@@ -11,27 +11,6 @@ export default function useTime() {
   const [date, setDate] = useState("");
   const [hebrewDate, setHebrewDate] = useState("");
 
-  // Obtener timezone del API al cargar
-  useEffect(() => {
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const res = await fetch("https://worldtimeapi.org/api/ip");
-        const data = await res.json();
-        if (!cancelled && data?.timezone) {
-          setTimezone(data.timezone);
-        }
-      } catch (err) {
-        console.error("Error al obtener timezone:", err);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   // Actualizar hora y fechas
   useEffect(() => {
     const updateTime = () => {
