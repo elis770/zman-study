@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hebcal/core": "^5.10.1",
+    "@hebcal/learning": "^6.4.4",
+    "@hebcal/leyning": "^9.2.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
