@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
-import { DailyLearning } from "@hebcal/core";
+import {HDate, DailyLearning} from '@hebcal/core';
 import "@hebcal/learning";
-import useTime from "./useTime";
+//import useTime from "./useTime";
 
 export default function useStudy() {
-  const { hdObj } = useTime(); // obtenemos el HDate de useTime
+  //const { date } = useTime(); // obtenemos el HDate de useTime
+  const dt = new Date();
+  const hd = new HDate(dt);
   const [todayStudy, setTodayStudy] = useState(null);
 
   useEffect(() => {
-    if (hdObj) {
-      const learning = DailyLearning.lookup("seferHaMitzvot", hdObj);
-      setTodayStudy(learning);
+    if (hd) {
+      const learning = DailyLearning.lookup("seferHaMitzvot", hd);
+      setTodayStudy(learning.render());
     }
-  }, [hdObj]);
+  }, []);
 
   return { todayStudy };
 }

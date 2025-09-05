@@ -10,8 +10,8 @@ export default function useTime() {
   const [time, setTime] = useState("");
   const [date, setDate] = useState("");
   const [hebrewDate, setHebrewDate] = useState("");
-  const [hdObj, setHdObj] = useState(null);
 
+  // Obtener timezone del API al cargar
   useEffect(() => {
     let cancelled = false;
 
@@ -32,15 +32,12 @@ export default function useTime() {
     };
   }, []);
 
+  // Actualizar hora y fechas
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
       const hd = new HDate(now);
 
-      // Guardamos el objeto HDate
-      setHdObj(hd);
-
-      // Hora y fecha normal
       setTime(
         now.toLocaleTimeString(undefined, {
           timeZone: timezone,
@@ -60,16 +57,14 @@ export default function useTime() {
         })
       );
 
-      // Fecha hebrea en string
       setHebrewDate(`${hd.getDate()} ${hd.getMonthName()} ${hd.getFullYear()}`);
     };
 
     updateTime();
-    const id = setInterval(updateTime, 1000); // actualiza cada segundo
+    const id = setInterval(updateTime, 1000);
 
     return () => clearInterval(id);
   }, [timezone]);
 
-  // Retornamos tanto el string como el objeto HDate
-  return { time, date, timezone, hebrewDate, hdObj };
+  return { time, date, timezone, hebrewDate };
 }
