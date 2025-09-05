@@ -11,7 +11,6 @@ const App = () => {
   const { todaySH, todayJumesh, todayTehilim } = useStudy();
   const { sunrise, sofZmanShma, shkiah, tzet, candleLighting, chatzot } = useHdate();
   //const { /*algo va a enviar aca */ } = useScraping();
-  //console.log(Hz);
 
   return (
     <div
@@ -23,143 +22,47 @@ const App = () => {
     >
       <div
         style={{
-          background: 'blueviolet',
-          padding: '20px',
+          padding: '10px',
           marginBottom: '20px',
         }}
       >
-        <h2>Hora actual según tu ubicación</h2>
-        <div id="date">
-          {date} - {hebrewDate}
-        </div>
-        <div id="time">{time}</div>
+        <h3 id="date">{date} - {hebrewDate}</h3>
+         {parasha && <p><strong>Parashá:</strong> {parasha.he} - {parasha.en}</p>}
+        <h2 id="time">{time}</h2>
         <div id="timezone">{timezone}</div>
-      </div>
 
-      <div style={{ background: 'blue', padding: '20px' }}>
-        <h2>Sefaria</h2>
         {loading ? (
           <p>Cargando...</p>
         ) : (
-          <ul>
-            {parasha && (
-              <div>
-                <strong>Parashá:</strong> {parasha.he} - {parasha.en}
-              </div>
-            )}
-            {haftara && (
-              <div>
-                <strong>Haftará:</strong> {haftara.he} - {haftara.en}
-              </div>
-            )}
-            {daf_yomi && (
-              <div>
-                <strong>Daf Yomi:</strong> {daf_yomi.he} - {daf_yomi.en}
-              </div>
-            )}
-            {Rambam1 && (
-              <div>
-                <strong>Rambam 1 Perek:</strong> {Rambam1.he} - {Rambam1.en}
-              </div>
-            )}
-            {Rambam3 && (
-              <div>
-                <strong>Rambam 3 Perek:</strong> {Rambam3.he} - {Rambam3.en}
-              </div>
-            )}
-            {Tanya && (
-              <div>
-                <strong>Tanya:</strong> {Tanya.en}
-              </div>
-            )}
-          </ul>
-        )}
-      </div>
-
-      <br />
-
-      <div style={{ background: 'green', padding: '20px' }}>
-        <h2>Hdate</h2>
-      <div style={{ background: 'red', padding: '20px' }}>
-        <h2>Estudio de Hoy</h2>
-        {todaySH || todayJumesh ? (
           <>
-            {todaySH && (
-              <div>
-                <strong>Sefer HaMitzvot:</strong> {todaySH}
-              </div>
-            )}
-            {todayJumesh && (
-              <div>
-                <strong>Jumash:</strong> {todayJumesh}
-              </div>
-            )}
-            {todayTehilim && (
-              <div>
-                <strong>Tehilim:</strong> {todayTehilim}
-              </div>
-            )}
+            <h2>Zmanim</h2>
+            <ul>
+              {sofZmanShma && <li><strong>Sof Shema:</strong> {sofZmanShma}</li>}
+              {shkiah && <li><strong>Shkia:</strong> {shkiah}</li>}
+              {candleLighting && <li><strong>Encendido de velas:</strong> {candleLighting}</li>}
+              {tzet && <li><strong>Tzet hakojabim:</strong> {tzet}</li>}
+              {chatzot && <li><strong>Jatzot:</strong> {chatzot}</li>}
+            </ul>
+
+            <h2>Estudio de Hoy</h2>
+            <ul>
+              {todayJumesh && <li><strong>Jumash:</strong> {todayJumesh}</li>}
+              {todayTehilim && <li><strong>Tehilim:</strong> {todayTehilim}</li>}
+              {Tanya && <li><strong>Tanya:</strong> {Tanya.en}</li>}
+              {Rambam3 && <li><strong>Rambam 3 Perek:</strong> {Rambam3.he} - {Rambam3.en}</li>}
+            </ul>
+
+            <h2>Más Zmanim y Estudio</h2>
+            <ul>
+              {sunrise && <li><strong>Netz Hajama:</strong> {sunrise}</li>}
+              {todaySH && <li><strong>Sefer HaMitzvot:</strong> {todaySH}</li>}
+              {haftara && <li><strong>Haftará:</strong> {haftara.he} - {haftara.en}</li>}
+              {daf_yomi && <li><strong>Daf Yomi:</strong> {daf_yomi.he} - {daf_yomi.en}</li>}
+              {Rambam1 && <li><strong>Rambam 1 Perek:</strong> {Rambam1.he} - {Rambam1.en}</li>}
+            </ul>
           </>
-        ) : (
-          <p>Cargando...</p>
         )}
       </div>
-      <br />
-      <div style={{ background: 'orange', padding: '20px' }}>
-        <h2>Zmanim</h2>
-        {loading ? (
-          <p>Cargando...</p>
-        ) : (
-          <ul>
-            {sunrise && (
-              <div>
-                <strong>Netz Hajama:</strong> {sunrise}
-              </div>
-            )}
-            {sofZmanShma && (
-              <div>
-                <strong>Sof Shema:</strong> {sofZmanShma}
-              </div>
-            )}
-            {shkiah && (
-              <div>
-                <strong>Shkia:</strong> {shkiah}
-              </div>
-            )}
-            {tzet && (
-              <div>
-                <strong>Tzet hacojabim:</strong> {tzet}
-              </div>
-            )}
-            {candleLighting && (
-              <div>
-                <strong>Encendido de velas:</strong> {candleLighting}
-              </div>
-            )}
-            {chatzot && (
-              <div>
-                <strong>Jatzot:</strong> {chatzot}
-              </div>
-            )}
-          </ul>
-        )}
-      </div>
-      <br />
-      <div style={{ background: 'orange', padding: '20px' }}>
-        <h2>Scraping</h2>
-        {loading ? (
-          <p>Cargando...</p>
-        ) : (
-          <ul>
-            {sunrise && (
-              <div>
-               <strong>Haiom iom:</strong> {sunrise}
-              </div>
-            )}
-          </ul>
-        )}
-      </div>
-    </div>
     </div>
   );
 };
