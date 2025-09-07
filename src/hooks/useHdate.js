@@ -1,68 +1,48 @@
 import { useState, useEffect } from 'react';
 import { GeoLocation, Zmanim } from '@hebcal/core';
+import useGregorianTime from './useGregorianTime';
 
 export default function useHdate() {
-  const [sunrise, setSunrise] = useState(null);
-  const [sofZmanShma, setSofZmanShma] = useState(null);
-  const [shkiah, setShkiah] = useState(null);
-  const [tzet, setTzet] = useState(null);
-  const [candleLighting, setCandleLighting] = useState(null);
-  const [chatzot, setChatzot] = useState(null);
-
-  const latitude = -34.6037;
-  const longitude = -58.3816;
-  const tzid = 'America/Argentina/Buenos_Aires';
-  const gloc = new GeoLocation(null, latitude, longitude, 0, tzid);
+  const { latitude, longitude, tzid, date, loading: gregorianLoading } = useGregorianTime();
+  const [zmanim, setZmanim] = useState({});
 
   useEffect(() => {
-    const today = new Date();
-    if (!today) return;
+    if (gregorianLoading || !latitude || !longitude || !tzid || !date) {
+      return;
+    }
 
-    const zmanim = new Zmanim(gloc, today, false);
+    const gloc = new GeoLocation(null, latitude, longitude, 0, tzid);
+    const zmanimCalculator = new Zmanim(gloc, date, false);
 
-    const zmanimList = [
-      { name: 'sunrise', fn: () => zmanim.sunrise() },
-      { name: 'sofZmanShma', fn: () => zmanim.sofZmanShma() },
-      { name: 'shkiah', fn: () => zmanim.sunset() },
-      { name: 'tzet', fn: () => zmanim.tzeit() },
-      { name: 'candleLighting', fn: () => zmanim.sunsetOffset(-18, true) },
-      { name: 'chatzot', fn: () => zmanim.chatzot() },
+    const zmanimToCalc = [
+      { name: 'sunrise', fn: () => zmanimCalculator.sunrise() },
+      { name: 'sofZmanShma', fn: () => zmanimCalculator.sofZmanShma() },
+      { name: 'shkiah', fn: () => zmanimCalculator.sunset() },
+      { name: 'tzet', fn: () => zmanimCalculator.tzeit() },
+      { name: 'candleLighting', fn: () => (date.getDay() === 5 ? zmanimCalculator.sunsetOffset(gloc.getCandleLightingOffset()) : null) },
+      { name: 'chatzot', fn: () => zmanimCalculator.chatzot() },
     ];
 
-    // Recorremos todos los zmanim
-    zmanimList.forEach(z => {
-      const dateObj = z.fn();
-      if (!dateObj) return;
-      const hora = dateObj.toLocaleTimeString('he-IL', {
-        timeZone: tzid,
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
-
-      // Seteamos cada estado dinámicamente
-      switch (z.name) {
-        case 'sunrise':
-          setSunrise(hora);
-          break;
-        case 'sofZmanShma':
-          setSofZmanShma(hora);
-          break;
-        case 'shkiah':
-          setShkiah(hora);
-          break;
-        case 'tzet':
-          setTzet(hora);
-          break;
-        case 'candleLighting':
-          setCandleLighting(hora);
-          break;
-        case 'chatzot':
-          setChatzot(hora);
-          break;
+    const calculatedZmanim = zmanimToCalc.reduce((acc, z) => {
+      try {
+        const dateObj = z.fn();
+        if (dateObj) {
+          acc[z.name] = dateObj.toLocaleTimeString('es-AR', {
+            timeZone: tzid,
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          });
+        }
+      } catch (e) {
+        // Some zmanim might not be available for all locations/dates
+        console.warn(`Could not calculate zman '${z.name}':`, e);
       }
-    });
-  }, []);
+      return acc;
+    }, {});
 
-  return { sunrise, sofZmanShma, shkiah, tzet, candleLighting, chatzot };
+    setZmanim(calculatedZmanim);
+  }, [latitude, longitude, tzid, date, gregorianLoading]);
+
+  return { ...zmanim, loading: gregorianLoading };
 }

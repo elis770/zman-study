@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import useTime from "./useTime.js";
+import useGregorianTime from "./useGregorianTime.js";
 
 const ordersMap = {
   1: "parasha",
@@ -11,24 +11,18 @@ const ordersMap = {
 };
 
 const useSefaria = () => {
-  const { timezone } = useTime();
+  const { tzid, formattedDate, loading: gregorianLoading } = useGregorianTime();
   const [studies, setStudies] = useState({});
   const [loading, setLoading] = useState(true);
   const [dateUsed, setDateUsed] = useState("");
 
   useEffect(() => {
-    if (!timezone) return;
+    if (!tzid || !formattedDate) return;
 
     const fetchSefariaData = async () => {
       setLoading(true);
       try {
-        const formatter = new Intl.DateTimeFormat("en-CA", {
-          timeZone: timezone,
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        });
-        const formattedDate = formatter.format(new Date());
+        // The formattedDate from useGregorianTime is already in 'en-CA' format (YYYY-MM-DD)
         setDateUsed(formattedDate);
 
         const response = await fetch(
@@ -36,16 +30,16 @@ const useSefaria = () => {
         );
         const data = await response.json();
 
-        const result = {};
-        data.calendar_items.forEach((item) => {
+        const newStudies = data.calendar_items.reduce((acc, item) => {
           const key = ordersMap[item.order];
           if (key) {
-            result[key] =
+            acc[key] =
               item.order === 15 ? { en: item.ref } : item.displayValue;
           }
-        });
+          return acc;
+        }, {});
 
-        setStudies(result);
+        setStudies(newStudies);
       } catch (err) {
         console.error("Error en fetchSefariaData:", err);
       } finally {
@@ -54,9 +48,14 @@ const useSefaria = () => {
     };
 
     fetchSefariaData();
-  }, [timezone]);
+  }, [tzid, formattedDate]);
 
-  return { ...studies, loading, timezone, dateUsed };
+  return {
+    ...studies,
+    loading: loading || gregorianLoading,
+    timezone: tzid,
+    dateUsed,
+  };
 };
 
 export default useSefaria;
