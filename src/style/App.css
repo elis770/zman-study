@@ -5,6 +5,21 @@
   text-align: center;
 }
 
+.app-container {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.app-icon {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+.main-content {
+  padding: 10px;
+  margin-bottom: 20px;
+}
 
 .card {
   padding: 2em;

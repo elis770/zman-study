@@ -61,7 +61,7 @@ export default function useGregorianTime(options = {}) {
       } catch (e) { /* ignore */ }
 
       try {
-        const data = await fetchWithTimeout("https://worldtimeapi.org/api/ip", 5000);
+        const data = await fetchWithTimeout("https://worldtimeapi.org/api/ip");
         if (!mounted) return;
         if (data?.timezone) setTzid(data.timezone);
         setLoading(false);
