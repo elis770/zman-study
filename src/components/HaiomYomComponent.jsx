@@ -1,8 +1,30 @@
+import useHayomYom from '../hooks/useHayomYom';
+
 export const HaiomYomComponent = () => {
+  const { title, text, loading, error } = useHayomYom();
+
+  if (loading) {
+    return (
+      <>
+        <h3>Haiom Iom</h3>
+        <p>Cargando estudio diario...</p>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <h3>Haiom Iom</h3>
+        <p style={{ color: '#b00' }}>No se pudo cargar el estudio: {error}</p>
+      </>
+    );
+  }
+
   return (
     <>
-      <h3>Haiom Iom</h3>
-      <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ratione doloremque quis at eum, atque alias, dolorem nesciunt in obcaecati unde. Cupiditate eveniet ullam cumque, doloribus itaque tempore magnam sequi?</div>
+      <h3>{title || 'Haiom Iom'}</h3>
+      <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>
     </>
-  )
-}
+  );
+};
