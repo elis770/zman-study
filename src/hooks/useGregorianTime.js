@@ -13,14 +13,32 @@ const fetchWithTimeout = async (url, ms = 5000) => {
   }
 };
 
-export default function useGregorianTime(options = {}) {
-  const fallbackTZ =
-    options.defaultTz ||
-    Intl.DateTimeFormat().resolvedOptions().timeZone ||
-    "America/Argentina/Buenos_Aires";
+// --- Utilidades de validación ---
+const isValidTimeZone = (tz) => {
+  if (typeof tz !== "string" || !tz) return false;
+  try {
+    // Si no es válido, esto tira.
+    new Intl.DateTimeFormat("en-US", { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+};
 
-  const fallbackLat = options.defaultLat ?? -34.6037;
-  const fallbackLon = options.defaultLon ?? -58.3816;
+export default function useGregorianTime(options = {}) {
+  const detectedTZ =
+    Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+
+  const fallbackTZ =
+    (typeof options.defaultTz === "string" && isValidTimeZone(options.defaultTz)
+      ? options.defaultTz
+      : undefined) ||
+    (isValidTimeZone(detectedTZ) ? detectedTZ : "America/Argentina/Buenos_Aires");
+
+  const fallbackLat =
+    typeof options.defaultLat === "number" ? options.defaultLat : -34.6037;
+  const fallbackLon =
+    typeof options.defaultLon === "number" ? options.defaultLon : -58.3816;
 
   const [tzid, setTzid] = useState(fallbackTZ);
   const [latitude, setLatitude] = useState(fallbackLat);
@@ -33,6 +51,13 @@ export default function useGregorianTime(options = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Normaliza/asegura que tzid sea válido antes de setearlo
+  const applyTzSafe = (maybeTz) => {
+    const next = isValidTimeZone(maybeTz) ? maybeTz : fallbackTZ;
+    setTzid(next);
+    return next;
+  };
+
   useEffect(() => {
     let mounted = true;
     if (options.disableNetwork) {
@@ -44,36 +69,50 @@ export default function useGregorianTime(options = {}) {
       setLoading(true);
       setError(null);
 
+      // 1) Intentar cache
       try {
-        const cachedLocation = sessionStorage.getItem('zman-user-location');
+        const cachedLocation = sessionStorage.getItem("zman-user-location");
         if (cachedLocation) {
           const data = JSON.parse(cachedLocation);
-          if (mounted) {
-            setTzid(data.tzid);
-            setLatitude(data.latitude);
-            setLongitude(data.longitude);
-            setCity(data.city);
-            setCountry(data.country);
+          if (mounted && data) {
+            applyTzSafe(
+              typeof data.tzid === "string" ? data.tzid : data.timezone
+            );
+            if (typeof data.latitude === "number") setLatitude(data.latitude);
+            if (typeof data.longitude === "number") setLongitude(data.longitude);
+            if (typeof data.city === "string") setCity(data.city);
+            if (typeof data.country === "string") setCountry(data.country);
             setLoading(false);
+            return;
           }
-          return;
         }
-      } catch (e) { /* ignore */ }
+      } catch {
+        // ignorar cache corrupto
+      }
 
+      // 2) worldtimeapi
       try {
         const data = await fetchWithTimeout("https://worldtimeapi.org/api/ip");
         if (!mounted) return;
-        if (data?.timezone) setTzid(data.timezone);
-        setLoading(false);
-        return;
-      } catch {}
+        if (data) {
+          const tz = data.timezone || data.tzid;
+          applyTzSafe(tz);
+          // worldtimeapi no siempre trae lat/lon; si tenés otro endpoint, podés completar acá.
+          setLoading(false);
+          return;
+        }
+      } catch {
+        // sigue al fallback
+      }
 
-      // Fallback
+      // 3) Fallback
       if (mounted) {
-        setTzid(fallbackTZ);
+        applyTzSafe(fallbackTZ);
         setLatitude(fallbackLat);
         setLongitude(fallbackLon);
-        setError("No se pudo obtener ubicación por IP. Usando valores por defecto.");
+        setError(
+          "No se pudo obtener ubicación por IP. Usando valores por defecto."
+        );
         setLoading(false);
       }
     })();
@@ -81,37 +120,56 @@ export default function useGregorianTime(options = {}) {
     return () => {
       mounted = false;
     };
-  }, [options.disableNetwork]);
+  }, [options.disableNetwork]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const tick = () => {
       const localDate = new Date();
       setDate(localDate);
-      setTime(
-        localDate.toLocaleTimeString("es-AR", {
-          timeZone: tzid,
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        })
-      );
+      // Intentar con tz; si falla, sin tz (usa local)
+      try {
+        setTime(
+          localDate.toLocaleTimeString("es-AR", {
+            timeZone: tzid,
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+          })
+        );
+      } catch {
+        setTime(
+          localDate.toLocaleTimeString("es-AR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+          })
+        );
+      }
     };
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [tzid]);
 
-  const formattedDate = useMemo(
-    () =>
-      date.toLocaleDateString("en-CA", {
+  const formattedDate = useMemo(() => {
+    // Igual que arriba: usar tz si es válida; si no, sin tz
+    try {
+      return date.toLocaleDateString("en-CA", {
         timeZone: tzid,
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
-      }),
-    [date, tzid]
-  );
+      });
+    } catch {
+      return date.toLocaleDateString("en-CA", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+    }
+  }, [date, tzid]);
 
   return {
     tzid,

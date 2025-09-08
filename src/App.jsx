@@ -1,4 +1,4 @@
-import icon from '../public/icon.png';
+import icon from './utils/icon.png';
 import './style/App.css';
 import { HaiomYomComponent } from './components/HaiomYomComponent.jsx';
 import { TimeComponent } from './components/TimeComponent.jsx';

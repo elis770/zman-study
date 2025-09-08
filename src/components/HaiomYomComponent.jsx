@@ -23,7 +23,7 @@ export const HaiomYomComponent = () => {
 
   return (
     <>
-      <h3>{title || 'Haiom Iom'}</h3>
+    <h3>Haiom Iom</h3>
       <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>
     </>
   );
