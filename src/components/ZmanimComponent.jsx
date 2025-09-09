@@ -4,6 +4,7 @@ import {
   isFriday,
 } from '../utils/dateChecks';
 import { useAppData } from '../context/DataContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const ZmanimComponent = () => {
   const {
@@ -15,24 +16,31 @@ const ZmanimComponent = () => {
     tzet,
     candleLighting,
     chatzot,
+    loading,
+    loadingGeo,
   } = useAppData();
+  const { t, language } = useLanguage();
+
+  if (loading || loadingGeo) {
+    return null;
+  }
 
   const zmanimList = [
     {
-      label: 'Netz Hajama',
+      label: t('NETZ_HAJAMA'),
       value: sunrise,
       show: shouldShowNetz(hebrewDate) && sunrise,
     },
-    { label: 'Sof Shema', value: sofZmanShma, show: !!sofZmanShma },
-    { label: 'Shkia', value: shkiah, show: !!shkiah },
+    { label: t('SOF_SHEMA'), value: sofZmanShma, show: !!sofZmanShma },
+    { label: t('SHKIA'), value: shkiah, show: !!shkiah },
     {
-      label: 'Encendido de velas',
+      label: t('CANDLE_LIGHTING'),
       value: candleLighting,
       show: isFriday(date) && candleLighting,
     },
-    { label: 'Tzet hakojabim', value: tzet, show: !!tzet },
+    { label: t('TZET_HAKOJABIM'), value: tzet, show: !!tzet },
     {
-      label: 'Jatzot',
+      label: t('JATZOT'),
       value: chatzot,
       show: shouldShowChatzot(hebrewDate) && chatzot,
     },
@@ -43,8 +51,11 @@ const ZmanimComponent = () => {
   }
 
   return (
-    <div>
-      <h2>Zmanim</h2>
+    <div style={{
+      direction: language === 'he' ? 'rtl' : 'ltr',
+      textAlign: language === 'he' ? 'right' : 'left'
+    }}>
+      <h2>{t('ZMANIM_TITLE')}</h2>
       {zmanimList.map(zman => (
         <p key={zman.label}>
           <strong>{zman.label}:</strong> {zman.value}

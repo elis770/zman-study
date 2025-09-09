@@ -156,17 +156,17 @@ export default function useGregorianTime(options = {}) {
   const formattedDate = useMemo(() => {
     // Igual que arriba: usar tz si es válida; si no, sin tz
     try {
-      return date.toLocaleDateString("en-CA", {
+      return date.toLocaleDateString('es-ES', {
         timeZone: tzid,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
       });
     } catch {
-      return date.toLocaleDateString("en-CA", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
       });
     }
   }, [date, tzid]);
