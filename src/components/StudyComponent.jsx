@@ -2,7 +2,7 @@ import { useAppData } from '../context/DataContext';
 import { useLanguage } from '../context/LanguageContext';
 import styles from '../style/Study.module.css';
 
-const StudyComponent = () => {
+const StudyComponent = ({ visibleStudies }) => {
   const {
     todayJumesh,
     todayTehilim,
@@ -18,6 +18,7 @@ const StudyComponent = () => {
   } = useAppData();
   const { t } = useLanguage();
 
+  //console.log('todaySH:', todaySH);
   // Propuesta de iconos para cada estudio
   const iconMap = {
     PARASHA: '📜',
@@ -26,9 +27,9 @@ const StudyComponent = () => {
     JUMASH: '📖',
     TEHILIM: '🎶',
     TANYA: '🧠',
-    RAMBAM_1: '📚',
-    RAMBAM_3: '📚',
-    SEFER_HAMITZVOT: '📜',
+    RAMBAM_1: '1📚',
+    RAMBAM_3: '3📚',
+    SEFER_HAMITZVOT: 'SH📚',
   };
 
   if (loading || loadingGeo) {
@@ -36,17 +37,21 @@ const StudyComponent = () => {
   }
 
   // Construir la lista de estudios a mostrar
-  const studyList = [
-    { key: 'PARASHA', label: t('PARASHA_TITLE'), value: parasha?.he, show: !!parasha },
-    { key: 'HAFTARA', label: t('HAFTARA_TITLE'), value: haftara?.he, show: !!haftara },
-    { key: 'DAF_YOMI', label: t('DAF_YOMI_TITLE'), value: daf_yomi?.he, show: !!daf_yomi },
-    { key: 'JUMASH', label: t('JUMASH'), value: todayJumesh, show: !!todayJumesh },
-    { key: 'TEHILIM', label: t('TEHILIM'), value: todayTehilim, show: !!todayTehilim },
-    { key: 'TANYA', label: t('TANYA'), value: Tanya?.en, show: !!Tanya },
-    { key: 'RAMBAM_1', label: t('RAMBAM_1'), value: Rambam1?.he, show: !!Rambam1 },
-    { key: 'RAMBAM_3', label: t('RAMBAM_3'), value: Rambam3?.he, show: !!Rambam3 },
-    { key: 'SEFER_HAMITZVOT', label: t('SEFER_HAMITZVOT_TITLE'), value: todaySH, show: !!todaySH },
-  ].filter(item => item.show);
+  const allStudiesData = {
+    JUMASH: { label: t('JUMASH'), value: todayJumesh },
+    TEHILIM: { label: t('TEHILIM'), value: todayTehilim },
+    TANYA: { label: t('TANYA'), value: Tanya?.en },
+    SEFER_HAMITZVOT: { label: t('SEFER_HAMITZVOT_TITLE'), value: todaySH?.render() },
+    RAMBAM_1: { label: t('RAMBAM_1'), value: Rambam1?.he },
+    RAMBAM_3: { label: t('RAMBAM_3'), value: Rambam3?.he },
+    PARASHA: { label: t('PARASHA_TITLE'), value: parasha?.he },
+    HAFTARA: { label: t('HAFTARA_TITLE'), value: haftara?.he },
+    DAF_YOMI: { label: t('DAF_YOMI_TITLE'), value: daf_yomi?.he },
+  };
+
+  const studyList = visibleStudies
+    .map(key => ({ key, ...allStudiesData[key] }))
+    .filter(study => study.value);
 
   if (studyList.length === 0) {
     return null;

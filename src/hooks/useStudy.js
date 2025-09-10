@@ -2,13 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { DailyLearning, Sedra } from '@hebcal/core';
 import { getLeyningForParsha } from '@hebcal/leyning';
 import { tehilimByelul, tehilimMonthly } from './tehilim.js';
-import useGregorianTime from './useGregorianTime.js';
-import useHebrewDate from './useHebrewDate.js';
+import '@hebcal/learning';
 
-export default function useStudy() {
-  const { date, loading: gregorianLoading } = useGregorianTime();
-  const { hebrewObj: hd } = useHebrewDate(date);
-
+export default function useStudy({ date, loading: gregorianLoading, hebrewObj: hd }) {
   const [todaySH, setTodaySH] = useState(null);
   const [todayJumesh, setTodayJumesh] = useState(null);
   const [todayTehilim, setTodayTehilim] = useState(null);
@@ -24,7 +20,7 @@ export default function useStudy() {
 
     // Sefer HaMitzvot del día
     const learning = DailyLearning.lookup('seferHaMitzvot', hd);
-    setTodaySH(learning ? learning.render() : null);
+    setTodaySH(learning || null);
 
     // Jumash del día
     const jsDow = date.getDay(); // 0=Dom … 6=Sáb

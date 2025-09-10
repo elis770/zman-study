@@ -1,0 +1,74 @@
+.avisoContainer {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  min-height: 100px; /* Para evitar saltos de layout */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Para la animación */
+}
+
+.avisoCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 600px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para el modo oscuro */
+body.dark .avisoCard {
+  background-color: #3a3a3a;
+  border-color: #555;
+}
+
+.iconContainer {
+  font-size: 2.5rem; /* Tamaño del emoji/icono */
+  line-height: 1;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.label {
+  font-size: 1.1em;
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.value {
+  font-size: 0.95em;
+  font-weight: 400;
+  white-space: normal;
+  word-break: break-word;
+}
+
+body.dark .label {
+  color: #f1f1f1;
+}
+
+body.dark .value {
+  color: #ccc;
+}

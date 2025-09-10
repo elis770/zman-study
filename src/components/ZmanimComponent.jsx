@@ -42,13 +42,21 @@ const ZmanimComponent = () => {
       key: 'NETZ_HAJAMA',
       label: t('NETZ_HAJAMA'),
       value: sunrise,
-      show: shouldShowNetz(hebrewDate) && sunrise,
+      show: sunrise,
+      //show: shouldShowNetz(hebrewDate) && sunrise,
     },
     {
       key: 'SOF_SHEMA',
       label: t('SOF_SHEMA'),
       value: sofZmanShma,
       show: !!sofZmanShma,
+    },
+    {
+      key: 'JATZOT',
+      label: t('JATZOT'),
+      value: chatzot,
+      show: chatzot,
+      //show: shouldShowChatzot(hebrewDate) && chatzot,
     },
     { key: 'SHKIA', label: t('SHKIA'), value: shkiah, show: !!shkiah },
     {
@@ -62,12 +70,6 @@ const ZmanimComponent = () => {
       label: t('TZET_HAKOJABIM'),
       value: tzet,
       show: !!tzet,
-    },
-    {
-      key: 'JATZOT',
-      label: t('JATZOT'),
-      value: chatzot,
-      show: shouldShowChatzot(hebrewDate) && chatzot,
     },
   ].filter(item => item.show);
 

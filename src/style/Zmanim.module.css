@@ -1,10 +1,9 @@
 .zmanimContainer {
   display: grid;
-  /* Crea una cuadrícula responsive que se adapta al tamaño de la pantalla */
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   margin-top: 1.5rem;
-   margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .zmanItem {
@@ -48,8 +47,10 @@ body.dark .zmanItem {
 }
 
 .value {
-  font-size: 1.3em;
+  font-size: 1em;
   font-weight: 700;
+  white-space: normal;
+  word-break: break-word;
 }
 
 body.dark .label {

@@ -1,0 +1,257 @@
+.minianContainer {
+  position: relative;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.minianGridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.minianCard, .addMinianCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  position: relative;
+  min-height: 80px;
+}
+
+.minianCard {
+  background-color: var(--background-color-hover, #f9f9f9);
+  border: 1px solid var(--border-color, #eee);
+}
+
+.addMinianCard {
+  justify-content: center;
+  color: var(--text-color-secondary, #888);
+  cursor: pointer;
+  border: 2px dashed var(--border-color, #ccc);
+  min-height: 150px;
+}
+
+.addMinianCard:hover {
+  background-color: var(--background-color-hover, #f9f9f9);
+  border-color: var(--primary-color, #007bff);
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.modalContent {
+  background: var(--background-color, #fff);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+body.dark .modalContent {
+  background: #3a3a3a;
+  border: 1px solid #555;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--text-color, #888);
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.formLabel {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9em;
+  color: var(--text-color-secondary, #555);
+}
+
+body.dark .formLabel {
+  color: #ccc;
+}
+
+.formSelect {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #ccc);
+  background-color: var(--background-color-input, #fff);
+  color: var(--text-color, #333);
+  font-size: 1em;
+}
+
+body.dark .formSelect {
+  background-color: #555;
+  border-color: #777;
+  color: #f1f1f1;
+}
+
+.timeSelector {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.timeSelector .formGroup {
+  flex: 1;
+}
+
+.timeSeparator {
+  font-size: 1.5em;
+  font-weight: bold;
+  padding-bottom: 0.75rem; /* Align with select padding */
+}
+
+.saveButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--primary-color, #007bff);
+  color: white;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveButton:hover {
+  background-color: var(--primary-color-hover, #0056b3);
+}
+
+body.dark .minianCard {
+  background-color: #4a4a4a;
+  border-color: #555;
+}
+
+body.dark .addMinianCard:hover {
+  background-color: #4a4a4a;
+  border-color: #58a6ff;
+}
+
+.minianTypeIcon {
+  font-size: 2.2rem;
+}
+
+.addMinianIcon {
+  font-size: 2.2rem;
+}
+
+.addMinianText {
+  font-weight: 700;
+  font-size: 1em;
+}
+
+.minianTextContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.minianType {
+  font-weight: 500;
+  font-size: 0.9em;
+  color: var(--text-color-secondary, #555);
+}
+
+.minianTime {
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+.deleteButton {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  color: var(--text-color-secondary, #aaa);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.deleteButton:hover {
+  color: #c00;
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+body.dark .deleteButton {
+  color: #888;
+}
+
+body.dark .deleteButton:hover {
+  color: #ff8a8a;
+  background-color: rgba(255, 138, 138, 0.15);
+}
+
+body.dark .minianType {
+  color: #ccc;
+}
+
+body.dark .minianTime {
+  color: #f1f1f1;
+}
+
+.smallAddButton {
+  position: absolute;
+  top: -45px;
+  right: -20px;
+  padding: 10px;
+  z-index: 10;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  /*background-color: var(--primary-color, #007bff);*/
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.smallAddButton:hover {
+  transform: scale(1.1);
+  /*background-color: var(--primary-color-hover, #0056b3);*/
+}

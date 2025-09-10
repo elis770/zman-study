@@ -1,5 +1,5 @@
 #root {
-  max-width: 1280px;
+  min-width: 100%;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -11,18 +11,17 @@
   /* margin-top: 50px; */ /* Eliminado para un layout más flexible */
 }
 
-.controls-container {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+.header-container {
   display: flex;
-  gap: 10px; /* Espacio entre botones */
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 20px;
 }
 
 .app-icon {
-  width: 100px;
+  width: 130px; /* Agrandado */
   height: auto;
-  margin-bottom: 20px;
 }
 
 .main-content {
@@ -32,7 +31,7 @@
   border-radius: 8px;
   padding: 2rem;
   width: 100%;
-  max-width: 800px;
+  max-width: 960px;
   margin: 20px auto; /* Centrado y con margen */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
@@ -48,21 +47,19 @@
 
 /* Estilos para los botones de cambio de tema e idioma */
 .theme-toggle-button,
-.language-toggle-button {
-  padding: 8px 12px;
-  border-radius: 8px;
+.language-toggle-button,
+.settings-button {
+  padding: 12px;
+  border-radius: 12px;
   cursor: pointer;
   /* Los estilos base como background y color vienen de index.css */
+  font-size: 2rem; /* Agrandado para el emoji */
+  line-height: 1; /* Ayuda a centrar verticalmente el emoji */
 }
 
 /* Media Query para pantallas más pequeñas */
 @media (max-width: 768px) {
   #root {
     padding: 1rem;
-  }
-  .controls-container {
-    position: static;
-    justify-content: center;
-    margin-bottom: 1rem;
   }
 }

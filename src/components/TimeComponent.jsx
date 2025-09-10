@@ -1,6 +1,6 @@
 import { useAppData } from '../context/DataContext';
-import { useLanguage } from '../context/LanguageContext';
-import { useEffect, useState } from 'react';
+// import { useLanguage } from '../context/LanguageContext';
+// import { useEffect, useState } from 'react';
 import styles from '../style/Time.module.css';
 
 export const TimeComponent = () => {
@@ -14,17 +14,17 @@ export const TimeComponent = () => {
     hebrewDate,
     loadingGeo,
   } = useAppData();
-  const { language, translateDynamicText } = useLanguage();
-  const [translatedHebrewDate, setTranslatedHebrewDate] = useState('');
+  // const { language, translateDynamicText } = useLanguage();
+  // const [translatedHebrewDate, setTranslatedHebrewDate] = useState('');
 
-  useEffect(() => {
-    if (hebrewDate && language === 'es') {
-      // Asumimos que hebrewDate del contexto siempre está en hebreo
-      translateDynamicText(hebrewDate, 'he').then(setTranslatedHebrewDate);
-    } else {
-      setTranslatedHebrewDate('');
-    }
-  }, [hebrewDate, language, translateDynamicText]);
+  // useEffect(() => {
+  //   if (hebrewDate && language === 'es') {
+  //     // Asumimos que hebrewDate del contexto siempre está en hebreo
+  //     translateDynamicText(hebrewDate, 'he').then(setTranslatedHebrewDate);
+  //   } else {
+  //     setTranslatedHebrewDate('');
+  //   }
+  // }, [hebrewDate, language, translateDynamicText]);
 
   if (loadingGeo) {
     return <p>Obteniendo ubicación...</p>;
