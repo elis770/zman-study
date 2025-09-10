@@ -1,9 +1,7 @@
 import icon from '../utils/icon.png';
 import '../style/App.css';
-import { HaiomYomComponent } from '../components/HaiomYomComponent.jsx';
 import { TimeComponent } from '../components/TimeComponent.jsx';
-import ZmanimComponent from '../components/ZmanimComponent.jsx';
-import StudyComponent from '../components/StudyComponent.jsx';
+import StudyContainer from '../components/StudyContainer.jsx';
 import { DataProvider } from '../context/DataContext';
 import { useTheme } from '../hooks/useTheme.js';
 import { LanguageProvider, useLanguage } from '../context/LanguageContext';
@@ -33,11 +31,7 @@ const AppContent = () => {
       </button>
       <div className="main-content">
         <TimeComponent />
-        <ZmanimComponent />
-        <br />
-        <StudyComponent />
-        <br />
-        <HaiomYomComponent />
+        <StudyContainer />
       </div>
     </div>
   );

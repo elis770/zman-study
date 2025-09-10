@@ -3,21 +3,39 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  position: relative; /* Para que el posicionamiento absoluto de los hijos funcione */
 }
 
 .app-container {
   text-align: center;
-  margin-top: 50px;
+  /* margin-top: 50px; */ /* Eliminado para un layout más flexible */
+}
+
+.controls-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px; /* Espacio entre botones */
 }
 
 .app-icon {
   width: 100px;
+  height: auto;
   margin-bottom: 20px;
 }
 
 .main-content {
-  padding: 10px;
-  margin-bottom: 20px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid #ddd; /* Borde sutil */
+  border-radius: 8px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto; /* Centrado y con margen */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .card {
@@ -28,20 +46,23 @@
   color: #888;
 }
 
-.theme-toggle-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+/* Estilos para los botones de cambio de tema e idioma */
+.theme-toggle-button,
+.language-toggle-button {
   padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
+  /* Los estilos base como background y color vienen de index.css */
 }
 
-.language-toggle-button {
-  position: absolute;
-  top: 60px;
-  right: 20px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
+/* Media Query para pantallas más pequeñas */
+@media (max-width: 768px) {
+  #root {
+    padding: 1rem;
+  }
+  .controls-container {
+    position: static;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
 }

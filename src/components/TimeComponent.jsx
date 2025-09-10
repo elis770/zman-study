@@ -1,6 +1,7 @@
 import { useAppData } from '../context/DataContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useEffect, useState } from 'react';
+import styles from '../style/Time.module.css';
 
 export const TimeComponent = () => {
   const {
@@ -30,17 +31,45 @@ export const TimeComponent = () => {
   }
   return (
     <>
-      <h3 id="date" style={{ direction: language === 'he' ? 'rtl' : 'ltr' }}>
-        {formattedDate} - {language === 'es' ? (translatedHebrewDate || hebrewDate) : hebrewDate}
+    <div className={`${styles['container-sm']}`}>
+      <div className={styles.hola}>
+      <h2 className={`${styles.time}`}>{time}</h2>
+      </div>
+      <div className={styles.hola2}>
+      <h3 className={styles.date}>
+        {formattedDate}
       </h3>
-      <h2 id="time">{time}</h2>
-      <div id="timezone">
+      <h3 className={styles.date}>
+        {hebrewDate}
+      </h3>
+      <div className={styles.timezone}>
         {tzid}{' '}
         {city || country
           ? `— ${city ?? ''}${city && country ? ', ' : ''}${country ?? ''}`
           : ''}
       </div>
-      {geoError && <small style={{ color: '#b00' }}>{geoError}</small>}
+      </div>
+    </div>
+    {/* <div className={`${styles['container-sm']} bg-primary text-white`}>
+      <div className={styles.hola}>
+      <h2 className={`${styles.time} text-primary-emphasis bg-primary-subtle border border-primary-subtle`}>{time}</h2>
+      </div>
+      <div className={styles.hola2}>
+      <h3 className={styles.date}>
+        {formattedDate}
+      </h3>
+      <h3 className={styles.date}>
+        {hebrewDate}
+      </h3>
+      <div className={styles.timezone}>
+        {tzid}{' '}
+        {city || country
+          ? `— ${city ?? ''}${city && country ? ', ' : ''}${country ?? ''}`
+          : ''}
+      </div>
+      </div>
+    </div> */}
     </>
   );
 };
+{/* {geoError && <small className={styles.error}>{geoError}</small>} */}

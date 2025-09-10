@@ -1,0 +1,61 @@
+.zmanimContainer {
+  display: grid;
+  /* Crea una cuadrícula responsive que se adapta al tamaño de la pantalla */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+   margin-bottom: 2rem;
+}
+
+.zmanItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.zmanItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para el modo oscuro */
+body.dark .zmanItem {
+  background-color: #3a3a3a;
+  border-color: #555;
+}
+
+.iconContainer {
+  font-size: 2.2rem; /* Tamaño del emoji/icono */
+  line-height: 1;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinea el texto a la izquierda (o derecha en RTL) */
+}
+
+.label {
+  font-size: 0.9em;
+  color: #555;
+  font-weight: 500;
+}
+
+.value {
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+body.dark .label {
+  color: #ccc;
+}
+
+body.dark .value {
+  color: #f1f1f1;
+}
