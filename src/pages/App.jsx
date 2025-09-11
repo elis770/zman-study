@@ -21,11 +21,21 @@ const AppContent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showMinian, setShowMinian] = usePersistentState('showMinian', false);
   const [showHayomYom, setShowHayomYom] = usePersistentState('showHayomYom', true);
+  const [customAvisos, setCustomAvisos] = usePersistentState('customAvisos', []);
   const [visibleZmanim, setVisibleZmanim] = usePersistentState('visibleZmanim', defaultZmanim);
   const [visibleStudies, setVisibleStudies] = usePersistentState('visibleStudies', defaultStudies);
 
   const toggleShowMinian = () => setShowMinian(prev => !prev);
   const toggleShowHayomYom = () => setShowHayomYom(prev => !prev);
+
+  const addAviso = (aviso) => {
+    // Adds a unique ID to the new aviso
+    setCustomAvisos(prev => [...prev, { ...aviso, id: Date.now() }]);
+  };
+
+  const deleteAviso = (id) => {
+    setCustomAvisos(prev => prev.filter(a => a.id !== id));
+  };
 
   const handleZmanimChange = (key) => {
     setVisibleZmanim(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
@@ -54,7 +64,7 @@ const AppContent = () => {
       </div>
       <div className="main-content">
         <TimeComponent />
-        <AvisosComponent/>
+        <AvisosComponent customAvisos={customAvisos} />
         <StudyContainer
           showMinian={showMinian}
           showHayomYom={showHayomYom}
@@ -78,6 +88,9 @@ const AppContent = () => {
         onZmanimChange={handleZmanimChange}
         visibleStudies={visibleStudies}
         onStudiesChange={handleStudiesChange}
+        customAvisos={customAvisos}
+        onAddAviso={addAviso}
+        onDeleteAviso={deleteAviso}
       />
     </div>
   );

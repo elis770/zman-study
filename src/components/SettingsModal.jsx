@@ -1,82 +1,128 @@
+import { useState, useEffect } from 'react';
 import styles from '../style/SettingsModal.module.css';
-import { allZmanim } from '../hooks/zmanimConfig.js';
-import { allStudies } from '../hooks/studyConfig.js';
+import GeneralSettings from './GeneralSettings.jsx';
+import ZmanimSettings from './ZmanimSettings.jsx';
+import StudySettings from './StudySettings.jsx';
+import AvisosSettings from './AvisosSettings.jsx';
 
-const SettingsModal = ({ isOpen, onClose, theme, toggleTheme, language, toggleLanguage, t, showMinian, toggleShowMinian, showHayomYom, toggleShowHayomYom, visibleZmanim, onZmanimChange, visibleStudies, onStudiesChange }) => {
-  if (!isOpen) {
-    return null;
-  }
+const SettingsModal = ({
+  isOpen, onClose,
+  theme, toggleTheme,
+  language, toggleLanguage,
+  t,
+  showMinian, toggleShowMinian,
+  showHayomYom, toggleShowHayomYom,
+  visibleZmanim, onZmanimChange,
+  visibleStudies, onStudiesChange,
+  customAvisos, onAddAviso, onDeleteAviso
+}) => {
+  const [expanded, setExpanded] = useState({
+    general: true, zmanim: true, study: true, avisos: true
+  });
 
-  const buttonStyles = {
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && onClose();
+    if (isOpen) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const btnStyle = {
     color: theme === 'dark' ? '#fff' : '#000',
     backgroundColor: theme === 'dark' ? '#333' : '#eee',
   };
 
+  const toggle = (k) => setExpanded(s => ({ ...s, [k]: !s[k] }));
+
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.closeButton} onClick={onClose}>&times;</button>
-        <h2>{t('SETTINGS_TITLE') || 'Configuración'}</h2>
-        <div className={styles.buttonGroup}>
-          <button
-            onClick={toggleTheme}
-            className={styles.modalButton}
-            style={buttonStyles}
-          >
-            Cambiar a modo {theme === 'dark' ? 'claro' : 'oscuro'}
-          </button>
-          <button
-            onClick={toggleLanguage}
-            className={styles.modalButton}
-            style={buttonStyles}
-          >
-            {t(language === 'es' ? 'CHANGE_TO_HEBREW' : 'CHANGE_TO_SPANISH')}
-          </button>
-          <button
-            onClick={toggleShowMinian}
-            className={styles.modalButton}
-            style={buttonStyles}
-          >
-            {showMinian ? t('HIDE_MINIAN') : t('SHOW_MINIAN')}
-          </button>
-          <button
-            onClick={toggleShowHayomYom}
-            className={styles.modalButton}
-            style={buttonStyles}
-          >
-            {showHayomYom ? t('HIDE_HAYOM_YOM') : t('SHOW_HAYOM_YOM')}
-          </button>
+      <div
+        className={styles.modalContent}
+        role="dialog" aria-modal="true" aria-labelledby="modal-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.modalHeader}>
+          <button className={styles.closeButton} onClick={onClose} aria-label="Cerrar">×</button>
+          <h2 id="modal-title">{t('SETTINGS_TITLE') || 'Configuración'}</h2>
+          {/* espacio a la derecha para balancear layout */}
+          <span style={{ width: 28 }} />
         </div>
 
-        <div className={styles.settingsSection}>
-          <h3>{t('ZMANIM_TITLE')}</h3>
-          <div className={styles.checkboxGroup}>
-            {allZmanim.map(zman => (
-              <label key={zman.key} className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={visibleZmanim.includes(zman.key)}
-                  onChange={() => onZmanimChange(zman.key)}
+        <div className={styles.scrollableContent}>
+          {/* General */}
+          <div className={styles.settingsSection}>
+            <div className={styles.sectionHeader} onClick={() => toggle('general')}>
+              <h3>{t('GENERAL_SETTINGS') || 'Configuración General'}</h3>
+              <span>{expanded.general ? '−' : '+'}</span>
+            </div>
+            {expanded.general && (
+              <div className={styles.sectionContent}>
+                <GeneralSettings
+                  t={t}
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  language={language}
+                  toggleLanguage={toggleLanguage}
+                  showMinian={showMinian}
+                  toggleShowMinian={toggleShowMinian}
+                  showHayomYom={showHayomYom}
+                  toggleShowHayomYom={toggleShowHayomYom}
+                  btnStyle={btnStyle}
                 />
-                {t(zman.labelKey)}
-              </label>
-            ))}
+              </div>
+            )}
           </div>
-        </div>
 
-        <div className={styles.settingsSection}>
-          <h3>{t('STUDY_TITLE')}</h3>
-          <div className={styles.checkboxGroup}>
-            {allStudies.map(study => (
-              <label key={study.key} className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={visibleStudies.includes(study.key)}
-                  onChange={() => onStudiesChange(study.key)}
+          {/* Zmanim */}
+          <div className={styles.settingsSection}>
+            <div className={styles.sectionHeader} onClick={() => toggle('zmanim')}>
+              <h3>{t('ZMANIM_TITLE')}</h3>
+              <span>{expanded.zmanim ? '−' : '+'}</span>
+            </div>
+            {expanded.zmanim && (
+              <div className={styles.sectionContent}>
+                <ZmanimSettings
+                  t={t}
+                  visibleZmanim={visibleZmanim}
+                  onZmanimChange={onZmanimChange}
                 />
-                {t(study.labelKey)}
-              </label>
-            ))}
+              </div>
+            )}
+          </div>
+
+          {/* Estudio */}
+          <div className={styles.settingsSection}>
+            <div className={styles.sectionHeader} onClick={() => toggle('study')}>
+              <h3>{t('STUDY_TITLE')}</h3>
+              <span>{expanded.study ? '−' : '+'}</span>
+            </div>
+            {expanded.study && (
+              <div className={styles.sectionContent}>
+                <StudySettings
+                  t={t}
+                  visibleStudies={visibleStudies}
+                  onStudiesChange={onStudiesChange}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Avisos y Eventos */}
+          <div className={styles.settingsSection}>
+            <div className={styles.sectionHeader} onClick={() => toggle('avisos')}>
+              <h3>{t('AVISOS_EVENTS_TITLE') || 'Avisos y Eventos'}</h3>
+              <span>{expanded.avisos ? '−' : '+'}</span>
+            </div>
+            {expanded.avisos && (
+              <div className={styles.sectionContent}>
+                <AvisosSettings
+                  customAvisos={customAvisos}
+                  onAddAviso={onAddAviso}
+                  onDeleteAviso={onDeleteAviso}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

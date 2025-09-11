@@ -1,0 +1,18 @@
+.buttonGroup {
+  display: grid;
+  gap: 10px;
+}
+
+.modalButton {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.modalButton:hover {
+  background: var(--hover);
+}

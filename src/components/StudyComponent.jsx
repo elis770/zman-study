@@ -51,6 +51,8 @@ const StudyComponent = ({ visibleStudies }) => {
 
   const studyList = visibleStudies
     .map(key => ({ key, ...allStudiesData[key] }))
+    // Parasha and Haftara are now shown in the AvisosComponent
+    .filter(study => study.key !== 'PARASHA' && study.key !== 'HAFTARA')
     .filter(study => study.value);
 
   if (studyList.length === 0) {

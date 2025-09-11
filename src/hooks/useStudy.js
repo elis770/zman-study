@@ -1,19 +1,22 @@
-import { useState, useEffect, useMemo } from 'react';
-import { DailyLearning, Sedra } from '@hebcal/core';
-import { getLeyningForParsha } from '@hebcal/leyning';
+import { useState, useEffect } from 'react';
 import { tehilimByelul, tehilimMonthly } from './tehilim.js';
-import '@hebcal/learning';
 
 export default function useStudy({ date, loading: gregorianLoading, hebrewObj: hd }) {
   const [todaySH, setTodaySH] = useState(null);
   const [todayJumesh, setTodayJumesh] = useState(null);
   const [todayTehilim, setTodayTehilim] = useState(null);
 
-  const sedra = useMemo(() => (hd ? new Sedra(hd.getFullYear(), true) : null), [hd]);
-  const parsha = useMemo(() => (hd && sedra ? sedra.get(hd) : null), [sedra, hd]);
-
   useEffect(() => {
     if (!hd || !date) return;
+    let cancelled = false;
+
+    const calculateStudies = async () => {
+      // Carga diferida para que vivan en un chunk aparte
+      const { DailyLearning, Sedra } = await import('@hebcal/core');
+      const { getLeyningForParsha } = await import('@hebcal/leyning');
+      await import('@hebcal/learning'); // side-effect: registra schedules
+
+      if (cancelled) return;
 
     const month = hd.getMonth(); // mes hebreo (1..13)
     const day = hd.getDate(); // día del mes hebreo
@@ -21,6 +24,9 @@ export default function useStudy({ date, loading: gregorianLoading, hebrewObj: h
     // Sefer HaMitzvot del día
     const learning = DailyLearning.lookup('seferHaMitzvot', hd);
     setTodaySH(learning || null);
+
+      const sedra = new Sedra(hd.getFullYear(), true);
+      const parsha = sedra.get(hd);
 
     // Jumash del día
     const jsDow = date.getDay(); // 0=Dom … 6=Sáb
@@ -71,7 +77,14 @@ export default function useStudy({ date, loading: gregorianLoading, hebrewObj: h
 
     const combinedTehilim = [dailyTehilim, extra].filter(Boolean).join(' | ');
     setTodayTehilim(combinedTehilim);
-  }, [hd, parsha, date]);
+    };
+
+    calculateStudies();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hd, date]);
 
   return { todaySH, todayJumesh, todayTehilim, loading: gregorianLoading };
 }

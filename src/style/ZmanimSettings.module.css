@@ -1,0 +1,22 @@
+.checkboxGroup {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap: 8px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.checkboxLabel:hover {
+  background: var(--hover);
+}
+
+@media (max-width: 768px) {
+  .checkboxGroup { grid-template-columns: 1fr; }
+}

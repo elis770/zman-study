@@ -255,3 +255,11 @@ body.dark .minianTime {
   transform: scale(1.1);
   /*background-color: var(--primary-color-hover, #0056b3);*/
 }
+
+@media (max-width: 768px) {
+  .modalContent {
+    width: 80vw;
+    height: 80vh;
+    overflow-y: auto;
+  }
+}
