@@ -34,7 +34,6 @@
   max-width: 960px;
   margin: 20px auto; /* Centrado y con margen */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .card {
@@ -46,7 +45,6 @@
 }
 
 /* Estilos para los botones de cambio de tema e idioma */
-.theme-toggle-button,
 .language-toggle-button,
 .settings-button {
   padding: 12px;

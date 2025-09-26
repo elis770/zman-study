@@ -3,17 +3,14 @@ import { useAppData } from '../context/DataContext';
 import styles from '../style/Avisos.module.css';
 
 // Placeholder for a future hook that will provide information about special days.
-const useSpecialDay = () => {
-  // TODO: Implement logic to determine if today is a special day (e.g., Rosh Jodesh, Yom Tov, etc.)
-  // For now, it returns null.
-  // Example of a possible future return value:
-  // return { specialDay: { id: 'special-day', title: 'Rosh Jodesh', content: 'Hoy es Rosh Jodesh Sivan', icon: '🌙' } };
+const useAvisos = () => {
+  // This is a placeholder. In the future, this could fetch special announcements.
   return { specialDay: null };
 };
 
 const AvisosComponent = ({ customAvisos }) => {
-  const { parasha, haftara, loading, loadingGeo } = useAppData();
-  const { specialDay } = useSpecialDay();
+  const { parasha, haftara, loading, loadingGeo, date, candleLighting, tzet } = useAppData();
+  const { specialDay } = useAvisos();
   const [visibleAvisoIndex, setVisibleAvisoIndex] = useState(0);
   const [avisos, setAvisos] = useState([]);
 
@@ -21,6 +18,28 @@ const AvisosComponent = ({ customAvisos }) => {
     if (loading || loadingGeo) return;
 
     const allAvisos = [];
+
+    const dayOfWeek = date ? date.getDay() : -1;
+
+    // Viernes: Mostrar horario de encendido de velas
+    if (dayOfWeek === 5 && candleLighting) {
+      allAvisos.push({
+        id: 'candle-lighting',
+        title: 'Encendido de Velas',
+        content: candleLighting,
+        icon: '🕯️',
+      });
+    }
+
+    // Sábado: Mostrar horario de fin de Shabat
+    if (dayOfWeek === 6 && tzet) {
+      allAvisos.push({
+        id: 'shabbat-end',
+        title: 'Fin de Shabat (Tzet Hakojabim)',
+        content: tzet,
+        icon: '🌃',
+      });
+    }
 
     // 1. Parashá de la semana
     if (parasha?.he) {
@@ -57,7 +76,7 @@ const AvisosComponent = ({ customAvisos }) => {
     if (allAvisos.length > 0) {
       setVisibleAvisoIndex(current => (current >= allAvisos.length ? 0 : current));
     }
-  }, [parasha, haftara, specialDay, customAvisos, loading, loadingGeo]);
+  }, [parasha, haftara, specialDay, customAvisos, loading, loadingGeo, date, candleLighting, tzet]);
 
   useEffect(() => {
     if (avisos.length <= 1) return; // No rotation needed for 0 or 1 item

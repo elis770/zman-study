@@ -1,13 +1,8 @@
-import {
-  shouldShowChatzot,
-  shouldShowNetz,
-  isFriday,
-} from '../utils/dateChecks';
 import { useAppData } from '../context/DataContext';
 import { useLanguage } from '../context/LanguageContext';
 import styles from '../style/Zmanim.module.css';
 
-const ZmanimComponent = () => {
+const ZmanimComponent = ({ visibleZmanim }) => {
   const {
     date,
     hebrewDate,
@@ -38,40 +33,14 @@ const ZmanimComponent = () => {
   }
 
   const zmanimList = [
-    {
-      key: 'NETZ_HAJAMA',
-      label: t('NETZ_HAJAMA'),
-      value: sunrise,
-      show: sunrise,
-      //show: shouldShowNetz(hebrewDate) && sunrise,
-    },
-    {
-      key: 'SOF_SHEMA',
-      label: t('SOF_SHEMA'),
-      value: sofZmanShma,
-      show: !!sofZmanShma,
-    },
-    {
-      key: 'JATZOT',
-      label: t('JATZOT'),
-      value: chatzot,
-      show: chatzot,
-      //show: shouldShowChatzot(hebrewDate) && chatzot,
-    },
-    { key: 'SHKIA', label: t('SHKIA'), value: shkiah, show: !!shkiah },
-    {
-      key: 'CANDLE_LIGHTING',
-      label: t('CANDLE_LIGHTING'),
-      value: candleLighting,
-      show: isFriday(date) && candleLighting,
-    },
-    {
-      key: 'TZET_HAKOJABIM',
-      label: t('TZET_HAKOJABIM'),
-      value: tzet,
-      show: !!tzet,
-    },
-  ].filter(item => item.show);
+    { key: 'NETZ_HAJAMA', label: t('NETZ_HAJAMA'), value: sunrise },
+    { key: 'SOF_SHEMA', label: t('SOF_SHEMA'), value: sofZmanShma },
+    { key: 'JATZOT', label: t('JATZOT'), value: chatzot },
+    { key: 'SHKIA', label: t('SHKIA'), value: shkiah },
+    { key: 'CANDLE_LIGHTING', label: t('CANDLE_LIGHTING'), value: candleLighting },
+    { key: 'TZET_HAKOJABIM', label: t('TZET_HAKOJABIM'), value: tzet },
+  ]
+    .filter(zman => visibleZmanim.includes(zman.key) && zman.value);
 
   if (zmanimList.length === 0) {
     return null;
@@ -83,7 +52,7 @@ const ZmanimComponent = () => {
         {zmanimList.map(zman => (
           <div key={zman.key} className={styles.zmanItem}>
             <div className={styles.iconContainer}>
-              {iconMap[zman.key] || '🕒' /* Icono por defecto */}
+              {iconMap[zman.key] || ''}
             </div>
             <div className={styles.textContainer}>
               <span className={styles.label}>{zman.label}</span>

@@ -6,14 +6,6 @@
   --hover: rgba(0,0,0,.05);
   --primary: #007bff;
 }
-
-body.dark {
-  --bg: #3a3a3a;
-  --text: #f3f3f3;
-  --border: #555;
-  --hover: rgba(255,255,255,.06);
-}
-
 /* ===== Overlay ===== */
 .modalOverlay {
   position: fixed;

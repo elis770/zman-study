@@ -33,12 +33,6 @@
   }
 }
 
-/* Estilos para el modo oscuro */
-body.dark .avisoCard {
-  background-color: #3a3a3a;
-  border-color: #555;
-}
-
 .iconContainer {
   font-size: 2.5rem; /* Tamaño del emoji/icono */
   line-height: 1;
@@ -63,12 +57,4 @@ body.dark .avisoCard {
   font-weight: 400;
   white-space: normal;
   word-break: break-word;
-}
-
-body.dark .label {
-  color: #f1f1f1;
-}
-
-body.dark .value {
-  color: #ccc;
 }
