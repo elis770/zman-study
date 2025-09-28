@@ -1,11 +1,11 @@
 // context/DataContext.jsx
 import { createContext, useContext, useMemo } from 'react';
 import { HDate } from '@hebcal/core';
-import useGregorianTime from '../hooks/useGregorianTime';
-import useHebrewDate from '../hooks/useHebrewDate';
-import useSefaria from '../hooks/useSefaria';
-import useHdate from '../hooks/useHdate';
-import useStudy from '../hooks/useStudy';
+import useGregorianTime from '../hooks/useGregorianTime.js';
+import useHebrewDate from '../hooks/useHebrewDate.js';
+import useSefaria from '../hooks/useSefaria.js';
+import useHdate from '../hooks/useHdate.js';
+import useStudy from '../hooks/useStudy.js';
 
 const AppContext = createContext(null);
 

@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import icon from '../utils/icon.png';
-import '../style/App.css';
-import { TimeComponent } from '../components/TimeComponent.jsx';
-import StudyContainer from '../components/StudyContainer.jsx';
-import AvisosComponent from '../components/AvisosComponent.jsx';
-import SettingsModal from '../components/SettingsModal.jsx';
-import { DataProvider } from '../context/DataContext';
-import { useTheme } from '../hooks/useTheme.js';
-import { LanguageProvider, useLanguage } from '../context/LanguageContext';
-import usePersistentState from '../hooks/usePersistentState.js';
-import { allZmanim } from '../hooks/zmanimConfig.js';
-import { allStudies } from '../hooks/studyConfig.js';
+import '../shared/styles/App.css';
+import { TimeComponent } from '../modules/time/ui/TimeComponent.jsx';
+import StudyContainer from '../modules/study/ui/StudyContainer.jsx';
+import AvisosComponent from '../modules/avisos/ui/AvisosComponent.jsx';
+import SettingsModal from '../modules/settings/ui/SettingsModal.jsx';
+import { DataProvider } from '../shared/context/DataContext.jsx';
+import { useTheme } from '../shared/hooks/useTheme.js';
+import { LanguageProvider, useLanguage } from '../shared/context/LanguageContext.jsx';
+import usePersistentState from '../shared/hooks/usePersistentState.js';
+import { allZmanim } from '../shared/hooks/zmanimConfig.js';
+import { allStudies } from '../shared/hooks/studyConfig.js';
 
 const defaultZmanim = ['NETZ_HAJAMA', 'SOF_SHEMA', 'SHKIA', 'TZET_HAKOJABIM'];
 const defaultStudies = ['JUMASH', 'TEHILIM', 'TANYA', 'SEFER_HAMITZVOT', 'RAMBAM_1', 'PARASHA'];

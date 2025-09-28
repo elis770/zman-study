@@ -1,5 +1,5 @@
-import styles from '../style/ZmanimSettings.module.css';
-import { allZmanim } from '../hooks/zmanimConfig.js';
+import styles from '../styles/ZmanimSettings.module.css';
+import { allZmanim } from '@/shared/hooks/zmanimConfig.js';
 
 const ZmanimSettings = ({ t, visibleZmanim, onZmanimChange }) => {
   return (

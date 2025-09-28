@@ -1,4 +1,4 @@
-import styles from '../style/GeneralSettings.module.css';
+import styles from '../styles/GeneralSettings.module.css';
 
 const GeneralSettings = ({
   t,

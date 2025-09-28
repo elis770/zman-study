@@ -1,5 +1,5 @@
 // import { useEffect, useState } from 'react';
-import useHayomYom from '../hooks/useHayomYom.js';
+import useHayomYom from '@/shared/hooks/useHayomYom.js';
 // import { useLanguage } from '../context/LanguageContext';
 
 const HayomYomComponent = () => {

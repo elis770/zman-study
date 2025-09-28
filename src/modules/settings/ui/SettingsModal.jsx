@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import styles from '../style/SettingsModal.module.css';
-import GeneralSettings from './GeneralSettings.jsx';
-import ZmanimSettings from './ZmanimSettings.jsx';
-import StudySettings from './StudySettings.jsx';
-import AvisosSettings from './AvisosSettings.jsx';
+import styles from '../styles/SettingsModal.module.css';
+import GeneralSettings from '../../general-settings/ui/GeneralSettings.jsx';
+import ZmanimSettings from '../../zmanim/ui/ZmanimSettings.jsx';
+import StudySettings from '../../study/ui/StudySettings.jsx';
+import AvisosSettings from '../../avisos/ui/AvisosSettings.jsx';
 
 const SettingsModal = ({
   isOpen, onClose,

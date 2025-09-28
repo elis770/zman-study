@@ -1,6 +1,6 @@
-import { useAppData } from '../context/DataContext';
-import { useLanguage } from '../context/LanguageContext';
-import styles from '../style/Zmanim.module.css';
+import { useAppData } from '@/shared/context/DataContext.jsx';
+import { useLanguage } from '@/shared/context/LanguageContext.jsx';
+import styles from '../styles/Zmanim.module.css';
 
 const ZmanimComponent = ({ visibleZmanim }) => {
   const {

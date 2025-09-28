@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLanguage } from '../context/LanguageContext';
-import styles from '../style/Minian.module.css';
+import { useLanguage } from '@/shared/context/LanguageContext.jsx';
+import styles from '../styles/Minian.module.css';
 
 const MinianComponent = () => {
   const { t } = useLanguage();

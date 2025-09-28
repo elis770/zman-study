@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useAppData } from '../context/DataContext';
-import styles from '../style/Avisos.module.css';
+import { useAppData } from '@/shared/context/DataContext.jsx';
+import styles from '../styles/Avisos.module.css';
 
 // Placeholder for a future hook that will provide information about special days.
 const useAvisos = () => {

@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import StudyComponent from './StudyComponent';
-import HayomYomComponent from './HayomYomComponent';
-import ZmanimComponent from './ZmanimComponent';
-import MinianComponent from './MinianComponent';
-import { useLanguage } from '../context/LanguageContext';
-import styles from '../style/StudyContainer.module.css';
+import HayomYomComponent from '../../hayom-yom/ui/HayomYomComponent.jsx';
+import ZmanimComponent from '../../zmanim/ui/ZmanimComponent.jsx';
+import MinianComponent from '../../minian/ui/MinianComponent.jsx';
+import { useLanguage } from '@/shared/context/LanguageContext.jsx';
+import styles from '../styles/StudyContainer.module.css';
 
 const AUTO_SWITCH_DELAY = 10000;
 

@@ -1,7 +1,7 @@
-import { useAppData } from '../context/DataContext';
+import { useAppData } from '@/shared/context/DataContext.jsx';
 // import { useLanguage } from '../context/LanguageContext';
 // import { useEffect, useState } from 'react';
-import styles from '../style/Time.module.css';
+import styles from '../styles/Time.module.css';
 
 export const TimeComponent = () => {
   const {
