@@ -9,16 +9,15 @@ import { DataProvider } from '../shared/context/DataContext.jsx';
 import { useTheme } from '../shared/hooks/useTheme.js';
 import { LanguageProvider, useLanguage } from '../shared/context/LanguageContext.jsx';
 import usePersistentState from '../shared/hooks/usePersistentState.js';
-import { allZmanim } from '../shared/hooks/zmanimConfig.js';
-import { allStudies } from '../shared/hooks/studyConfig.js';
-
+ import AboutMeModal from '../modules/AboutMe/ui/AboutMeModal.jsx';
 const defaultZmanim = ['NETZ_HAJAMA', 'SOF_SHEMA', 'SHKIA', 'TZET_HAKOJABIM'];
 const defaultStudies = ['JUMASH', 'TEHILIM', 'TANYA', 'SEFER_HAMITZVOT', 'RAMBAM_1', 'PARASHA'];
 
 const AppContent = () => {
   const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAboutMeOpen, setIsAboutMeOpen] = useState(false);
   const [showMinian, setShowMinian] = usePersistentState('showMinian', false);
   const [showHayomYom, setShowHayomYom] = usePersistentState('showHayomYom', true);
   const [customAvisos, setCustomAvisos] = usePersistentState('customAvisos', []);
@@ -53,7 +52,15 @@ const AppContent = () => {
         <img src={icon} alt="ícono de la aplicación" className="app-icon" />
         <div className="controls-container">
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setIsAboutMeOpen(true)}
+            className="about-me-button"
+            style={x}
+            aria-label="Sobre Mí"
+          >
+            👤
+          </button>
+          <button
+            onClick={() => setIsSettingsOpen(true)}
             className="settings-button"
             style={x}
             aria-label="Configuración"
@@ -73,8 +80,8 @@ const AppContent = () => {
         />
       </div>
       <SettingsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
         theme={theme}
         toggleTheme={toggleTheme}
         language={language}
@@ -91,6 +98,10 @@ const AppContent = () => {
         customAvisos={customAvisos}
         onAddAviso={addAviso}
         onDeleteAviso={deleteAviso}
+      />
+      <AboutMeModal
+        isOpen={isAboutMeOpen}
+        onClose={() => setIsAboutMeOpen(false)}
       />
     </div>
   );

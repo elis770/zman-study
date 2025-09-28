@@ -46,6 +46,7 @@
 
 /* Estilos para los botones de cambio de tema e idioma */
 .language-toggle-button,
+.about-me-button,
 .settings-button {
   padding: 12px;
   border-radius: 12px;
