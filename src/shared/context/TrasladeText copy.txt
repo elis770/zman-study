@@ -1,0 +1,36 @@
+import React, { useState } from 'react'
+import axios from 'axios';
+export const TrasladeText = () => {
+
+    const [text, setText] = useState("")
+    const [translatedText, setTranslatedText] = useState("")
+
+    const TrasladeText = async () => {
+        try {
+            const response = await axios.post('https://api.mymemory.translated.net/get', null, {
+                params: {
+                    q: text,
+                    langpair: 'he|es'
+                }
+            });
+            setTranslatedText(response.data.responseData.translatedText);
+        } catch (error) {
+            console.error("Error translating text:", error);
+        }
+    }
+
+  return (
+    <div>
+        <textarea 
+            value={text} 
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Enter text to translate"
+        />
+        <button onClick={TrasladeText}>Translate</button>
+        <div>
+            <h3>Translated Text:</h3>
+            <p>{translatedText}</p>
+        </div>
+    </div>
+  )
+}
