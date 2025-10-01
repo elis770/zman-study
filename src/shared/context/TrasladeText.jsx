@@ -1,34 +1,36 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useLanguage } from './LanguageContext.jsx';
 
-export const useTrasladeText = (textToTranslate) => {
+export const useTrasladeText = (textToTranslate, sourceLang) => {
   const [translatedText, setTranslatedText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const translateText = useCallback(async (text) => {
-    if (!text) return;
-
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post('https://api.mymemory.translated.net/get', null, {
-        params: {
-          q: text,
-          langpair: 'he|en',
-        },
-      });
-      setTranslatedText(response.data.responseData.translatedText);
-    } catch (err) {
-      console.error('Error translating text:', err);
-      setError('Failed to translate text.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const { translateDynamicText, language: targetLang } = useLanguage();
 
   useEffect(() => {
-    translateText(textToTranslate);
-  }, [textToTranslate, translateText]);
-  return { translatedText, isLoading, error };
+    if (!textToTranslate) {
+      setTranslatedText('');
+      return;
+    }
+    let isMounted = true;
+    setIsLoading(true);
+    translateDynamicText(textToTranslate, sourceLang).then(result => {
+      if (isMounted) {
+        setTranslatedText(result);
+        setIsLoading(false);
+      }
+    });
+    return () => { isMounted = false; };
+  }, [textToTranslate, sourceLang, targetLang, translateDynamicText]);
+
+  return { translatedText, isLoading };
 };
+
+const TrasladeText = ({ text, sourceLang }) => {
+  const { translatedText, isLoading } = useTrasladeText(text, sourceLang);
+
+  if (isLoading) return <>Translating...</>;
+
+  return <>{translatedText}</>;
+};
+
+export default TrasladeText;

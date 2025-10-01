@@ -38,15 +38,18 @@ export async function trasladeText(text, sourceLang, targetLangs) {
 }
 
 // Ejemplo de uso:
-const sampleText = "אמר רבי יהודה: כל המקיים נפש אחת, כאילו קיים עולם מלא"; // Texto en hebreo
-const sourceLanguage = "he";
-const targetLanguages = ["en", "es", "fr"]; // Traducir a inglés, español y francés
+async function testTranslation() {
+  const sampleText = "אמר רבי יהודה: כל המקיים נפש אחת, כאילו קיים עולם מלא"; // Texto en hebreo
+  const sourceLanguage = "he";
+  const targetLanguages = ["en", "es", "fr"]; // Traducir a inglés, español y francés
 
-trasladeText(sampleText, sourceLanguage, targetLanguages).then(({ translations, error }) => {
-  if (error) {
-    console.error("Translation Error:", error);
-  } else {
-    console.log("Original Text:", sampleText);
-    console.log("Translations:", translations);
-  }
-});
+  const { translations, error } = await trasladeText(sampleText, sourceLanguage, targetLanguages);
+    if (error) {
+      console.error("Translation Error:", error);
+    } else {
+      console.log("Original Text:", sampleText);
+      console.log("Translations:", translations);
+    }
+}
+
+testTranslation();

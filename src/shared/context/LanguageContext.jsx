@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
+import axios from 'axios';
 
 // Este es un diccionario simple para las traducciones de la interfaz.
 // En una aplicación real, esto podría venir de una biblioteca como i18next.
@@ -85,15 +86,71 @@ const translations = {
 
 const LanguageContext = createContext();
 
-// Esta es una función de traducción simulada.
-// ¡IMPORTANTE! En una aplicación real, deberías reemplazar esto con una llamada a un backend
-// que use un servicio como Google Translate API. No expongas tus claves de API en el cliente.
-async function translateWithApi(text, targetLang) {
+// --- Lógica de Protección de Números ---
+const protectNumbers = (text) => {
+  if (!text) return { protectedText: '', placeholders: [] };
+  const placeholders = [];
+  // Ya no se convierte la gematria. Solo se protegen los números arábigos existentes.
+  const protectedText = text.replace(/(\d+[:.\-]?\d*)/g, (match) => {
+    const placeholder = `__${placeholders.length}__`;
+    placeholders.push(match);
+    return placeholder;
+  });
+  return { protectedText, placeholders };
+};
+
+const restoreNumbers = (text, placeholders) => {
   if (!text) return '';
-  console.warn(`Simulando traducción de API para: "${text}" a ${targetLang}. Reemplazar con una llamada real a la API.`);
-  // Simular retraso de red
-  await new Promise(res => setTimeout(res, 200));
-  return `[${targetLang}] ${text}`; // Devuelve una traducción simulada
+  return text.replace(/__(\d+)__/g, (match, index) => placeholders[parseInt(index, 10)] || match);
+};
+
+// --- Lógica de Post-Procesamiento para Gematria mal traducida ---
+const latinGematriaMap = {
+  'A': 1, 'B': 2, 'G': 3, 'D': 4, 'H': 5, 'V': 6, 'W': 6, 'Z': 7,
+  'CH': 8, 'T': 9, 'I': 10, 'Y': 10, 'K': 20, 'L': 30, 'M': 40,
+  'N': 50, 'S': 60, 'O': 70, 'P': 80, 'F': 80, 'TZ': 90,
+  'Q': 100, 'R': 200, 'SH': 300,
+};
+
+const latinGematriaToNumber = (str) => {
+  let total = 0;
+  let s = str.toUpperCase();
+  // Casos especiales de dos letras
+  if (s === 'TO') return 15; // טו
+  if (s === 'TZ') return 16; // טז
+  
+  // Procesar de izquierda a derecha para combinaciones
+  while (s.length > 0) {
+    const twoLetter = s.substring(0, 2);
+    const oneLetter = s.substring(0, 1);
+    const value = latinGematriaMap[twoLetter] || latinGematriaMap[oneLetter] || 0;
+    total += value;
+    s = s.substring(latinGematriaMap[twoLetter] ? 2 : 1);
+  }
+  return total;
+};
+
+// --- Función de Traducción Real ---
+async function translateWithApi(text, sourceLang, targetLang) {
+  try {
+    const { protectedText, placeholders } = protectNumbers(text);
+    const response = await axios.post('https://api.mymemory.translated.net/get', null, {
+      params: { q: protectedText, langpair: `${sourceLang}|${targetLang}` },
+    });
+    const rawTranslatedText = response.data.responseData.translatedText;
+    let restoredText = restoreNumbers(rawTranslatedText, placeholders);
+
+    // Post-procesamiento para corregir gematria transliterada (ej. "22:A-NA")
+    restoredText = restoredText.replace(/(\d+):([A-Z]+(?:-[A-Z]+)?)/gi, (match, chapter, verses) => {
+      const correctedVerses = verses.split('-').map(latinGematriaToNumber).join('-');
+      return `${chapter}:${correctedVerses}`;
+    });
+    return restoredText;
+  } catch (err) {
+    console.error('Error translating text:', err, 'Original text:', text);
+    // En caso de error, devolvemos el texto original para no romper la UI.
+    return text;
+  }
 }
 
 export const LanguageProvider = ({ children }) => {
@@ -107,9 +164,22 @@ export const LanguageProvider = ({ children }) => {
     return translations[language][key] || key;
   }, [language]);
 
+  const translationCache = useRef({});
+
   const translateDynamicText = useCallback(async (text, sourceLang) => {
-    if (language === sourceLang) return text;
-    return translateWithApi(text, language);
+    if (!text || language === sourceLang) {
+      return text;
+    }
+
+    const cacheKey = `${sourceLang}:${language}:${text}`;
+    if (translationCache.current[cacheKey]) {
+      return translationCache.current[cacheKey];
+    }
+
+    const translatedText = await translateWithApi(text, sourceLang, language);
+    translationCache.current[cacheKey] = translatedText; // Guardar en caché
+    return translatedText;
+
   }, [language]);
 
   const value = useMemo(() => ({ language, toggleLanguage, t, translateDynamicText }), [language, toggleLanguage, t, translateDynamicText]);
