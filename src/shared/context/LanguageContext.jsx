@@ -82,6 +82,37 @@ const translations = {
     'MINJA': 'מנחה',
     'MAARIV': 'ערבית',
   },
+  en: {
+    'ZMANIM_TITLE': 'Zmanim',
+    'NETZ_HAJAMA': 'Sunrise',
+    'SOF_SHEMA': 'Latest Shema',
+    'SHKIA': 'Sunset',
+    'CANDLE_LIGHTING': 'Candle Lighting',
+    'TZET_HAKOJABIM': 'Nightfall',
+    'JATZOT': 'Midday',
+    'STUDY_TITLE': 'Today\'s Study',
+    'JUMASH': 'Chumash',
+    'PARASHA_TITLE': 'Parasha',
+    'HAFTARA_TITLE': 'Haftara',
+    'DAF_YOMI_TITLE': 'Daf Yomi',
+    'SEFER_HAMITZVOT_TITLE': 'Sefer HaMitzvot',
+    'RAMBAM_1': 'Rambam 1 Perek',
+    'TEHILIM': 'Tehilim',
+    'TANYA': 'Tanya',
+    'RAMBAM_3': 'Rambam 3 Perek',
+    'HAIOM_IOM_TITLE': 'Hayom Yom',
+    'MINIAN_TITLE': 'Minyan',
+    'ABOUT_ME_TITLE': 'About Me',
+    'CHANGE_TO_HEBREW': 'Change to Hebrew',
+    'CHANGE_TO_SPANISH': 'Change to Spanish',
+    'CHANGE_TO_ENGLISH': 'Change to English',
+    'SETTINGS_TITLE': 'Settings',
+    'ADD_MINIAN': 'Add Minyan',
+    'PRAYER': 'Prayer',
+    'HOUR': 'Hour',
+    'MINUTE': 'Minute',
+    'SAVE': 'Save',
+  }
 };
 
 const LanguageContext = createContext();
@@ -154,14 +185,18 @@ async function translateWithApi(text, sourceLang, targetLang) {
 }
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState('es'); // 'es' o 'he'
+  const [language, setLanguage] = useState('es'); // 'es', 'he', o 'en'
 
   const toggleLanguage = useCallback(() => {
-    setLanguage(prev => (prev === 'es' ? 'he' : 'es'));
+    setLanguage(prev => {
+      if (prev === 'es') return 'he';
+      if (prev === 'he') return 'en';
+      return 'es'; // Vuelve a español desde inglés
+    });
   }, []);
 
   const t = useCallback((key) => {
-    return translations[language][key] || key;
+    return (translations[language] && translations[language][key]) || translations['es'][key] || key;
   }, [language]);
 
   const translationCache = useRef({});

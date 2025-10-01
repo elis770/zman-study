@@ -17,8 +17,10 @@ export const T = () => {
 
   return (
     <div>
-      <button onClick={toggleLanguage}>
-        Traducir a {language === 'es' ? 'Hebreo' : 'Español'}
+      <button onClick={toggleLanguage} style={{minWidth: '120px'}}>
+        {language === 'es' && 'Traducir a Hebreo'}
+        {language === 'he' && 'Translate to English'}
+        {language === 'en' && 'Traducir a Español'}
       </button>
       <hr />
       {/* <TrasladeText text="שלום עולם" />
