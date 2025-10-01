@@ -5,6 +5,7 @@ import useGregorianTime from '../hooks/useGregorianTime.js';
 import useHebrewDate from '../hooks/useHebrewDate.js';
 import useSefaria from '../hooks/useSefaria.js';
 import useHdate from '../hooks/useHdate.js';
+import useHayomYom from '../hooks/useHayomYom.js';
 import useStudy from '../hooks/useStudy.js';
 
 const AppContext = createContext(null);
@@ -23,6 +24,7 @@ export const DataProvider = ({ children }) => {
   const sefariaData = useSefaria(gregorianData);
   const studyData = useStudy({ ...gregorianData, ...hebrewData });
 
+  const hayomYomData = useHayomYom();
   // 4) Zmanim
   const hdateData = useHdate(gregorianData);
 
@@ -51,6 +53,7 @@ export const DataProvider = ({ children }) => {
     ...sefariaData,
     ...studyData,
     ...hdateData,
+    hayomYom: hayomYomData, // { title, text, loading, error }
 
     // Alias / derivados
     hebrewDate,
