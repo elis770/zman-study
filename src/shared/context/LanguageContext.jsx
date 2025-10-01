@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import axios from 'axios';
 
 // Este es un diccionario simple para las traducciones de la interfaz.
@@ -166,7 +166,7 @@ async function translateWithApi(text, sourceLang, targetLang) {
   try {
     const { protectedText, placeholders } = protectNumbers(text);
     const response = await axios.post('https://api.mymemory.translated.net/get', null, {
-      params: { q: protectedText, langpair: `${sourceLang}|${targetLang}` },
+      params: { q: new Blob([protectedText]).size < 5000 ? protectedText : null, langpair: `${sourceLang}|${targetLang}`, de: import.meta.env.VITE_TRANSLATION_API_EMAIL },
     });
     const rawTranslatedText = response.data.responseData.translatedText;
     let restoredText = restoreNumbers(rawTranslatedText, placeholders);
@@ -185,36 +185,100 @@ async function translateWithApi(text, sourceLang, targetLang) {
 }
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState('es'); // 'es', 'he', o 'en'
+  const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'es');
+  const translationCache = useRef({});
+  const translationQueue = useRef([]);
+  const translationTimeout = useRef(null);
+
+  const getCacheKey = (sourceLang, targetLang, text) => `${sourceLang}:${targetLang}:${text}`;
+
+  // Función para obtener la fecha en formato YYYY-MM-DD
+  const getTodayString = () => new Date().toISOString().split('T')[0];
+
+  // Cargar caché desde localStorage al iniciar
+  useEffect(() => {
+    const today = getTodayString();
+    const storedCache = localStorage.getItem('translationCache');
+    const storedDate = localStorage.getItem('translationCacheDate');
+
+    if (storedCache && storedDate === today) {
+      translationCache.current = JSON.parse(storedCache);
+    } else {
+      // Limpiar caché si es un nuevo día
+      localStorage.removeItem('translationCache');
+      localStorage.removeItem('translationCacheDate');
+    }
+  }, []);
+
+  const processTranslationQueue = useCallback(async () => {
+    if (translationQueue.current.length === 0) return;
+
+    const queue = [...translationQueue.current];
+    translationQueue.current = [];
+
+    const requestsBySourceLang = queue.reduce((acc, promise) => {
+      const { sourceLang } = promise;
+      if (!acc[sourceLang]) acc[sourceLang] = { texts: new Set(), promises: [] };
+      acc[sourceLang].texts.add(promise.text);
+      acc[sourceLang].promises.push(promise);
+      return acc;
+    }, {});
+
+    for (const sourceLang in requestsBySourceLang) {
+      const { texts, promises } = requestsBySourceLang[sourceLang];
+      const textsToTranslate = Array.from(texts);
+      const joinedText = textsToTranslate.join(' ||| ');
+
+      try {
+        const translatedJoinedText = await translateWithApi(joinedText, sourceLang, language);
+        const translatedTexts = translatedJoinedText.split(' ||| ');
+
+        textsToTranslate.forEach((originalText, index) => {
+          const translatedText = translatedTexts[index] ? translatedTexts[index].trim() : originalText;
+          const cacheKey = getCacheKey(sourceLang, language, originalText);
+          translationCache.current[cacheKey] = translatedText;
+
+          // Resolver todas las promesas para este texto
+          promises.filter(p => p.text === originalText).forEach(p => p.resolve(translatedText));
+        });
+      } catch (error) {
+        console.error("Error in batch translation, returning original texts.", error);
+        promises.forEach(p => p.resolve(p.text)); // Devolver texto original en caso de error
+      }
+    }
+
+    // Guardar en localStorage
+    localStorage.setItem('translationCache', JSON.stringify(translationCache.current));
+    localStorage.setItem('translationCacheDate', getTodayString());
+  }, [language]);
+
+  const translateDynamicText = useCallback((text, sourceLang) => {
+    if (!text || language === sourceLang) return Promise.resolve(text);
+
+    const cacheKey = getCacheKey(sourceLang, language, text);
+    if (translationCache.current[cacheKey]) return Promise.resolve(translationCache.current[cacheKey]);
+
+    return new Promise(resolve => {
+      translationQueue.current.push({ text, sourceLang, resolve });
+      if (translationTimeout.current) clearTimeout(translationTimeout.current);
+      // Espera 100ms para agrupar solicitudes cercanas
+      translationTimeout.current = setTimeout(processTranslationQueue, 100);
+    });
+  }, [language, processTranslationQueue]);
+
 
   const toggleLanguage = useCallback(() => {
-    setLanguage(prev => {
+    const newLang = (prev => {
       if (prev === 'es') return 'he';
       if (prev === 'he') return 'en';
       return 'es'; // Vuelve a español desde inglés
-    });
+    })(language);
+    setLanguage(newLang);
+    localStorage.setItem('language', newLang);
   }, []);
 
   const t = useCallback((key) => {
     return (translations[language] && translations[language][key]) || translations['es'][key] || key;
-  }, [language]);
-
-  const translationCache = useRef({});
-
-  const translateDynamicText = useCallback(async (text, sourceLang) => {
-    if (!text || language === sourceLang) {
-      return text;
-    }
-
-    const cacheKey = `${sourceLang}:${language}:${text}`;
-    if (translationCache.current[cacheKey]) {
-      return translationCache.current[cacheKey];
-    }
-
-    const translatedText = await translateWithApi(text, sourceLang, language);
-    translationCache.current[cacheKey] = translatedText; // Guardar en caché
-    return translatedText;
-
   }, [language]);
 
   const value = useMemo(() => ({ language, toggleLanguage, t, translateDynamicText }), [language, toggleLanguage, t, translateDynamicText]);

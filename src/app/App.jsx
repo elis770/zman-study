@@ -10,8 +10,7 @@ import { useTheme } from '../shared/hooks/useTheme.js';
 import { LanguageProvider, useLanguage } from '../shared/context/LanguageContext.jsx';
 import usePersistentState from '../shared/hooks/usePersistentState.js';
 import AboutMeModal from '../modules/AboutMe/ui/AboutMeModal.jsx';
-import TrasladeText from '../shared/context/TrasladeText.jsx';
-import { T } from '../shared/context/T.jsx';
+//import { T } from '../shared/context/T.jsx';
 const defaultZmanim = ['NETZ_HAJAMA', 'SOF_SHEMA', 'SHKIA', 'TZET_HAKOJABIM'];
 const defaultStudies = ['JUMASH', 'TEHILIM', 'TANYA', 'SEFER_HAMITZVOT', 'RAMBAM_1', 'PARASHA'];
 
@@ -50,7 +49,6 @@ const AppContent = () => {
           backgroundColor: theme === 'dark' ? '#333' : '#eee',}
   return (
     <>
-    <T/>
     <div className="app-container">
       <div className="header-container">
         <img src={icon} alt="ícono de la aplicación" className="app-icon" />
