@@ -1,5 +1,5 @@
 import styles from '../styles/StudySettings.module.css';
-import { allStudies } from '@/shared/hooks/studyConfig.js';
+import { allStudies } from '../hooks/studyConfig.js';
 
 const StudySettings = ({ t, visibleStudies, onStudiesChange }) => {
   return (

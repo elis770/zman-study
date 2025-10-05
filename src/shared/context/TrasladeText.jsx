@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLanguage } from './LanguageContext';
+import { useLanguage } from '../hooks/useLanguage.js';
 import styles from '../../modules/study/styles/Study.module.css';
 
 const TrasladeText = ({ text, sourceLang }) => {

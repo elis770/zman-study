@@ -1,13 +1,13 @@
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useMemo } from 'react';
 import { HDate } from '@hebcal/core';
-import useGregorianTime from '../hooks/useGregorianTime.js';
-import useHebrewDate from '../hooks/useHebrewDate.js';
-import useSefaria from '../hooks/useSefaria.js';
-import useHdate from '../hooks/useHdate.js';
-import useHayomYom from '../hooks/useHayomYom.js';
-import useStudy from '../hooks/useStudy.js';
+import useGregorianTime from '../../modules/time/hooks/useGregorianTime.js';
+import useHebrewDate from '../../modules/time/hooks/useHebrewDate.js';
+import useSefaria from '../../modules/study/hooks/useSefaria.js';
+import useHdate from '../../modules/time/hooks/useHdate.js';
+import useHayomYom from '../../modules/hayom-yom/hooks/useHayomYom.js';
+import useStudy from '../../modules/study/hooks/useStudy.js';
 
-const AppContext = createContext(null);
+export const AppContext = createContext(null);
 
 // Helpers
 const toStr = (v) => (typeof v === 'string' ? v : v?.toString?.() ?? '');
@@ -47,9 +47,9 @@ const buildStudyCards = ({
     SEFER_HAMITZVOT: {
       key: 'SEFER_HAMITZVOT',
       labelKey: 'SEFER_HAMITZVOT_TITLE',
-      value: toStr(todaySH?.text),
+      value: toStr(todaySH?.render()),
       sourceLang: 'he',
-    }, // <- ya NO usamos render()
+    },
     RAMBAM_1: {
       key: 'RAMBAM_1',
       labelKey: 'RAMBAM_1',
@@ -137,11 +137,4 @@ export const DataProvider = ({ children }) => {
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
-};
-
-export const useAppData = () => {
-  const ctx = useContext(AppContext);
-  if (ctx === null)
-    throw new Error('useAppData must be used within a DataProvider');
-  return ctx;
 };

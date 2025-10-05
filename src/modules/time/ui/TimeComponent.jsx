@@ -1,4 +1,4 @@
-import { useAppData } from '@/shared/context/DataContext.jsx';
+import { useAppData } from '@/shared/hooks/useAppData.js';
 // import { useLanguage } from '../context/LanguageContext';
 // import { useEffect, useState } from 'react';
 import styles from '../styles/Time.module.css';
@@ -10,7 +10,6 @@ export const TimeComponent = () => {
     tzid,
     city,
     country,
-    error: geoError,
     hebrewDate,
     loadingGeo,
   } = useAppData();
@@ -72,4 +71,3 @@ export const TimeComponent = () => {
     </>
   );
 };
-{/* {geoError && <small className={styles.error}>{geoError}</small>} */}

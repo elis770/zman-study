@@ -3,13 +3,13 @@ import StudyComponent from './StudyComponent';
 import HayomYomComponent from '../../hayom-yom/ui/HayomYomComponent.jsx';
 import ZmanimComponent from '../../zmanim/ui/ZmanimComponent.jsx';
 import MinianComponent from '../../minian/ui/MinianComponent.jsx';
-import { useLanguage } from '@/shared/context/LanguageContext.jsx';
+import { useLanguage } from '@/shared/hooks/useLanguage.js';
 import styles from '../styles/StudyContainer.module.css';
 
 const AUTO_SWITCH_DELAY = 1000000;
 
 const StudyContainer = ({ showMinian, showHayomYom, visibleZmanim, visibleStudies }) => {
-  const [visibleComponent, setVisibleComponent] = useState('zmanim');
+  const [visibleIndex, setVisibleIndex] = useState(0);
   const { t } = useLanguage();
 
   const components = useMemo(() => {
@@ -23,39 +23,37 @@ const StudyContainer = ({ showMinian, showHayomYom, visibleZmanim, visibleStudie
     return baseComponents;
   }, [showMinian, showHayomYom]);
 
-  useEffect(() => {
-    if (!components.includes(visibleComponent)) {
-      setVisibleComponent(components[0] || null);
-    }
+  const visibleComponent = useMemo(() => components[visibleIndex] || null, [components, visibleIndex]);
 
-    if (components.length <= 1) {
-      return; // No timer if only one or zero tabs
+  useEffect(() => {
+    if (visibleIndex >= components.length) {
+      setVisibleIndex(0);
     }
+  }, [components, visibleIndex]);
+
+  useEffect(() => {
+    if (components.length <= 1) return;
 
     const timer = setTimeout(() => {
-      setVisibleComponent(current => {
-        const currentIndex = components.indexOf(current);
-        const nextIndex = (currentIndex + 1) % components.length;
-        return components[nextIndex];
-      });
+      setVisibleIndex(current => (current + 1) % components.length);
     }, AUTO_SWITCH_DELAY);
 
     return () => clearTimeout(timer);
-  }, [visibleComponent, components]);
+  }, [visibleIndex, components]);
 
   return (
     <div className={styles.container}>
       <div className={styles.tabs}>
         <button
           className={`${styles.tabButton} ${visibleComponent === 'zmanim' ? styles.active : ''}`}
-          onClick={() => setVisibleComponent('zmanim')}
+          onClick={() => setVisibleIndex(components.indexOf('zmanim'))}
         >
           {t('ZMANIM_TITLE')}
         </button>
 
         <button
           className={`${styles.tabButton} ${visibleComponent === 'study' ? styles.active : ''}`}
-          onClick={() => setVisibleComponent('study')}
+          onClick={() => setVisibleIndex(components.indexOf('study'))}
         >
           {t('STUDY_TITLE')}
         </button>
@@ -63,7 +61,7 @@ const StudyContainer = ({ showMinian, showHayomYom, visibleZmanim, visibleStudie
         {showHayomYom && (
           <button
             className={`${styles.tabButton} ${visibleComponent === 'hayom' ? styles.active : ''}`}
-            onClick={() => setVisibleComponent('hayom')}
+            onClick={() => setVisibleIndex(components.indexOf('hayom'))}
           >
             {t('HAIOM_IOM_TITLE')}
           </button>
@@ -71,7 +69,7 @@ const StudyContainer = ({ showMinian, showHayomYom, visibleZmanim, visibleStudie
         {showMinian && (
           <button
             className={`${styles.tabButton} ${visibleComponent === 'minian' ? styles.active : ''}`}
-            onClick={() => setVisibleComponent('minian')}
+            onClick={() => setVisibleIndex(components.indexOf('minian'))}
           >
             {t('MINIAN_TITLE')}
           </button>

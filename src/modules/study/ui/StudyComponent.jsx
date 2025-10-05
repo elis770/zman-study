@@ -1,5 +1,5 @@
-import { useAppData } from '@/shared/context/DataContext.jsx';
-import { useLanguage } from '@/shared/context/LanguageContext.jsx';
+import { useAppData } from '@/shared/hooks/useAppData.js';
+import { useLanguage } from '@/shared/hooks/useLanguage.js';
 import styles from '../styles/Study.module.css';
 import TrasladeText from '@/shared/context/TrasladeText.jsx';
 
@@ -8,8 +8,7 @@ const StudyComponent = ({ visibleStudies }) => {
   const { t } = useLanguage();
   
   const iconMap = {
-    PARASHA: '📜', HAFTARA: '🗣️', DAF_YOMI: '📄', JUMASH: '📖',
-    TEHILIM: '🎶', TANYA: '🧠', RAMBAM_1: '1📚', RAMBAM_3: '3📚', SEFER_HAMITZVOT: 'SH📚',
+    PARASHA: '📜', HAFTARA: '🗣️', DAF_YOMI: '📄', JUMASH: '📖', TEHILIM: '🎶', TANYA: '🧠', RAMBAM_1: '1📚', RAMBAM_3: '3📚', SEFER_HAMITZVOT: 'SH📚',
   };
 
   if (loading || loadingGeo) return <div>Cargando estudios...</div>;
@@ -17,7 +16,8 @@ const StudyComponent = ({ visibleStudies }) => {
   // Tomamos ya normalizados; filtramos por visibilidad y por existencia de texto
   const list = Object.values(studyCards)
     .filter(item => visibleStudies.includes(item.key))
-    .filter(item => item.value);
+    .filter(item => item.value)
+    .filter(item => item.key !== 'PARASHA' && item.key !== 'HAFTARA');
 
   if (!list.length) return null;
   return (
