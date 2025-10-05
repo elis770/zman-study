@@ -1,36 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { useLanguage } from './LanguageContext.jsx';
-
-export const useTrasladeText = (textToTranslate, sourceLang) => {
-  const [translatedText, setTranslatedText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { translateDynamicText, language: targetLang } = useLanguage();
-
-  useEffect(() => {
-    if (!textToTranslate) {
-      setTranslatedText('');
-      return;
-    }
-    let isMounted = true;
-    setIsLoading(true);
-    translateDynamicText(textToTranslate, sourceLang).then(result => {
-      if (isMounted) {
-        setTranslatedText(result);
-        setIsLoading(false);
-      }
-    });
-    return () => { isMounted = false; };
-  }, [textToTranslate, sourceLang, targetLang, translateDynamicText]);
-
-  return { translatedText, isLoading };
-};
+import { useState, useEffect } from 'react';
+import { useLanguage } from './LanguageContext';
+import styles from '../../modules/study/styles/Study.module.css';
 
 const TrasladeText = ({ text, sourceLang }) => {
-  const { translatedText, isLoading } = useTrasladeText(text, sourceLang);
+  const { language, translateDynamicText } = useLanguage();
+  const [translatedText, setTranslatedText] = useState(text);
+  const [isLoading, setIsLoading] = useState(false);
 
-  if (isLoading) return <>Translating...</>;
+  useEffect(() => {
+    if (!text || sourceLang === language) {
+      setTranslatedText(text);
+      return;
+    }
 
-  return <>{translatedText}</>;
+    const run = async () => {
+      setIsLoading(true);
+      try {
+        const safe = typeof text === 'string' ? text : (text?.toString?.() ?? '');
+        const result = await translateDynamicText(safe, sourceLang);
+        setTranslatedText(result);
+      } catch (e) {
+        console.error('Translation failed in TrasladeText:', e);
+        setTranslatedText(text);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    run();
+  }, [text, sourceLang, language, translateDynamicText]);
+
+  if (isLoading) return <span className={styles.value}>Traduciendo...</span>;
+  return <span className={styles.value}>{translatedText || text}</span>;
 };
 
 export default TrasladeText;

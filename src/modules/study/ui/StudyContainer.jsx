@@ -6,7 +6,7 @@ import MinianComponent from '../../minian/ui/MinianComponent.jsx';
 import { useLanguage } from '@/shared/context/LanguageContext.jsx';
 import styles from '../styles/StudyContainer.module.css';
 
-const AUTO_SWITCH_DELAY = 10000;
+const AUTO_SWITCH_DELAY = 1000000;
 
 const StudyContainer = ({ showMinian, showHayomYom, visibleZmanim, visibleStudies }) => {
   const [visibleComponent, setVisibleComponent] = useState('zmanim');

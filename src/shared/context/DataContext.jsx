@@ -1,4 +1,3 @@
-// context/DataContext.jsx
 import { createContext, useContext, useMemo } from 'react';
 import { HDate } from '@hebcal/core';
 import useGregorianTime from '../hooks/useGregorianTime.js';
@@ -10,64 +9,80 @@ import useStudy from '../hooks/useStudy.js';
 
 const AppContext = createContext(null);
 
+// Helpers
+const toStr = (v) => (typeof v === 'string' ? v : (v?.toString?.() ?? ''));
+
+// Convierte el objeto/estructura de cada estudio en un STRING seguro y declara su idioma de origen.
+// Este es el único lugar donde definimos “qué campo usar”.
+const buildStudyCards = ({ todayJumesh, todayTehilim, todaySH, parasha, haftara, daf_yomi, Tanya, Rambam1, Rambam3 }) => {
+  return {
+    JUMASH:         { key: 'JUMASH',         labelKey: 'JUMASH',                value: toStr(todayJumesh),     sourceLang: 'en' },
+    TEHILIM:        { key: 'TEHILIM',        labelKey: 'TEHILIM',               value: toStr(todayTehilim),    sourceLang: 'he' },
+    TANYA:          { key: 'TANYA',          labelKey: 'TANYA',                 value: toStr(Tanya?.en),       sourceLang: 'en' },
+    SEFER_HAMITZVOT:{ key: 'SEFER_HAMITZVOT',labelKey: 'SEFER_HAMITZVOT_TITLE', value: toStr(todaySH?.text),   sourceLang: 'he' }, // <- ya NO usamos render()
+    RAMBAM_1:       { key: 'RAMBAM_1',       labelKey: 'RAMBAM_1',              value: toStr(Rambam1?.he),     sourceLang: 'he' },
+    RAMBAM_3:       { key: 'RAMBAM_3',       labelKey: 'RAMBAM_3',              value: toStr(Rambam3?.he),     sourceLang: 'he' },
+    PARASHA:        { key: 'PARASHA',        labelKey: 'PARASHA_TITLE',         value: toStr(parasha?.he),     sourceLang: 'he' },
+    HAFTARA:        { key: 'HAFTARA',        labelKey: 'HAFTARA_TITLE',         value: toStr(haftara?.he),     sourceLang: 'he' },
+    DAF_YOMI:       { key: 'DAF_YOMI',       labelKey: 'DAF_YOMI_TITLE',        value: toStr(daf_yomi?.he),    sourceLang: 'he' },
+  };
+};
+
 export const DataProvider = ({ children }) => {
-  // 1) Tiempo gregoriano + geo
-  const gregorianData = useGregorianTime();
+  // 1) Tiempo y geo
+  const gregorianData = useGregorianTime();   // { date, loading, error, ... }
   const { date } = gregorianData;
 
-  // 2) Fecha hebrea (tu hook) — puede devolver hebrewObj u otras props
-  const hebrewData = useHebrewDate(date);
-  const { hebrewObj } = hebrewData;
+  // 2) Fecha hebrea
+  const hebrewData = useHebrewDate(date);     // { hebrewObj, hebrewDate?, ... }
 
-  // 3) Otras fuentes
-  // Pass all required data to avoid internal hook calls and data waterfalls.
+  // 3) Fuentes de contenido
   const sefariaData = useSefaria(gregorianData);
-  const studyData = useStudy({ ...gregorianData, ...hebrewData });
+  const studyData   = useStudy({ ...gregorianData, ...hebrewData });
+  const hayomYom    = useHayomYom();          // { title, text, loading, error }
+  const hdateData   = useHdate(gregorianData);
 
-  const hayomYomData = useHayomYom();
-  // 4) Zmanim
-  const hdateData = useHdate(gregorianData);
-
-  // --- Derivados / alias que tu UI espera ---
-  // A) hebrewDate legible siempre (si tu hook no lo da formateado)
+  // 4) Derivados
   const hebrewDate = useMemo(() => {
-    // Si tu useHebrewDate ya expone un string, usalo:
     if (typeof hebrewData.hebrewDate === 'string' && hebrewData.hebrewDate) {
       return hebrewData.hebrewDate;
     }
-    // Si trae algo como hebrewObj?.toString o partes sueltas, adaptalo:
     try {
-      return new HDate(date).toString(); // "1 Tishrei 5786", etc.
+      return new HDate(date).toString();
     } catch {
       return '';
     }
   }, [hebrewData.hebrewDate, date]);
 
-  // B) Alias para nombres que usa tu TimeComponent
   const loadingGeo = gregorianData.loading;
-  const geoError = gregorianData.error;
+  const geoError   = gregorianData.error;
+
+  // 5) View-model unificado para Study (todo como string + sourceLang)
+  const studyCards = useMemo(() => buildStudyCards(studyData), [studyData]);
 
   const value = {
-    ...gregorianData,  // formattedDate, time, tzid, city, country, loading, error, etc.
-    ...hebrewData,     // hebrewObj y lo que ya tengas
+    // datos crudos por si otros componentes los necesitan
+    ...gregorianData,
+    ...hebrewData,
     ...sefariaData,
-    ...studyData,
     ...hdateData,
-    hayomYom: hayomYomData, // { title, text, loading, error }
+    ...studyData,
+    hayomYom,
 
-    // Alias / derivados
+    // derivados
     hebrewDate,
     loadingGeo,
     geoError,
+
+    // view-modeles
+    studyCards, // <- el StudyComponent ahora consume esto directamente
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
 export const useAppData = () => {
-  const context = useContext(AppContext);
-  if (context === null) {
-    throw new Error('useAppData must be used within a DataProvider');
-  }
-  return context;
+  const ctx = useContext(AppContext);
+  if (ctx === null) throw new Error('useAppData must be used within a DataProvider');
+  return ctx;
 };
