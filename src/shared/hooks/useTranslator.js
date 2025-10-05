@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 
-export function useTranslator({ sourceLanguage = 'es', targetLanguage = 'he' } = {}) {
+export function useTranslator({ sourceLanguage = 'en', targetLanguage = 'he' } = {}) {
   const translatorRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

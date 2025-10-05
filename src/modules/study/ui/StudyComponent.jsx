@@ -5,8 +5,8 @@ import TrasladeText from '@/shared/context/TrasladeText.jsx';
 
 const StudyComponent = ({ visibleStudies }) => {
   const { studyCards, loading, loadingGeo } = useAppData();
-  const { t, language, toggleLanguage } = useLanguage();
-
+  const { t } = useLanguage();
+  
   const iconMap = {
     PARASHA: '📜', HAFTARA: '🗣️', DAF_YOMI: '📄', JUMASH: '📖',
     TEHILIM: '🎶', TANYA: '🧠', RAMBAM_1: '1📚', RAMBAM_3: '3📚', SEFER_HAMITZVOT: 'SH📚',
@@ -20,12 +20,8 @@ const StudyComponent = ({ visibleStudies }) => {
     .filter(item => item.value);
 
   if (!list.length) return null;
-
   return (
     <div className={styles.studyContainer}>
-      <button onClick={toggleLanguage} style={{ minWidth: '120px' }}>
-        {language === 'es' ? t('CHANGE_TO_HEBREW') : language === 'he' ? t('CHANGE_TO_ENGLISH') : t('CHANGE_TO_SPANISH')}
-      </button>
 
       {list.map(item => (
         <div key={item.key} className={styles.studyItem}>

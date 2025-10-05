@@ -10,37 +10,92 @@ import useStudy from '../hooks/useStudy.js';
 const AppContext = createContext(null);
 
 // Helpers
-const toStr = (v) => (typeof v === 'string' ? v : (v?.toString?.() ?? ''));
+const toStr = (v) => (typeof v === 'string' ? v : v?.toString?.() ?? '');
 
 // Convierte el objeto/estructura de cada estudio en un STRING seguro y declara su idioma de origen.
 // Este es el único lugar donde definimos “qué campo usar”.
-const buildStudyCards = ({ todayJumesh, todayTehilim, todaySH, parasha, haftara, daf_yomi, Tanya, Rambam1, Rambam3 }) => {
+const buildStudyCards = ({
+  todayJumesh,
+  todayTehilim,
+  todaySH,
+  parasha,
+  haftara,
+  daf_yomi,
+  Tanya,
+  Rambam1,
+  Rambam3,
+}) => {
   return {
-    JUMASH:         { key: 'JUMASH',         labelKey: 'JUMASH',                value: toStr(todayJumesh),     sourceLang: 'en' },
-    TEHILIM:        { key: 'TEHILIM',        labelKey: 'TEHILIM',               value: toStr(todayTehilim),    sourceLang: 'he' },
-    TANYA:          { key: 'TANYA',          labelKey: 'TANYA',                 value: toStr(Tanya?.en),       sourceLang: 'en' },
-    SEFER_HAMITZVOT:{ key: 'SEFER_HAMITZVOT',labelKey: 'SEFER_HAMITZVOT_TITLE', value: toStr(todaySH?.text),   sourceLang: 'he' }, // <- ya NO usamos render()
-    RAMBAM_1:       { key: 'RAMBAM_1',       labelKey: 'RAMBAM_1',              value: toStr(Rambam1?.he),     sourceLang: 'he' },
-    RAMBAM_3:       { key: 'RAMBAM_3',       labelKey: 'RAMBAM_3',              value: toStr(Rambam3?.he),     sourceLang: 'he' },
-    PARASHA:        { key: 'PARASHA',        labelKey: 'PARASHA_TITLE',         value: toStr(parasha?.he),     sourceLang: 'he' },
-    HAFTARA:        { key: 'HAFTARA',        labelKey: 'HAFTARA_TITLE',         value: toStr(haftara?.he),     sourceLang: 'he' },
-    DAF_YOMI:       { key: 'DAF_YOMI',       labelKey: 'DAF_YOMI_TITLE',        value: toStr(daf_yomi?.he),    sourceLang: 'he' },
+    JUMASH: {
+      key: 'JUMASH',
+      labelKey: 'JUMASH',
+      value: toStr(todayJumesh),
+      sourceLang: 'en',
+    },
+    TEHILIM: {
+      key: 'TEHILIM',
+      labelKey: 'TEHILIM',
+      value: toStr(todayTehilim),
+      sourceLang: 'he',
+    },
+    TANYA: {
+      key: 'TANYA',
+      labelKey: 'TANYA',
+      value: toStr(Tanya?.en),
+      sourceLang: 'en',
+    },
+    SEFER_HAMITZVOT: {
+      key: 'SEFER_HAMITZVOT',
+      labelKey: 'SEFER_HAMITZVOT_TITLE',
+      value: toStr(todaySH?.text),
+      sourceLang: 'he',
+    }, // <- ya NO usamos render()
+    RAMBAM_1: {
+      key: 'RAMBAM_1',
+      labelKey: 'RAMBAM_1',
+      value: toStr(Rambam1?.he),
+      sourceLang: 'he',
+    },
+    RAMBAM_3: {
+      key: 'RAMBAM_3',
+      labelKey: 'RAMBAM_3',
+      value: toStr(Rambam3?.he),
+      sourceLang: 'he',
+    },
+    PARASHA: {
+      key: 'PARASHA',
+      labelKey: 'PARASHA_TITLE',
+      value: toStr(parasha?.he),
+      sourceLang: 'he',
+    },
+    HAFTARA: {
+      key: 'HAFTARA',
+      labelKey: 'HAFTARA_TITLE',
+      value: toStr(haftara?.he),
+      sourceLang: 'he',
+    },
+    DAF_YOMI: {
+      key: 'DAF_YOMI',
+      labelKey: 'DAF_YOMI_TITLE',
+      value: toStr(daf_yomi?.he),
+      sourceLang: 'he',
+    },
   };
 };
 
 export const DataProvider = ({ children }) => {
   // 1) Tiempo y geo
-  const gregorianData = useGregorianTime();   // { date, loading, error, ... }
+  const gregorianData = useGregorianTime(); // { date, loading, error, ... }
   const { date } = gregorianData;
 
   // 2) Fecha hebrea
-  const hebrewData = useHebrewDate(date);     // { hebrewObj, hebrewDate?, ... }
+  const hebrewData = useHebrewDate(date); // { hebrewObj, hebrewDate?, ... }
 
   // 3) Fuentes de contenido
-  const sefariaData = useSefaria(gregorianData);
-  const studyData   = useStudy({ ...gregorianData, ...hebrewData });
-  const hayomYom    = useHayomYom();          // { title, text, loading, error }
-  const hdateData   = useHdate(gregorianData);
+  const sefariaData = useSefaria(gregorianData); // Inyectar dependencia
+  const studyData = useStudy({ ...gregorianData, ...hebrewData });
+  const hayomYom = useHayomYom();          // { title, text, loading, error }
+  const hdateData = useHdate(gregorianData); // Inyectar dependencia
 
   // 4) Derivados
   const hebrewDate = useMemo(() => {
@@ -55,10 +110,13 @@ export const DataProvider = ({ children }) => {
   }, [hebrewData.hebrewDate, date]);
 
   const loadingGeo = gregorianData.loading;
-  const geoError   = gregorianData.error;
+  const geoError = gregorianData.error;
 
   // 5) View-model unificado para Study (todo como string + sourceLang)
-  const studyCards = useMemo(() => buildStudyCards(studyData), [studyData]);
+  const studyCards = useMemo(
+    () => buildStudyCards({ ...studyData, ...sefariaData }),
+    [studyData, sefariaData]
+  );
 
   const value = {
     // datos crudos por si otros componentes los necesitan
@@ -83,6 +141,7 @@ export const DataProvider = ({ children }) => {
 
 export const useAppData = () => {
   const ctx = useContext(AppContext);
-  if (ctx === null) throw new Error('useAppData must be used within a DataProvider');
+  if (ctx === null)
+    throw new Error('useAppData must be used within a DataProvider');
   return ctx;
 };

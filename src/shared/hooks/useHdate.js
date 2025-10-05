@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { GeoLocation, Zmanim } from '@hebcal/core';
-import useGregorianTime from './useGregorianTime.js';
-
-export default function useHdate() {
-  const { latitude, longitude, tzid, date, loading: gregorianLoading } = useGregorianTime();
+export default function useHdate(gregorianData) {
+  const { latitude, longitude, tzid, date, loading: gregorianLoading } = gregorianData;
   const [zmanim, setZmanim] = useState({});
 
   useEffect(() => {
