@@ -1,11 +1,9 @@
-import { useAppData } from '@/shared/context/DataContext.jsx';
-import { useLanguage } from '@/shared/context/LanguageContext.jsx';
+import { useAppData } from '@/shared/hooks/useAppData.js';
+import { useLanguage } from '@/shared/hooks/useLanguage.js';
 import styles from '../styles/Zmanim.module.css';
 
 const ZmanimComponent = ({ visibleZmanim }) => {
   const {
-    date,
-    hebrewDate,
     sunrise,
     sofZmanShma,
     shkiah,
@@ -15,7 +13,7 @@ const ZmanimComponent = ({ visibleZmanim }) => {
     loading,
     loadingGeo,
   } = useAppData();
-  const { t, language } = useLanguage();
+    const { t } = useLanguage();
 
   // Propuesta de iconos: Un mapa de emojis para cada zman.
   // Se puede reemplazar fácilmente por componentes de iconos en el futuro.

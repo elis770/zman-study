@@ -13,6 +13,7 @@
     "@hebcal/core": "^5.10.1",
     "@hebcal/learning": "^6.4.4",
     "@hebcal/leyning": "^9.2.5",
+    "axios": "^1.12.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
@@ -20,6 +21,8 @@
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react-swc": "^4.0.1",
+    "eslint-plugin-react-hooks": "^6.1.1",
+    "eslint-plugin-react-refresh": "^0.4.23",
     "vite": "^7.1.2"
   },
   "overrides": {

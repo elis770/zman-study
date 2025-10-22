@@ -42,8 +42,8 @@ export default function useStudy({ date, loading: gregorianLoading, hebrewObj: h
     const key = fullKriyahMap[jsDow];
 
     let jumashSet = false;
-    if (parsha?.length) {
-      for (let p of parsha) {
+    if (parsha?.parsha?.length && !parsha.chag) {
+      for (let p of parsha.parsha) { // Iterar sobre el array correcto
         const leyning = getLeyningForParsha(p);
         if (leyning && key && leyning.fullkriyah[key]) {
           const lectura = leyning.fullkriyah[key];

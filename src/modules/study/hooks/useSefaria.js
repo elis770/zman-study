@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import useGregorianTime from "./useGregorianTime.js";
 
 const ordersMap = {
   1: "parasha",
@@ -10,20 +9,27 @@ const ordersMap = {
   15: "Tanya",
 };
 
-const useSefaria = () => {
-  const { tzid, formattedDate, loading: gregorianLoading } = useGregorianTime();
+const useSefaria = (gregorianData) => {
+  const { tzid, date, loading: gregorianLoading } = gregorianData || {};
   const [studies, setStudies] = useState({});
   const [loading, setLoading] = useState(true);
   const [dateUsed, setDateUsed] = useState("");
 
   useEffect(() => {
-    if (!tzid || !formattedDate) return;
+    if (!tzid || !date) return;
 
     const fetchSefariaData = async () => {
       setLoading(true);
       try {
-        // The formattedDate from useGregorianTime is already in 'en-CA' format (YYYY-MM-DD)
-        setDateUsed(formattedDate);
+        // Formatear la fecha aquí, ya que no viene pre-formateada para Sefaria
+        const formattedDate = date.toLocaleDateString('en-CA', {
+          timeZone: tzid,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        });
+
+        setDateUsed(formattedDate); // YYYY-MM-DD
 
         const response = await fetch(
           `https://www.sefaria.org/api/calendars?date=${formattedDate}`
@@ -48,7 +54,7 @@ const useSefaria = () => {
     };
 
     fetchSefariaData();
-  }, [tzid, formattedDate]);
+  }, [tzid, date]);
 
   return {
     ...studies,

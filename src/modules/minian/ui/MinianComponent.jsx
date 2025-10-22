@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLanguage } from '@/shared/context/LanguageContext.jsx';
+import { useLanguage } from '@/shared/hooks/useLanguage.js';
 import styles from '../styles/Minian.module.css';
 
 const MinianComponent = () => {

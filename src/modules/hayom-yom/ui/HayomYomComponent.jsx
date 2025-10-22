@@ -1,44 +1,27 @@
-// import { useEffect, useState } from 'react';
-import useHayomYom from '@/shared/hooks/useHayomYom.js';
-// import { useLanguage } from '../context/LanguageContext';
+import { useAppData } from '@/shared/hooks/useAppData.js';
+import TrasladeText from '@/shared/context/TrasladeText.jsx';
 
 const HayomYomComponent = () => {
-  const { title, text, loading, error } = useHayomYom();
-  // const { t, language, translateDynamicText } = useLanguage();
-  // const [translatedText, setTranslatedText] = useState('');
+  const { hayomYom, loading, loadingGeo } = useAppData();
 
-  // useEffect(() => {
-  //   if (text && language === 'es') {
-  //     // Assuming the source text is Hebrew
-  //     translateDynamicText(text, 'he').then(setTranslatedText);
-  //   } else {
-  //     setTranslatedText('');
-  //   }
-  // }, [text, language, translateDynamicText]);
-
-  if (loading) {
-    return (
-      <>
-        <p>Cargando estudio diario...</p>
-      </>
-    );
+  if (loading || loadingGeo) {
+    return <p>Cargando estudio diario...</p>;
   }
 
-  if (error) {
-    return (
-      <>
-        <p style={{ color: '#b00' }}>No se pudo cargar el estudio: {error}</p>
-      </>
-    );
+  if (hayomYom.error) {
+    return <p style={{ color: '#b00' }}>No se pudo cargar el estudio: {hayomYom.error}</p>;
   }
 
-  return (
-    <>
-      <div style={{ whiteSpace: 'pre-wrap', direction: 'rtl', textAlign: 'right' }}>
-        {text}
+  return hayomYom.text ? (
+    <div>
+      <h3>
+        <TrasladeText text={hayomYom.title} sourceLang="he" />
+      </h3>
+      <div style={{ whiteSpace: 'pre-wrap' }}>
+        <TrasladeText text={hayomYom.text} sourceLang="he" />
       </div>
-    </>
-  );
+    </div>
+  ) : null;
 };
 
 export default HayomYomComponent;

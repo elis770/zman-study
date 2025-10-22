@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { GeoLocation, Zmanim } from '@hebcal/core';
-import useGregorianTime from './useGregorianTime.js';
 
-export default function useHdate() {
-  const { latitude, longitude, tzid, date, loading: gregorianLoading } = useGregorianTime();
-  const [zmanim, setZmanim] = useState({});
+export default function useHdate(gregorianData) {
+  const { latitude, longitude, tzid, date, loading: gregorianLoading } = gregorianData;
 
-  useEffect(() => {
+  const zmanim = useMemo(() => {
     if (gregorianLoading || !latitude || !longitude || !tzid || !date) {
-      return;
+      return {};
     }
 
     const gloc = new GeoLocation(null, latitude, longitude, 0, tzid);
@@ -23,7 +21,7 @@ export default function useHdate() {
       { name: 'chatzot', fn: () => zmanimCalculator.chatzot() },
     ];
 
-    const calculatedZmanim = zmanimToCalc.reduce((acc, z) => {
+    return zmanimToCalc.reduce((acc, z) => {
       try {
         const dateObj = z.fn();
         if (dateObj) {
@@ -40,8 +38,6 @@ export default function useHdate() {
       }
       return acc;
     }, {});
-
-    setZmanim(calculatedZmanim);
   }, [latitude, longitude, tzid, date, gregorianLoading]);
 
   return { ...zmanim, loading: gregorianLoading };

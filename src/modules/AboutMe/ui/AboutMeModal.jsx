@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../styles/AboutMeModal.module.css';
-import { useLanguage } from '../../../shared/context/LanguageContext.jsx';
+import { useLanguage } from '../../../shared/hooks/useLanguage.js';
 
 const AboutMeModal = ({ isOpen, onClose }) => {
   const { t } = useLanguage();

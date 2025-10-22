@@ -1,80 +1,38 @@
-import { useAppData } from '@/shared/context/DataContext.jsx';
-import { useLanguage } from '@/shared/context/LanguageContext.jsx';
+import { useAppData } from '@/shared/hooks/useAppData.js';
+import { useLanguage } from '@/shared/hooks/useLanguage.js';
 import styles from '../styles/Study.module.css';
+import TrasladeText from '@/shared/context/TrasladeText.jsx';
 
 const StudyComponent = ({ visibleStudies }) => {
-  const {
-    todayJumesh,
-    todayTehilim,
-    todaySH,
-    parasha,
-    haftara,
-    daf_yomi,
-    Tanya,
-    Rambam1,
-    Rambam3,
-    loading,
-    loadingGeo,
-  } = useAppData();
+  const { studyCards, loading, loadingGeo } = useAppData();
   const { t } = useLanguage();
-
-  //console.log('todaySH:', todaySH);
-  // Propuesta de iconos para cada estudio
+  
   const iconMap = {
-    PARASHA: '📜',
-    HAFTARA: '🗣️',
-    DAF_YOMI: '📄',
-    JUMASH: '📖',
-    TEHILIM: '🎶',
-    TANYA: '🧠',
-    RAMBAM_1: '1📚',
-    RAMBAM_3: '3📚',
-    SEFER_HAMITZVOT: 'SH📚',
+    PARASHA: '📜', HAFTARA: '🗣️', DAF_YOMI: '📄', JUMASH: '📖', TEHILIM: '🎶', TANYA: '🧠', RAMBAM_1: '1📚', RAMBAM_3: '3📚', SEFER_HAMITZVOT: 'SH📚',
   };
 
-  if (loading || loadingGeo) {
-    return null;
-  }
+  if (loading || loadingGeo) return <div>Cargando estudios...</div>;
 
-  // Construir la lista de estudios a mostrar
-  const allStudiesData = {
-    JUMASH: { label: t('JUMASH'), value: todayJumesh },
-    TEHILIM: { label: t('TEHILIM'), value: todayTehilim },
-    TANYA: { label: t('TANYA'), value: Tanya?.en },
-    SEFER_HAMITZVOT: { label: t('SEFER_HAMITZVOT_TITLE'), value: todaySH?.render() },
-    RAMBAM_1: { label: t('RAMBAM_1'), value: Rambam1?.he },
-    RAMBAM_3: { label: t('RAMBAM_3'), value: Rambam3?.he },
-    PARASHA: { label: t('PARASHA_TITLE'), value: parasha?.he },
-    HAFTARA: { label: t('HAFTARA_TITLE'), value: haftara?.he },
-    DAF_YOMI: { label: t('DAF_YOMI_TITLE'), value: daf_yomi?.he },
-  };
+  // Tomamos ya normalizados; filtramos por visibilidad y por existencia de texto
+  const list = Object.values(studyCards)
+    .filter(item => visibleStudies.includes(item.key))
+    .filter(item => item.value)
+    .filter(item => item.key !== 'PARASHA' && item.key !== 'HAFTARA');
 
-  const studyList = visibleStudies
-    .map(key => ({ key, ...allStudiesData[key] }))
-    // Parasha and Haftara are now shown in the AvisosComponent
-    .filter(study => study.key !== 'PARASHA' && study.key !== 'HAFTARA')
-    .filter(study => study.value);
-
-  if (studyList.length === 0) {
-    return null;
-  }
-
+  if (!list.length) return null;
   return (
-    <>
-      <div className={styles.studyContainer}>
-        {studyList.map(study => (
-          <div key={study.key} className={styles.studyItem}>
-            <div className={styles.iconContainer}>
-              {iconMap[study.key] || '📖'}
-            </div>
-            <div className={styles.textContainer}>
-              <span className={styles.label}>{study.label}</span>
-              <span className={styles.value}>{study.value}</span>
-            </div>
+    <div className={styles.studyContainer}>
+
+      {list.map(item => (
+        <div key={item.key} className={styles.studyItem}>
+          <div className={styles.iconContainer}>{iconMap[item.key] || '📖'}</div>
+          <div className={styles.textContainer}>
+            <span className={styles.label}>{t(item.labelKey)}</span>
+            <TrasladeText text={item.value} sourceLang={item.sourceLang} />
           </div>
-        ))}
-      </div>
-    </>
+        </div>
+      ))}
+    </div>
   );
 };
 

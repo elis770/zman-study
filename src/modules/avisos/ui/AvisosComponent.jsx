@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useAppData } from '@/shared/context/DataContext.jsx';
+import { useState, useEffect, useMemo } from 'react';
+import { useAppData } from '@/shared/hooks/useAppData.js';
 import styles from '../styles/Avisos.module.css';
 
 // Placeholder for a future hook that will provide information about special days.
@@ -12,13 +12,11 @@ const AvisosComponent = ({ customAvisos }) => {
   const { parasha, haftara, loading, loadingGeo, date, candleLighting, tzet } = useAppData();
   const { specialDay } = useAvisos();
   const [visibleAvisoIndex, setVisibleAvisoIndex] = useState(0);
-  const [avisos, setAvisos] = useState([]);
 
-  useEffect(() => {
-    if (loading || loadingGeo) return;
+  const avisos = useMemo(() => {
+    if (loading || loadingGeo) return [];
 
     const allAvisos = [];
-
     const dayOfWeek = date ? date.getDay() : -1;
 
     // Viernes: Mostrar horario de encendido de velas
@@ -70,13 +68,15 @@ const AvisosComponent = ({ customAvisos }) => {
     if (customAvisos && customAvisos.length > 0) {
       allAvisos.push(...customAvisos);
     }
-
-    setAvisos(allAvisos);
-    // Reset index if the list of announcements changes to avoid out-of-bounds errors
-    if (allAvisos.length > 0) {
-      setVisibleAvisoIndex(current => (current >= allAvisos.length ? 0 : current));
-    }
+    return allAvisos;
   }, [parasha, haftara, specialDay, customAvisos, loading, loadingGeo, date, candleLighting, tzet]);
+
+  useEffect(() => {
+    // Reset index if the list of announcements changes to avoid out-of-bounds errors
+    if (avisos.length > 0) {
+      setVisibleAvisoIndex(current => (current >= avisos.length ? 0 : current));
+    }
+  }, [avisos]);
 
   useEffect(() => {
     if (avisos.length <= 1) return; // No rotation needed for 0 or 1 item
