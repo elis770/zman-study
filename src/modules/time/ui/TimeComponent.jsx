@@ -5,13 +5,15 @@ import styles from '../styles/Time.module.css';
 
 export const TimeComponent = () => {
   const {
-    formattedDate,
-    time,
-    tzid,
-    city,
-    country,
-    hebrewDate,
-    loadingGeo,
+    time: {
+      formattedDate,
+      time,
+      tzid,
+      city,
+      country,
+      hebrewDate,
+      loading: loadingGeo,
+    },
   } = useAppData();
   // const { language, translateDynamicText } = useLanguage();
   // const [translatedHebrewDate, setTranslatedHebrewDate] = useState('');

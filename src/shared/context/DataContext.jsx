@@ -3,7 +3,7 @@ import { HDate } from '@hebcal/core';
 import useGregorianTime from '../../modules/time/hooks/useGregorianTime.js';
 import useHebrewDate from '../../modules/time/hooks/useHebrewDate.js';
 import useSefaria from '../../modules/study/hooks/useSefaria.js';
-import useHdate from '../../modules/time/hooks/useHdate.js';
+import useHdate from '../../modules/zmanim/hooks/useHdate.js';
 import useHayomYom from '../../modules/hayom-yom/hooks/useHayomYom.js';
 import useStudy from '../../modules/study/hooks/useStudy.js';
 // import { LanguageContext } from './LanguageContext.jsx'; // Comentado: evitar dependencia circular
@@ -119,23 +119,28 @@ export const DataProvider = ({ children }) => {
     [studyData, sefariaData]
   );
 
-  const value = {
-    // datos crudos por si otros componentes los necesitan
-    ...gregorianData,
-    ...hebrewData,
-    ...sefariaData,
-    ...hdateData,
-    ...studyData,
-    hayomYom,
+  // 5) Agrupamos todo en las categorías solicitadas
+  const value = useMemo(() => ({
+    time: {
+      ...gregorianData,
+      ...hebrewData,
+      hebrewDate,
+      loading: gregorianData.loading,
+      error: gregorianData.error,
+    },
+    zmanim: {
+      ...hdateData,
+      loading: hdateData.loading,
+    },
+    study: {
+      ...studyData,
+      ...sefariaData,
+      hayomYom,
+      studyCards,
+      loading: studyData.loading || sefariaData.loading || hayomYom.loading,
+    },
+  }), [gregorianData, hebrewData, hebrewDate, hdateData, studyData, sefariaData, hayomYom, studyCards]);
 
-    // derivados
-    hebrewDate,
-    loadingGeo,
-    geoError,
-
-    // view-modeles
-    studyCards, // <- el StudyComponent ahora consume esto directamente
-  };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
