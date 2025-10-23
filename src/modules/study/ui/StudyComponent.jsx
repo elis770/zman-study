@@ -1,12 +1,11 @@
 import { useAppData } from '@/shared/hooks/useAppData.js';
 import { useLanguage } from '@/shared/hooks/useLanguage.js';
 import styles from '../styles/Study.module.css';
-import TrasladeText from '@/shared/context/TrasladeText.jsx';
+// import TrasladeText from '@/shared/context/TrasladeText.jsx'; // Comentado: mostrar texto original sin traducciones
 
 const StudyComponent = ({ visibleStudies }) => {
   const { studyCards, loading, loadingGeo } = useAppData();
   const { t } = useLanguage();
-  
   const iconMap = {
     PARASHA: '📜', HAFTARA: '🗣️', DAF_YOMI: '📄', JUMASH: '📖', TEHILIM: '🎶', TANYA: '🧠', RAMBAM_1: '1📚', RAMBAM_3: '3📚', SEFER_HAMITZVOT: 'SH📚',
   };
@@ -20,6 +19,7 @@ const StudyComponent = ({ visibleStudies }) => {
     .filter(item => item.key !== 'PARASHA' && item.key !== 'HAFTARA');
 
   if (!list.length) return null;
+
   return (
     <div className={styles.studyContainer}>
 
@@ -28,7 +28,9 @@ const StudyComponent = ({ visibleStudies }) => {
           <div className={styles.iconContainer}>{iconMap[item.key] || '📖'}</div>
           <div className={styles.textContainer}>
             <span className={styles.label}>{t(item.labelKey)}</span>
-            <TrasladeText text={item.value} sourceLang={item.sourceLang} />
+            {/* Mostrar texto original sin traducciones - mantener idioma de la librería hebcal */}
+            <span className={styles.value}>{item.value}</span>
+            {/* <TrasladeText text={item.value} sourceLang={item.sourceLang} /> */}
           </div>
         </div>
       ))}

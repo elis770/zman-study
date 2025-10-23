@@ -5,9 +5,7 @@ import { TimeComponent } from '../modules/time/ui/TimeComponent.jsx';
 import StudyContainer from '../modules/study/ui/StudyContainer.jsx';
 import AvisosComponent from '../modules/avisos/ui/AvisosComponent.jsx';
 import SettingsModal from '../modules/settings/ui/SettingsModal.jsx';
-import { DataProvider } from '../shared/context/DataContext.jsx';
 import { useTheme } from '../shared/hooks/useTheme.js';
-import { LanguageProvider } from '../shared/context/LanguageContext.jsx';
 import { useLanguage } from '../shared/hooks/useLanguage.js';
 import usePersistentState from '../shared/hooks/usePersistentState.js';
 import AboutMeModal from '../modules/AboutMe/ui/AboutMeModal.jsx';
@@ -112,14 +110,4 @@ const AppContent = () => {
   );
 };
 
-const App = () => {
-  return (
-    <DataProvider>
-      <LanguageProvider>
-        <AppContent />
-      </LanguageProvider>
-    </DataProvider>
-  );
-};
-
-export default App;
+export default AppContent;

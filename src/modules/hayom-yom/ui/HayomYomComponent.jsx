@@ -15,13 +15,25 @@ const HayomYomComponent = () => {
   return hayomYom.text ? (
     <div>
       <h3>
-        <TrasladeText text={hayomYom.title} sourceLang="he" />
+        {hayomYom.title}
       </h3>
-      <div style={{ whiteSpace: 'pre-wrap' }}>
-        <TrasladeText text={hayomYom.text} sourceLang="he" />
+      <div style={{ whiteSpace: 'pre-wrap', direction: 'rtl', textAlign: 'right' }}>
+        {hayomYom.text}
       </div>
     </div>
   ) : null;
 };
 
 export default HayomYomComponent;
+
+//este es el original implementado segun las traducciones
+// return hayomYom.text ? (
+//   <div>
+//     <h3>
+//       {hayomYom.title}
+//     </h3>
+//     <div style={{ whiteSpace: 'pre-wrap' }}>
+//      ={hayomYom.text}
+//     </div>
+//   </div>
+// ) : null;
