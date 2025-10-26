@@ -4,39 +4,51 @@ import { allZmanim } from '../context/zmanimConfig.js';
 import styles from '../styles/Zmanim.module.css';
 
 const ZmanimComponent = ({ visibleZmanim }) => {
-  // Obtenemos TODOS los zmanim del contexto, no solo algunos.
-  const zmanimData = useAppData().zmanim;
-  //console.log(zmanimData);
+  const appData = useAppData();
   const { t } = useLanguage();
-  const { loading, loadingGeo } = zmanimData;
+  const zmanimData = appData?.zmanim;
 
-  if (loading || loadingGeo) {
-    return null;
-  }
+  // Mapa de íconos para cada zman
+  const iconMap = {
+    alotHaShachar: '🌅',
+    misheyakir: '🌇',
+    sunrise: '☀️',
+    sofZmanShma: '🤦‍♂️',
+    sofZmanTfilla: '📖',
+    chatzot: '🕛',
+    minchaGedola: '🕔',
+    minchaKetana: '🕕',
+    plagHaMincha: '🕡',
+    shkiah: '🌇',
+    beinHaShmashos: '🌆',
+    tzeit: '🌃',
+    chatzotNight: '🌙',
+  };
 
-  // Construimos la lista dinámicamente a partir de la configuración
+  if (!zmanimData || Object.keys(zmanimData).length === 0) return <div>No hay datos de zmanim disponibles.</div>;
+
+  // Filtramos las propiedades que no son zmanim (como 'loading')
   const zmanimList = allZmanim
-    .map(zmanConfig => ({
-      ...zmanConfig,
-      label: t(zmanConfig.labelKey),
-      value: zmanimData[zmanConfig.key], // Obtenemos el valor del contexto
-    }))
-    .filter(zman => visibleZmanim.includes(zman.key) && zman.value);
-
-    //console.log('Zmanim to display:', zmanimList);
-  if (zmanimList.length === 0) {
-    return null;
-  }
+    .map(zmanConfig => {
+      // Buscamos el valor del zman en zmanimData usando la clave de la configuración
+      const zmanValue = zmanimData[zmanConfig.key];
+      return {
+        ...zmanConfig,
+        value: zmanValue,
+      };
+    })
+    .filter(zman => !visibleZmanim.includes(zman.key) && zman.value);
 
   return (
     <>
+      <h2>{t('ZMANIM_TITLE')}</h2>
       <div className={styles.zmanimContainer}>
         {zmanimList.map(zman => (
           <div key={zman.key} className={styles.zmanItem}>
-            <div className={styles.iconContainer}>{zman.icon || ''}</div>
+            <div className={styles.iconContainer}>{iconMap[zman.key] || '⏳'}</div>
             <div className={styles.textContainer}>
-              <span className={styles.label}>{zman.label}</span>
-              <span className={styles.value}>{zman.value}</span>
+              <span className={styles.label}>{t(zman.labelKey) || zman.key}</span>
+              <span className={styles.value}>{String(zman.value)}</span>
             </div>
           </div>
         ))}
