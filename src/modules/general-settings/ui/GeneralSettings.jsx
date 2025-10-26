@@ -8,6 +8,8 @@ const GeneralSettings = ({
   toggleShowMinian,
   showHayomYom,
   toggleShowHayomYom,
+  autoSwitchDelay,
+  onAutoSwitchDelayChange,
 }) => {
   return (
     <div className={styles.buttonGroup}>
@@ -20,6 +22,20 @@ const GeneralSettings = ({
       <button onClick={toggleShowHayomYom} className={styles.modalButton}>
         {showHayomYom ? t('HIDE_HAYOM_YOM') : t('SHOW_HAYOM_YOM')}
       </button>
+
+      <div className={styles.sliderContainer}>
+        <label htmlFor="autoSwitchDelay">Intervalo de rotación de estudios (segundos)</label>
+        <input
+          type="range"
+          id="autoSwitchDelay"
+          min="1"
+          max="30"
+          value={autoSwitchDelay / 1000}
+          onChange={(e) => onAutoSwitchDelayChange(e.target.value * 1000)}
+          className={styles.slider}
+        />
+        <span>{autoSwitchDelay / 1000}s</span>
+      </div>
     </div>
   );
 };

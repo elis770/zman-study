@@ -2,7 +2,7 @@ import { useState } from 'react';
 import icon from '../utils/icon.png';
 import '../shared/styles/App.css';
 import { TimeComponent } from '../modules/time/ui/TimeComponent.jsx';
-import StudyContainer from '../modules/study/ui/StudyContainer.jsx';
+import StudyContainer from './StudyContainer.jsx';
 import AvisosComponent from '../modules/avisos/ui/AvisosComponent.jsx';
 import SettingsModal from '../modules/settings/ui/SettingsModal.jsx';
 import { useTheme } from '../shared/hooks/useTheme.js';
@@ -23,6 +23,8 @@ const AppContent = () => {
   const [customAvisos, setCustomAvisos] = usePersistentState('customAvisos', []);
   const [visibleZmanim, setVisibleZmanim] = usePersistentState('visibleZmanim', defaultZmanim);
   const [visibleStudies, setVisibleStudies] = usePersistentState('visibleStudies', defaultStudies);
+  const [autoSwitchDelay, setAutoSwitchDelay] = usePersistentState('autoSwitchDelay', 10000);
+
 
   const toggleShowMinian = () => setShowMinian(prev => !prev);
   const toggleShowHayomYom = () => setShowHayomYom(prev => !prev);
@@ -79,6 +81,7 @@ const AppContent = () => {
           showHayomYom={showHayomYom}
           visibleZmanim={visibleZmanim}
           visibleStudies={visibleStudies}
+          autoSwitchDelay={autoSwitchDelay}
         />
       </div>
       <SettingsModal
@@ -100,6 +103,8 @@ const AppContent = () => {
         customAvisos={customAvisos}
         onAddAviso={addAviso}
         onDeleteAviso={deleteAviso}
+        autoSwitchDelay={autoSwitchDelay}
+        onAutoSwitchDelayChange={setAutoSwitchDelay}
       />
       <AboutMeModal
         isOpen={isAboutMeOpen}

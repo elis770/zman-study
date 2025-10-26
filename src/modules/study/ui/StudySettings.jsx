@@ -1,21 +1,19 @@
 import styles from '../styles/StudySettings.module.css';
-import { allStudies } from '../hooks/studyConfig.js';
+import { allStudy } from '../context/studyConfig.js';
 
-const StudySettings = ({ t, visibleStudies, onStudiesChange }) => {
-  return (
-    <div className={styles.checkboxGroup}>
-      {allStudies.map(s => (
-        <label key={s.key} className={styles.checkboxLabel}>
-          <input
-            type="checkbox"
-            checked={visibleStudies.includes(s.key)}
-            onChange={() => onStudiesChange(s.key)}
-          />
-          {t(s.labelKey)}
-        </label>
-      ))}
-    </div>
-  );
-};
+const StudySettings = ({ t, visibleStudies, onStudiesChange }) => (
+  <div className={styles.checkboxGroup}>
+    {allStudy.map(s => (
+      <label key={s.key} className={styles.checkboxLabel}>
+        <input
+          type="checkbox"
+          checked={visibleStudies.includes(s.key)}
+          onChange={() => onStudiesChange(s.key)}
+        />
+        {t(s.labelKey)}
+      </label>
+    ))}
+  </div>
+);
 
 export default StudySettings;

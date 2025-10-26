@@ -16,3 +16,13 @@
 .modalButton:hover {
   background: var(--hover);
 }
+
+.sliderContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider {
+  cursor: pointer;
+}

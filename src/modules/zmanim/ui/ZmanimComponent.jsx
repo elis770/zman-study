@@ -41,7 +41,7 @@ const ZmanimComponent = ({ visibleZmanim }) => {
 
   return (
     <>
-      <h2>{t('ZMANIM_TITLE')}</h2>
+      {/* <h2>{t('ZMANIM_TITLE')}</h2> */}
       <div className={styles.zmanimContainer}>
         {zmanimList.map(zman => (
           <div key={zman.key} className={styles.zmanItem}>

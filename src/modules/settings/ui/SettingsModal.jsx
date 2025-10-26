@@ -14,7 +14,8 @@ const SettingsModal = ({
   showHayomYom, toggleShowHayomYom,
   visibleZmanim, onZmanimChange,
   visibleStudies, onStudiesChange,
-  customAvisos, onAddAviso, onDeleteAviso
+  customAvisos, onAddAviso, onDeleteAviso,
+  autoSwitchDelay, onAutoSwitchDelayChange
 }) => {
   const [expanded, setExpanded] = useState({
     general: true, zmanim: true, study: true, avisos: true
@@ -69,6 +70,8 @@ const SettingsModal = ({
                   showHayomYom={showHayomYom}
                   toggleShowHayomYom={toggleShowHayomYom}
                   btnStyle={btnStyle}
+                  autoSwitchDelay={autoSwitchDelay}
+                  onAutoSwitchDelayChange={onAutoSwitchDelayChange}
                 />
               </div>
             )}
