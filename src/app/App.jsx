@@ -1,5 +1,5 @@
 import { useState, createContext } from 'react';
-import icon from '../utils/icon.png';
+import icon from '../../public/icon.png';
 import { DataProvider } from '../shared/context/DataContext.jsx';
 import '../shared/styles/App.css';
 import { TimeComponent } from '../modules/time/ui/TimeComponent.jsx';
@@ -9,7 +9,8 @@ import SettingsModal from '../modules/settings/ui/SettingsModal.jsx';
 import { useTheme } from '../shared/hooks/useTheme.js';
 import { useLanguage } from '../shared/hooks/useLanguage.js';
 import usePersistentState from '../shared/hooks/usePersistentState.js';
-import AboutMeModal from '../modules/AboutMe/ui/AboutMeModal.jsx';// Importar configuraciones
+import AboutMeModal from '../modules/AboutMe/ui/AboutMeModal.jsx';
+import AboutProyectModal from '../modules/AboutProyect/ui/AboutProyectModal.jsx';
 import { allZmanim } from '../modules/zmanim/context/zmanimConfig.js';
 import { allStudy } from '../modules/study/context/studyConfig.js';
 
@@ -24,6 +25,7 @@ const AppContent = ({
   const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAboutProyectOpen, setIsAboutProyectOpen] = useState(false);
   const [isAboutMeOpen, setIsAboutMeOpen] = useState(false);
   const [showMinian, setShowMinian] = usePersistentState('showMinian', false);
   const [showHayomYom, setShowHayomYom] = usePersistentState('showHayomYom', true);
@@ -68,8 +70,15 @@ const AppContent = ({
     <>
   <div className="app-container">
       <div className="header-container">
-        <img src={icon} alt="ícono de la aplicación" className="app-icon" />
         <div className="controls-container">
+          <button
+            onClick={() => setIsAboutProyectOpen(true)}
+            className="about-proyect-button"
+            style={x}
+            aria-label="Sobre el Proyecto"
+          >
+        <img src={icon} alt="ícono de la aplicación" className="app-icon" />
+          </button>
           <button
             onClick={() => setIsAboutMeOpen(true)}
             className="about-me-button"
@@ -130,6 +139,10 @@ const AppContent = ({
       <AboutMeModal
         isOpen={isAboutMeOpen}
         onClose={() => setIsAboutMeOpen(false)}
+      />
+      <AboutProyectModal
+        isOpen={isAboutProyectOpen}
+        onClose={() => setIsAboutProyectOpen(false)}
       />
     </div>
     </>

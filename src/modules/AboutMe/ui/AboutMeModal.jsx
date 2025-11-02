@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from '../styles/AboutMeModal.module.css';
 import { useLanguage } from '../../../shared/hooks/useLanguage.js';
 
