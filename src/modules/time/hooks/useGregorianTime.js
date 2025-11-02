@@ -1,17 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-
-// Helper con timeout
-const fetchWithTimeout = async (url, ms = 5000) => {
-  const controller = new AbortController();
-  const t = setTimeout(() => controller.abort(), ms);
-  try {
-    const res = await fetch(url, { signal: controller.signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-    return res.json();
-  } finally {
-    clearTimeout(t);
-  }
-};
+import useUserLocation from "./useUserLocation.js";
 
 // --- Utilidades de validación ---
 const isValidTimeZone = (tz) => {
@@ -26,102 +14,14 @@ const isValidTimeZone = (tz) => {
 };
 
 export default function useGregorianTime(options = {}) {
-  const detectedTZ =
-    Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  // 1. Obtener datos de ubicación del hook especializado.
+  const { latitude, longitude, tzid, city, country, loading, error, detectionMethod } = useUserLocation({ city: options.city });
 
-  const fallbackTZ =
-    (typeof options.defaultTz === "string" && isValidTimeZone(options.defaultTz)
-      ? options.defaultTz
-      : undefined) ||
-    (isValidTimeZone(detectedTZ) ? detectedTZ : "America/Argentina/Buenos_Aires");
-
-  const fallbackLat =
-    typeof options.defaultLat === "number" ? options.defaultLat : -34.6037;
-  const fallbackLon =
-    typeof options.defaultLon === "number" ? options.defaultLon : -58.3816;
-
-  const [tzid, setTzid] = useState(fallbackTZ);
-  const [latitude, setLatitude] = useState(fallbackLat);
-  const [longitude, setLongitude] = useState(fallbackLon);
-  const [city, setCity] = useState(undefined);
-  const [country, setCountry] = useState(undefined);
-
+  // 2. Gestionar el estado del tiempo basado en la ubicación obtenida.
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // Normaliza/asegura que tzid sea válido antes de setearlo
-  const applyTzSafe = (maybeTz) => {
-    const next = isValidTimeZone(maybeTz) ? maybeTz : fallbackTZ;
-    setTzid(next);
-    return next;
-  };
-
-  useEffect(() => {
-    let mounted = true;
-    if (options.disableNetwork) {
-      setLoading(false);
-      return;
-    }
-
-    (async () => {
-      setLoading(true);
-      setError(null);
-
-      // 1) Intentar cache
-      try {
-        const cachedLocation = sessionStorage.getItem("zman-user-location");
-        if (cachedLocation) {
-          const data = JSON.parse(cachedLocation);
-          if (mounted && data) {
-            applyTzSafe(
-              typeof data.tzid === "string" ? data.tzid : data.timezone
-            );
-            if (typeof data.latitude === "number") setLatitude(data.latitude);
-            if (typeof data.longitude === "number") setLongitude(data.longitude);
-            if (typeof data.city === "string") setCity(data.city);
-            if (typeof data.country === "string") setCountry(data.country);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch {
-        // ignorar cache corrupto
-      }
-
-      // 2) worldtimeapi
-      try {
-        const data = await fetchWithTimeout("https://worldtimeapi.org/api/ip");
-        if (!mounted) return;
-        if (data) {
-          const tz = data.timezone || data.tzid;
-          applyTzSafe(tz);
-          // worldtimeapi no siempre trae lat/lon; si tenés otro endpoint, podés completar acá.
-          setLoading(false);
-          return;
-        }
-      } catch {
-        // sigue al fallback
-      }
-
-      // 3) Fallback
-      if (mounted) {
-        applyTzSafe(fallbackTZ);
-        setLatitude(fallbackLat);
-        setLongitude(fallbackLon);
-        setError(
-          "No se pudo obtener ubicación por IP. Usando valores por defecto."
-        );
-        setLoading(false);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [options.disableNetwork]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  // 3. Efecto para actualizar la hora cada segundo.
   useEffect(() => {
     const tick = () => {
       const localDate = new Date();
@@ -153,6 +53,7 @@ export default function useGregorianTime(options = {}) {
     return () => clearInterval(id);
   }, [tzid]);
 
+  // 4. Memoizar la fecha formateada para evitar recálculos innecesarios.
   const formattedDate = useMemo(() => {
     // Igual que arriba: usar tz si es válida; si no, sin tz
     try {
@@ -181,6 +82,7 @@ export default function useGregorianTime(options = {}) {
     city,
     country,
     loading,
+    detectionMethod,
     error,
   };
 }

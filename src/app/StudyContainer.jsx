@@ -3,15 +3,19 @@ import StudyComponent from '../modules/study/ui/StudyComponent.jsx';
 import HayomYomComponent from '../modules/hayom-yom/ui/HayomYomComponent.jsx';
 import ZmanimComponent from '../modules/zmanim/ui/ZmanimComponent.jsx';
 import MinianComponent from '../modules/minian/ui/MinianComponent.jsx';
+import AvisosComponent from '../modules/avisos/ui/AvisosComponent.jsx';
 import { useLanguage } from '../shared/hooks/useLanguage.js';
 import styles from './StudyContainer.module.css';
 
-const StudyContainer = ({ showMinian, showHayomYom, visibleZmanim, visibleStudies, autoSwitchDelay }) => {
+const StudyContainer = ({ showMinian, showHayomYom, showAvisos, customAvisos, visibleZmanim, visibleStudies, autoSwitchDelay }) => {
   const { t } = useLanguage();
   const [visibleIndex, setVisibleIndex] = useState(0);
 
   const components = useMemo(() => {
     const baseComponents = ['zmanim', 'study'];
+    if (showAvisos) {
+      baseComponents.push('avisos');
+    }
     if (showHayomYom) {
       baseComponents.push('hayom');
     }
@@ -19,7 +23,7 @@ const StudyContainer = ({ showMinian, showHayomYom, visibleZmanim, visibleStudie
       baseComponents.push('minian');
     }
     return baseComponents;
-  }, [showMinian, showHayomYom]);
+  }, [showMinian, showHayomYom, showAvisos]);
 
   useEffect(() => {
     if (visibleIndex >= components.length) {
@@ -56,6 +60,15 @@ const StudyContainer = ({ showMinian, showHayomYom, visibleZmanim, visibleStudie
           {t('STUDY_TITLE')}
         </button>
 
+        {showAvisos && (
+          <button
+            className={`${styles.tabButton} ${visibleComponent === 'avisos' ? styles.active : ''}`}
+            onClick={() => setVisibleIndex(components.indexOf('avisos'))}
+          >
+            {t('AVISOS_EVENTS_TITLE')}
+          </button>
+        )}
+
         {showHayomYom && (
           <button
             className={`${styles.tabButton} ${visibleComponent === 'hayom' ? styles.active : ''}`}
@@ -76,6 +89,7 @@ const StudyContainer = ({ showMinian, showHayomYom, visibleZmanim, visibleStudie
       <div className={styles.content}>
         {visibleComponent === 'zmanim' && <ZmanimComponent visibleZmanim={visibleZmanim} />}
         {visibleComponent === 'study' && <StudyComponent visibleStudies={visibleStudies} />}
+        {visibleComponent === 'avisos' && showAvisos && <AvisosComponent customAvisos={customAvisos} />}
         {visibleComponent === 'hayom' && showHayomYom && <HayomYomComponent />}
         {visibleComponent === 'minian' && showMinian && <MinianComponent />}
       </div>

@@ -9,17 +9,18 @@ const SettingsModal = ({
   isOpen, onClose,
   theme, toggleTheme,
   language, toggleLanguage,
-  t,
+  t, userCity, onUserCityChange,
   showMinian, toggleShowMinian,
   showHayomYom, toggleShowHayomYom,
-  visibleZmanim, onZmanimChange,
-  visibleStudies, onStudiesChange,
+  visibleZmanim, onZmanimChange, onZmanimSelectionChange,
+  visibleStudies, onStudiesChange, onStudiesSelectionChange,
   customAvisos, onAddAviso, onDeleteAviso,
   autoSwitchDelay, onAutoSwitchDelayChange
 }) => {
   const [expanded, setExpanded] = useState({
     general: true, zmanim: true, study: true, avisos: true
   });
+  const [cityInput, setCityInput] = useState(userCity || '');
 
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose();
@@ -35,6 +36,11 @@ const SettingsModal = ({
   };
 
   const toggle = (k) => setExpanded(s => ({ ...s, [k]: !s[k] }));
+
+  const handleSaveCity = () => {
+    onUserCityChange(cityInput.trim());
+    // Opcional: podrías cerrar el modal o mostrar una confirmación
+  };
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -73,6 +79,20 @@ const SettingsModal = ({
                   autoSwitchDelay={autoSwitchDelay}
                   onAutoSwitchDelayChange={onAutoSwitchDelayChange}
                 />
+                <hr />
+                <div className={styles.cityInputContainer}>
+                  <label htmlFor="city-input">{t('CITY_LABEL') || 'Ciudad'}</label>
+                  <div className={styles.cityInputWrapper}>
+                    <input
+                      id="city-input"
+                      type="text"
+                      value={cityInput}
+                      onChange={(e) => setCityInput(e.target.value)}
+                      placeholder={t('CITY_PLACEHOLDER') || 'Ej: New York'}
+                    />
+                    <button onClick={handleSaveCity} className={styles.saveButton}>{t('SAVE')}</button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -89,11 +109,11 @@ const SettingsModal = ({
                   t={t}
                   visibleZmanim={visibleZmanim}
                   onZmanimChange={onZmanimChange}
+                  onSelectionChange={onZmanimSelectionChange}
                 />
               </div>
             )}
           </div>
-
           {/* Estudio */}
           <div className={styles.settingsSection}>
             <div className={styles.sectionHeader} onClick={() => toggle('study')}>
@@ -106,6 +126,7 @@ const SettingsModal = ({
                   t={t}
                   visibleStudies={visibleStudies}
                   onStudiesChange={onStudiesChange}
+                  onSelectionChange={onStudiesSelectionChange}
                 />
               </div>
             )}

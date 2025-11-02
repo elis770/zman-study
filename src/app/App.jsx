@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, createContext } from 'react';
 import icon from '../utils/icon.png';
+import { DataProvider } from '../shared/context/DataContext.jsx';
 import '../shared/styles/App.css';
 import { TimeComponent } from '../modules/time/ui/TimeComponent.jsx';
 import StudyContainer from './StudyContainer.jsx';
@@ -8,12 +9,18 @@ import SettingsModal from '../modules/settings/ui/SettingsModal.jsx';
 import { useTheme } from '../shared/hooks/useTheme.js';
 import { useLanguage } from '../shared/hooks/useLanguage.js';
 import usePersistentState from '../shared/hooks/usePersistentState.js';
-import AboutMeModal from '../modules/AboutMe/ui/AboutMeModal.jsx';
-//import { T } from '../shared/context/T.jsx';
-const defaultZmanim = ['NETZ_HAJAMA', 'SOF_SHEMA', 'SHKIA', 'TZET_HAKOJABIM'];
+import AboutMeModal from '../modules/AboutMe/ui/AboutMeModal.jsx';// Importar configuraciones
+import { allZmanim } from '../modules/zmanim/context/zmanimConfig.js';
+import { allStudy } from '../modules/study/context/studyConfig.js';
+
+// Valores por defecto y listas completas de claves
+const defaultZmanim = ['sunrise', 'sofZmanShma', 'shkiah', 'tzeit'];
 const defaultStudies = ['JUMASH', 'TEHILIM', 'TANYA', 'SEFER_HAMITZVOT', 'RAMBAM_1', 'PARASHA'];
 
-const AppContent = () => {
+const AppContent = ({
+  userCity,
+  onUserCityChange,
+}) => {
   const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -24,7 +31,6 @@ const AppContent = () => {
   const [visibleZmanim, setVisibleZmanim] = usePersistentState('visibleZmanim', defaultZmanim);
   const [visibleStudies, setVisibleStudies] = usePersistentState('visibleStudies', defaultStudies);
   const [autoSwitchDelay, setAutoSwitchDelay] = usePersistentState('autoSwitchDelay', 10000);
-
 
   const toggleShowMinian = () => setShowMinian(prev => !prev);
   const toggleShowHayomYom = () => setShowHayomYom(prev => !prev);
@@ -46,11 +52,21 @@ const AppContent = () => {
     setVisibleStudies(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
   };
 
+  // Funciones para seleccionar todos o resetear
+  const handleZmanimSelection = (type) => {
+    const allKeys = allZmanim.map(z => z.key);
+    setVisibleZmanim(type === 'all' ? allKeys : defaultZmanim);
+  };
+  const handleStudiesSelection = (type) => {
+    const allKeys = allStudy.map(s => s.key);
+    setVisibleStudies(type === 'all' ? allKeys : defaultStudies);
+  };
+
   const x = {color: theme === 'dark' ? '#fff' : '#000',
           backgroundColor: theme === 'dark' ? '#333' : '#eee',}
   return (
     <>
-    <div className="app-container">
+  <div className="app-container">
       <div className="header-container">
         <img src={icon} alt="ícono de la aplicación" className="app-icon" />
         <div className="controls-container">
@@ -77,6 +93,7 @@ const AppContent = () => {
         <TimeComponent />
         <AvisosComponent customAvisos={customAvisos} />
         <StudyContainer
+          customAvisos={customAvisos}
           showMinian={showMinian}
           showHayomYom={showHayomYom}
           visibleZmanim={visibleZmanim}
@@ -93,12 +110,16 @@ const AppContent = () => {
         toggleLanguage={toggleLanguage}
         t={t}
         showMinian={showMinian}
+        userCity={userCity}
+        onUserCityChange={onUserCityChange}
         toggleShowMinian={toggleShowMinian}
         showHayomYom={showHayomYom}
         toggleShowHayomYom={toggleShowHayomYom}
         visibleZmanim={visibleZmanim}
+        onZmanimSelectionChange={handleZmanimSelection}
         onZmanimChange={handleZmanimChange}
         visibleStudies={visibleStudies}
+        onStudiesSelectionChange={handleStudiesSelection}
         onStudiesChange={handleStudiesChange}
         customAvisos={customAvisos}
         onAddAviso={addAviso}
@@ -115,4 +136,17 @@ const AppContent = () => {
   );
 };
 
-export default AppContent;
+const App = () => {
+  // El estado de la ciudad ahora vive aquí, en el componente padre.
+  const [userCity, setUserCity] = usePersistentState('userCity', '');
+
+  return (
+    // 1. DataProvider recibe la ciudad para que pueda recalcular los datos.
+    <DataProvider userCity={userCity}>
+      {/* 2. AppContent recibe la ciudad y la función para cambiarla desde el modal. */}
+      <AppContent userCity={userCity} onUserCityChange={setUserCity} />
+    </DataProvider>
+  );
+};
+
+export default App;

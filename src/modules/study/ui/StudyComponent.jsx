@@ -29,7 +29,6 @@ const iconMap = {
 const StudyComponent = ({ visibleStudies }) => {
   const { t } = useLanguage();
   const studyData = useAppData()?.study;
-  
   if (!studyData || Object.keys(studyData).length === 0) {
     return <div>No hay datos de study disponibles.</div>;
   }

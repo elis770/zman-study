@@ -24,7 +24,9 @@ const buildStudyCards = ({
   daf_yomi,
   Tanya,
   Rambam1,
+  rambam1, // desde useStudy
   Rambam3,
+  rambam3, // desde useStudy
 }) => {
   return {
     JUMASH: {
@@ -54,13 +56,13 @@ const buildStudyCards = ({
     RAMBAM_1: {
       key: 'RAMBAM_1',
       labelKey: 'RAMBAM_1',
-      value: toStr(Rambam1?.he),
+      value: toStr(rambam1 || Rambam1?.he), // Prioriza useStudy
       sourceLang: 'he', // Correcto
     },
     RAMBAM_3: {
       key: 'RAMBAM_3',
       labelKey: 'RAMBAM_3',
-      value: toStr(Rambam3?.he),
+      value: toStr(rambam3 || Rambam3?.he), // Prioriza useStudy
       sourceLang: 'he', // Correcto
     },
     PARASHA: {
@@ -84,9 +86,9 @@ const buildStudyCards = ({
   };
 };
 
-export const DataProvider = ({ children }) => {
+export const DataProvider = ({ children, userCity }) => {
   // 1) Tiempo y geo
-  const gregorianData = useGregorianTime(); // { date, loading, error, ... }
+  const gregorianData = useGregorianTime({ city: userCity });
   const { date } = gregorianData;
 
   // 2) Fecha hebrea

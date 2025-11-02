@@ -3,42 +3,62 @@ import { useLanguage } from '@/shared/hooks/useLanguage.js';
 import { allZmanim } from '../context/zmanimConfig.js';
 import styles from '../styles/Zmanim.module.css';
 
-const ZmanimComponent = ({ visibleZmanim }) => {
-  const appData = useAppData();
-  const { t } = useLanguage();
-  const zmanimData = appData?.zmanim;
-
-  // Mapa de íconos para cada zman
-  const iconMap = {
+const iconMap = {
     alotHaShachar: '🌅',
+    alotHaShachar72: '🌅',
     misheyakir: '🌇',
+    misheyakirMachmir: '🌇',
+    dawn: '🌄',
     sunrise: '☀️',
+    seaLevelSunrise: '☀️',
+    neitzHaChama: '☀️',
     sofZmanShma: '🤦‍♂️',
+    sofZmanShmaMGA: '📖',
+    sofZmanShmaMGA16Point1: '📖',
+    sofZmanShmaMGA19Point8: '📖',
     sofZmanTfilla: '📖',
+    sofZmanTfillaMGA: '🙏',
+    sofZmanTfillaMGA16Point1: '🙏',
+    sofZmanTfillaMGA19Point8: '🙏',
     chatzot: '🕛',
     minchaGedola: '🕔',
+    minchaGedolaMGA: '🕔',
     minchaKetana: '🕕',
+    minchaKetanaMGA: '🕕',
     plagHaMincha: '🕡',
     shkiah: '🌇',
+    seaLevelSunset: '🌇',
+    sunset: '🌇',
     beinHaShmashos: '🌆',
+    dusk: '🌆',
     tzeit: '🌃',
+    tzeit42min: '🌃',
+    tzeit72min: '🌃',
     chatzotNight: '🌙',
+    gregEve: '🌆',
   };
 
-  if (!zmanimData || Object.keys(zmanimData).length === 0) return <div>No hay datos de zmanim disponibles.</div>;
+const ZmanimComponent = ({ visibleZmanim }) => {
+  const { t } = useLanguage();
+  const appData = useAppData()?.zmanim;
+
+  //console.log(zmanimData);
+  // Mapa de íconos para cada zman
+  if (!appData || Object.keys(appData).length === 0) return <div>No hay datos de zmanim disponibles.</div>;
 
   // Filtramos las propiedades que no son zmanim (como 'loading')
   const zmanimList = allZmanim
     .map(zmanConfig => {
       // Buscamos el valor del zman en zmanimData usando la clave de la configuración
-      const zmanValue = zmanimData[zmanConfig.key];
+      const zmanValue = appData[zmanConfig.key];
       return {
         ...zmanConfig,
         value: zmanValue,
       };
     })
-    .filter(zman => !visibleZmanim.includes(zman.key) && zman.value);
+    .filter(zman => visibleZmanim.includes(zman.key) && zman.value);
 
+    //console.log(zmanimList);
   return (
     <>
       {/* <h2>{t('ZMANIM_TITLE')}</h2> */}
