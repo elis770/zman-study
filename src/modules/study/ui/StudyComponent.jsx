@@ -4,22 +4,6 @@ import { useLanguage } from '@/shared/hooks/useLanguage.js';
 import { allStudy } from '../context/studyConfig.js';
 import styles from '../styles/Study.module.css';
 
-// Helper: obtener valor por ruta "a.b.c"
-const getByPath = (obj, path) =>
-  path.split('.').reduce((o, k) => (o && o[k] !== undefined ? o[k] : undefined), obj);
-
-// Alias: cada clave lógica -> posibles rutas en studyData (según tu captura)
-const KEY_PATHS = {
-  PARASHA: ['studyCards.PARASHA.text', 'parasha.he', 'parasha.en'],
-  HAFTARA: ['studyCards.HAFTARA.text', 'haftara.he', 'haftara.en'],
-  DAF_YOMI: ['studyCards.DAF_YOMI.text', 'daf_yomi.he', 'daf_yomi.en'],
-  JUMASH: ['studyCards.JUMASH.text', 'todayJumesh'],
-  TEHILIM: ['studyCards.TEHILIM.text', 'todayTehilim'],
-  TANYA: ['studyCards.TANYA.text', 'Tanya.he', 'Tanya.en'],
-  RAMBAM_1: ['studyCards.RAMBAM_1.text', 'Rambam1.he', 'Rambam1.en'],
-  RAMBAM_3: ['studyCards.RAMBAM_3.text', 'Rambam3.he', 'Rambam3.en'],
-  SEFER_HAMITZVOT: ['studyCards.SEFER_HAMITZVOT.text', 'todaySH'],
-};
 
 const iconMap = {
   PARASHA: '📜', HAFTARA: '🗣️', DAF_YOMI: '📄', JUMASH: '📖',
@@ -28,7 +12,7 @@ const iconMap = {
 
 const StudyComponent = ({ visibleStudies }) => {
   const { t } = useLanguage();
-  const studyData = useAppData()?.study;
+  const studyData = useAppData()?.study?.studyCards;
   if (!studyData || Object.keys(studyData).length === 0) {
     return <div>No hay datos de study disponibles.</div>;
   }
@@ -43,17 +27,10 @@ const StudyComponent = ({ visibleStudies }) => {
     return allStudy
       .filter(cfg => allowedKeys.includes(cfg.key))
       .map(cfg => {
-        const candidates = KEY_PATHS[cfg.key] || [cfg.key];
-        const foundPath = candidates.find(p => {
-          const v = getByPath(studyData, p);
-          return v !== undefined && v !== null && String(v).trim() !== '';
-        });
-        const value = foundPath ? getByPath(studyData, foundPath) : null;
         return {
           key: cfg.key,
           label: t(cfg.labelKey) || cfg.key,
           value,
-          sourcePath: foundPath || '—',
           icon: iconMap[cfg.key] || '⏳',
         };
       })

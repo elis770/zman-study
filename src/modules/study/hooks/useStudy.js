@@ -22,6 +22,11 @@ export default function useStudy({
   const [todayJumash, setTodayJumash] = useState(null);
   const [todayTehilim, setTodayTehilim] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dafYomi, setDafYomi] = useState(null);
+  const [yerushalmiYomi, setYerushalmiYomi] = useState(null);
+  const [mishnaYomi, setMishnaYomi] = useState(null);
+  const [nachYomi, setNachYomi] = useState(null);
+  const [tehillimYomi, setTehillimYomi] = useState(null);
 
   useEffect(() => {
     if (!hd || !date) return;
@@ -51,9 +56,28 @@ export default function useStudy({
     setTodayJumash(transformJumashText(rawJumash, date, lang));
     setTodayTehilim(transformTehilimText(rawTehilimDaily, hd2, lang));
 
+    // 3. Obtener los nuevos ciclos de estudio
+    setDafYomi(DailyLearning.lookup('dafYomi', hd2)?.render('he'));
+    setYerushalmiYomi(DailyLearning.lookup('yerushalmi', hd2)?.render('he'));
+    setMishnaYomi(DailyLearning.lookup('mishnaYomi', hd2)?.render('he'));
+    setNachYomi(DailyLearning.lookup('nachYomi', hd2)?.render('he'));
+    setTehillimYomi(DailyLearning.lookup('tehilim', hd2)?.render('he'));
+
     setLoading(false);
 
   }, [hd, date, lang]);
 
-  return { rambam1, rambam3, todaySH, todayJumash, todayTehilim, loading: loading || gregorianLoading };
+  return {
+    rambam1,
+    rambam3,
+    todaySH,
+    todayJumash,
+    todayTehilim,
+    dafYomi,
+    yerushalmiYomi,
+    mishnaYomi,
+    nachYomi,
+    tehillimYomi,
+    loading: loading || gregorianLoading,
+  };
 }
