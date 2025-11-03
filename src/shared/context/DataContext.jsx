@@ -87,18 +87,18 @@ const buildStudyCards = ({
 };
 
 export const DataProvider = ({ children, userCity }) => {
-  // 1) Tiempo y geo
+  // 1) Tiempo y geo - Pasamos userCity explícitamente para forzar la actualización
   const gregorianData = useGregorianTime({ city: userCity });
   const { date } = gregorianData;
 
   // 2) Fecha hebrea
   const hebrewData = useHebrewDate(date); // { hebrewObj, hebrewDate?, ... }
 
-  // 3) Fuentes de contenido
-  const sefariaData = useSefaria(gregorianData); // Inyectar dependencia
-  const studyData = useStudy({ ...gregorianData, ...hebrewData, lang: 'he' }); // Usar hebreo por defecto
+  // 3) Fuentes de contenido - Pasamos userCity explícitamente para forzar la actualización
+  const sefariaData = useSefaria({...gregorianData, userCity}); // Inyectar dependencia y userCity
+  const studyData = useStudy({ ...gregorianData, ...hebrewData, lang: 'he', userCity }); // Pasar userCity
   const hayomYom = useHayomYom();          // { title, text, loading, error }
-  const hdateData = useHdate(gregorianData); // Inyectar dependencia
+  const hdateData = useHdate({...gregorianData, userCity}); // Inyectar dependencia y userCity
 
   // 4) Derivados
   const hebrewDate = useMemo(() => {

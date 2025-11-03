@@ -58,10 +58,12 @@ export default function useUserLocation(options = {}) {
       // 2️⃣ Ciudad pasada por usuario
       if (options.city) {
         try {
+          console.log("useUserLocation: buscando ciudad", options.city);
           const results = cityTimezones.lookupViaCity(options.city);
           if (results && results.length > 0) {
             const location = results[0]; // Tomamos el primer match
             if (mounted) {
+              console.log("useUserLocation: ciudad encontrada", location);
               setLatitude(location.lat);
               setLongitude(location.lng);
               const tz = location.timezone || tzlookup(location.lat, location.lng);
@@ -72,6 +74,8 @@ export default function useUserLocation(options = {}) {
               setLoading(false);
               return;
             }
+          } else {
+            console.warn(`No se encontraron resultados para la ciudad "${options.city}"`);
           }
         } catch (e) {
           console.warn(`Error buscando ciudad "${options.city}":`, e);

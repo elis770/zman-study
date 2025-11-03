@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import useUserLocation from "../../time/hooks/useUserLocation.js";
 import { GeoLocation, Zmanim } from '@hebcal/core';
 
-export default function useHdate() {
-  const { latitude, longitude, tzid, city, loading, error } = useUserLocation({ city: "Jerusalem" });
+export default function useHdate({ userCity }) {
+  const { latitude, longitude, tzid, city, loading, error } = useUserLocation({ city: userCity || "Jerusalem" });
   const date = new Date();
 
   const zmanim = useMemo(() => {
