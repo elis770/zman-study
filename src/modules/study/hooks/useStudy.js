@@ -1,4 +1,3 @@
-// useStudy.js
 import { useState, useEffect } from 'react';
 import { DailyLearning, Sedra, HDate } from '@hebcal/core';
 import { getLeyningForParsha } from '@hebcal/leyning';
@@ -22,11 +21,6 @@ export default function useStudy({
   const [todayJumash, setTodayJumash] = useState(null);
   const [todayTehilim, setTodayTehilim] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [dafYomi, setDafYomi] = useState(null);
-  const [yerushalmiYomi, setYerushalmiYomi] = useState(null);
-  const [mishnaYomi, setMishnaYomi] = useState(null);
-  const [nachYomi, setNachYomi] = useState(null);
-  const [tehillimYomi, setTehillimYomi] = useState(null);
 
   useEffect(() => {
     if (!hd || !date) return;
@@ -35,36 +29,41 @@ export default function useStudy({
 
     const hd2 = hd instanceof HDate ? hd : new HDate(hd);
 
-    // 1. Obtener datos crudos de @hebcal
+    // 1️⃣ Datos base
     const rawRambam = {
       rambam1: DailyLearning.lookup('rambam1', hd2),
       rambam3: DailyLearning.lookup('rambam3', hd2),
     };
     const rawSeferHaMitzvot = DailyLearning.lookup('seferHaMitzvot', hd2);
-    const sedra = new Sedra(hd2.getFullYear(), true);
-    const parshaEvent = sedra.get(hd2);
-    const parshaNames = parshaEvent?.parsha || [];
-    const rawJumash = parshaNames.map(p => getLeyningForParsha(p)).find(l => l);
     const rawTehilimDaily = DailyLearning.lookup('tehilim', hd2);
 
-    // 2. Transformar los datos crudos a texto y guardar en el estado
+    // 2️⃣ Obtener la parashá actual o próxima
+    const sedra = new Sedra(hd2.getFullYear(), true);
+    let parshaEvent = sedra.get(hd2);
+    let parshaNames = parshaEvent?.parsha || [];
+
+    // Si no hay parashá hoy (día de semana), usar el próximo Shabat
+    if (!parshaNames.length) {
+      const nextShabbat = hd2.onOrAfter(6); // 6 = sábado
+      parshaEvent = sedra.get(nextShabbat);
+      parshaNames = parshaEvent?.parsha || [];
+    }
+
+    // Obtenemos el leyning de la primera parashá válida
+    let rawJumash = null;
+    for (const p of parshaNames) {
+      rawJumash = getLeyningForParsha(p);
+      if (rawJumash) break;
+    }
+
+    // 3️⃣ Transformaciones
     const { rambam1: r1Text, rambam3: r3Text } = transformRambamText(rawRambam, lang);
     setRambam1(r1Text);
     setRambam3(r3Text);
-
     setTodaySH(transformSeferHaMitzvotText(rawSeferHaMitzvot));
     setTodayJumash(transformJumashText(rawJumash, date, lang));
     setTodayTehilim(transformTehilimText(rawTehilimDaily, hd2, lang));
-
-    // 3. Obtener los nuevos ciclos de estudio
-    setDafYomi(DailyLearning.lookup('dafYomi', hd2)?.render('he'));
-    setYerushalmiYomi(DailyLearning.lookup('yerushalmi', hd2)?.render('he'));
-    setMishnaYomi(DailyLearning.lookup('mishnaYomi', hd2)?.render('he'));
-    setNachYomi(DailyLearning.lookup('nachYomi', hd2)?.render('he'));
-    setTehillimYomi(DailyLearning.lookup('tehilim', hd2)?.render('he'));
-
     setLoading(false);
-
   }, [hd, date, lang]);
 
   return {
@@ -73,11 +72,6 @@ export default function useStudy({
     todaySH,
     todayJumash,
     todayTehilim,
-    dafYomi,
-    yerushalmiYomi,
-    mishnaYomi,
-    nachYomi,
-    tehillimYomi,
     loading: loading || gregorianLoading,
   };
 }

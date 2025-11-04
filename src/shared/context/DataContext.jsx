@@ -14,28 +14,26 @@ export const AppContext = createContext(null);
 const toStr = (v) => (typeof v === 'string' ? v : v?.toString?.() ?? '');
 
 const buildStudyCards = ({
-  todayJumesh,
+  todayJumash,
   todayTehilim,
   todaySH,
   parasha,
   haftara,
   daf_yomi,
-  Tanya,
-  Rambam1,
+  Tanya, //viene de useSefaria, es el unico que viene por ahi
   rambam1,
-  Rambam3,
-  rambam3, // desde useStudy
-  dafYomi, // desde useStudy
-  yerushalmiYomi, // desde useStudy
-  mishnaYomi, // desde useStudy
-  nachYomi, // desde useStudy
-  tehillimYomi, // desde useStudy
+  rambam3,
+  dafYomi,
+  yerushalmiYomi,
+  mishnaYomi,
+  nachYomi,
+  tehillimYomi,
 }) => {
   return [
     {
       key: 'JUMASH',
       labelKey: 'JUMASH_TITLE',
-      value: toStr(todayJumesh), // Corregido: usar todayJumesh que viene del hook
+      value: toStr(todayJumash),
       sourceLang: 'he',
     },
     {
@@ -59,14 +57,14 @@ const buildStudyCards = ({
     {
       key: 'RAMBAM_1',
       labelKey: 'RAMBAM_1_TITLE',
-      value: toStr(rambam1 || Rambam1?.he), // Prioriza useStudy
-      sourceLang: 'he', // Correcto
+      value: toStr(rambam1),
+      sourceLang: 'he',
     },
     {
       key: 'RAMBAM_3',
       labelKey: 'RAMBAM_3_TITLE',
-      value: toStr(rambam3 || Rambam3?.he), // Prioriza useStudy
-      sourceLang: 'he', // Correcto
+      value: toStr(rambam3),
+      sourceLang: 'he',
     },
     {
       key: 'PARASHA',

@@ -17,7 +17,7 @@ const iconMap = {
 export default function StudyComponent() {
   const { study } = useAppData();
   const { t } = useLanguage();
-  
+  //console.log(study)
   if (!study?.studyCards?.length) {
     return <div>No hay datos de estudio disponibles.</div>;
   }
