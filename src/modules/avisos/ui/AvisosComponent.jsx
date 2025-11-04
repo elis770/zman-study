@@ -9,6 +9,8 @@ const useAvisos = () => {
 };
 
 const AvisosComponent = ({ customAvisos }) => {
+  // const a = useAppData();
+  // console.log(a)
   //const { parasha, haftara, loading, loadingGeo, date, candleLighting, tzet } = useAppData();
   let parasha = "julin"
   let haftara = "haftara julin"

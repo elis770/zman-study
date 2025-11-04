@@ -3,13 +3,13 @@ import TrasladeText from '@/shared/context/TrasladeText.jsx';
 
 const HayomYomComponent = () => {
   const appData = useAppData();
-  const hayomYom = appData?.study?.hayomYom;
-  const loading = appData?.study?.loading;
-  const loadingGeo = appData?.study?.loadingGeo;
+  const hayomYom = appData?.hayomYom?.hayomYom;
+  const loading = appData?.hayomYom?.loading;
+  const loadingGeo = appData?.hayomYom?.loadingGeo;
 
-  // if (loading || loadingGeo) {
-  //   return <p>Cargando estudio diario...</p>;
-  // }
+  if (loading || loadingGeo) {
+    return <p>Cargando estudio diario...</p>;
+  }
 
   if (!hayomYom) {
     return <p>No se pudo cargar el estudio diario.</p>;

@@ -153,7 +153,6 @@ export const DataProvider = ({ children, userCity }) => {
   const value = useMemo(() => ({
     time: {
       ...gregorianData,
-      ...hebrewData,
       hebrewDate,
       loading: gregorianData.loading,
       error: gregorianData.error,
@@ -163,10 +162,17 @@ export const DataProvider = ({ children, userCity }) => {
       loading: hdateData.loading,
     },
     study: {
-      hayomYom,
       studyCards,
-      loading: studyData.loading || sefariaData.loading || hayomYom.loading,
+      loading: studyData.loading || sefariaData.loading,
     },
+    hayomYom: {
+      hayomYom,
+      loading: hayomYom.loading,
+    },
+    // Jadashot: {
+    //   hayomYom,
+    //   loading: hayomYom.loading,
+    // },
   }), [gregorianData, hebrewData, hebrewDate, hdateData, studyData, sefariaData, hayomYom, studyCards]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

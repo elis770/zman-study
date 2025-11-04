@@ -1,6 +1,7 @@
 import { useAppData } from '@/shared/hooks/useAppData.js';
 import { useLanguage } from '@/shared/hooks/useLanguage.js';
 import styles from '../styles/Study.module.css';
+import { use } from 'react';
 
 const iconMap = {
   PARASHA: '📜',
