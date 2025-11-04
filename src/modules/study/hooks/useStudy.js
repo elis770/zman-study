@@ -40,21 +40,17 @@ export default function useStudy({
     // 2️⃣ Obtener la parashá actual o próxima
     const sedra = new Sedra(hd2.getFullYear(), true);
     let parshaEvent = sedra.get(hd2);
-    let parshaNames = parshaEvent?.parsha || [];
 
-    // Si no hay parashá hoy (día de semana), usar el próximo Shabat
-    if (!parshaNames.length) {
-      const nextShabbat = hd2.onOrAfter(6); // 6 = sábado
-      parshaEvent = sedra.get(nextShabbat);
-      parshaNames = parshaEvent?.parsha || [];
-    }
-
-    // Obtenemos el leyning de la primera parashá válida
     let rawJumash = null;
-    for (const p of parshaNames) {
-      rawJumash = getLeyningForParsha(p);
-      if (rawJumash) break;
+   if (!/chol\s+ha-?moed/i.test(parshaEvent)) {
+      // Obtenemos el leyning de la primera parashá válida
+      for (const p of parshaEvent) {
+        rawJumash = getLeyningForParsha(p);
+        if (rawJumash) break;
+      }
     }
+    //TODO: manejar caso de jom tov con parashá (por ahora imprima que es shabat jol hamoed)
+    rawJumash = getLeyningForParsha(parshaEvent);
 
     // 3️⃣ Transformaciones
     const { rambam1: r1Text, rambam3: r3Text } = transformRambamText(rawRambam, lang);
