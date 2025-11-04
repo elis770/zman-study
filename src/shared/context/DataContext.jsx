@@ -24,24 +24,29 @@ const buildStudyCards = ({
   Rambam1,
   rambam1,
   Rambam3,
-  rambam3,
+  rambam3, // desde useStudy
+  dafYomi, // desde useStudy
+  yerushalmiYomi, // desde useStudy
+  mishnaYomi, // desde useStudy
+  nachYomi, // desde useStudy
+  tehillimYomi, // desde useStudy
 }) => {
   return [
     {
       key: 'JUMASH',
-      labelKey: 'JUMASH',
-      value: toStr(todayJumesh),
+      labelKey: 'JUMASH_TITLE',
+      value: toStr(todayJumesh), // Corregido: usar todayJumesh que viene del hook
       sourceLang: 'he',
     },
     {
       key: 'TEHILIM',
-      labelKey: 'TEHILIM',
+      labelKey: 'TEHILIM_TITLE',
       value: toStr(todayTehilim),
       sourceLang: 'he',
     },
     {
       key: 'TANYA',
-      labelKey: 'TANYA',
+      labelKey: 'TANYA_TITLE',
       value: toStr(Tanya?.en),
       sourceLang: 'en',
     },
@@ -53,15 +58,15 @@ const buildStudyCards = ({
     },
     {
       key: 'RAMBAM_1',
-      labelKey: 'RAMBAM_1',
-      value: toStr(rambam1 || Rambam1?.he),
-      sourceLang: 'he',
+      labelKey: 'RAMBAM_1_TITLE',
+      value: toStr(rambam1 || Rambam1?.he), // Prioriza useStudy
+      sourceLang: 'he', // Correcto
     },
     {
       key: 'RAMBAM_3',
-      labelKey: 'RAMBAM_3',
-      value: toStr(rambam3 || Rambam3?.he),
-      sourceLang: 'he',
+      labelKey: 'RAMBAM_3_TITLE',
+      value: toStr(rambam3 || Rambam3?.he), // Prioriza useStudy
+      sourceLang: 'he', // Correcto
     },
     {
       key: 'PARASHA',
@@ -78,10 +83,40 @@ const buildStudyCards = ({
     {
       key: 'DAF_YOMI',
       labelKey: 'DAF_YOMI_TITLE',
-      value: toStr(daf_yomi?.he),
+      value: toStr(dafYomi || daf_yomi?.he), // Prioriza useStudy (Hebcal) sobre useSefaria
+      sourceLang: 'he', // Correcto
+    },
+    {
+      key: 'YERUSHALMI_YOMI',
+      labelKey: 'YERUSHALMI_YOMI_TITLE',
+      value: toStr(yerushalmiYomi),
       sourceLang: 'he',
     },
-  ];
+    {
+      key: 'MISHNA_YOMI',
+      labelKey: 'MISHNA_YOMI_TITLE',
+      value: toStr(mishnaYomi),
+      sourceLang: 'he',
+    },
+    {
+      key: 'NACH_YOMI',
+      labelKey: 'NACH_YOMI_TITLE',
+      value: toStr(nachYomi),
+      sourceLang: 'he',
+    },
+    {
+      key: 'TEHILLIM_YOMI',
+      labelKey: 'TEHILLIM_YOMI_TITLE',
+      value: toStr(tehillimYomi),
+      sourceLang: 'he',
+    },
+    {
+      key: 'HAYOM_YOM',
+      labelKey: 'HAYOM_YOM_TITLE',
+      value: ' ', // El valor se maneja en su propio componente
+      sourceLang: 'he',
+    },
+  ]
 };
 
 export const DataProvider = ({ children, userCity }) => {

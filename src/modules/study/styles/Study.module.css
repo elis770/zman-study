@@ -33,6 +33,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start; /* Alinea el texto a la izquierda (o derecha en RTL) */
+  width: 100%;
 }
 
 .label {
@@ -47,4 +48,32 @@
   /* Permite que el texto se divida en varias líneas */
   white-space: normal;
   word-break: break-word;
+}
+
+/* Nuevos estilos para los campos adicionales */
+.additionalInfo {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  width: 100%;
+  border-top: 1px dashed #e0e0e0;
+  padding-top: 0.5rem;
+}
+
+.additionalLabel {
+  font-size: 0.8em;
+  color: #666;
+  font-weight: 500;
+}
+
+.additionalValue {
+  font-size: 0.9em;
+  font-weight: 500;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Estilo específico para texto en hebreo */
+[lang="he"] {
+  font-family: 'Arial Hebrew', 'David', sans-serif;
 }
