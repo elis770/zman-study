@@ -72,6 +72,8 @@ export default function useUserLocation(options = {}) {
               setLoading(false);
               return;
             }
+          } else {
+            console.warn(`No se encontraron resultados para la ciudad "${options.city}"`);
           }
         } catch (e) {
           console.warn(`Error buscando ciudad "${options.city}":`, e);

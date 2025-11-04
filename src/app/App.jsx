@@ -153,11 +153,20 @@ const App = () => {
   // El estado de la ciudad ahora vive aquí, en el componente padre.
   const [userCity, setUserCity] = usePersistentState('userCity', '');
 
+  // Función para actualizar la ciudad y forzar una recarga completa
+  const handleCityChange = (newCity) => {
+    setUserCity(newCity);
+    // Forzamos una actualización completa del contexto
+    // setTimeout(() => {
+    //   console.log("Actualizando contexto con nueva ciudad:", newCity);
+    // }, 0);
+  };
+
   return (
     // 1. DataProvider recibe la ciudad para que pueda recalcular los datos.
-    <DataProvider userCity={userCity}>
+    <DataProvider key={userCity} userCity={userCity}>
       {/* 2. AppContent recibe la ciudad y la función para cambiarla desde el modal. */}
-      <AppContent userCity={userCity} onUserCityChange={setUserCity} />
+      <AppContent userCity={userCity} onUserCityChange={handleCityChange} />
     </DataProvider>
   );
 };

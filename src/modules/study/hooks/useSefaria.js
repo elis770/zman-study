@@ -10,6 +10,7 @@ const ordersMap = {
 };
 
 const useSefaria = (gregorianData) => {
+  // Añadimos userCity como dependencia para forzar la actualización
   const { tzid, date, loading: gregorianLoading } = gregorianData || {};
   const [studies, setStudies] = useState({});
   const [loading, setLoading] = useState(true);
