@@ -58,12 +58,10 @@ export default function useUserLocation(options = {}) {
       // 2️⃣ Ciudad pasada por usuario
       if (options.city) {
         try {
-          console.log("useUserLocation: buscando ciudad", options.city);
           const results = cityTimezones.lookupViaCity(options.city);
           if (results && results.length > 0) {
             const location = results[0]; // Tomamos el primer match
             if (mounted) {
-              console.log("useUserLocation: ciudad encontrada", location);
               setLatitude(location.lat);
               setLongitude(location.lng);
               const tz = location.timezone || tzlookup(location.lat, location.lng);

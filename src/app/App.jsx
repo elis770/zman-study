@@ -155,12 +155,11 @@ const App = () => {
 
   // Función para actualizar la ciudad y forzar una recarga completa
   const handleCityChange = (newCity) => {
-    console.log("Cambiando ciudad a:", newCity);
     setUserCity(newCity);
     // Forzamos una actualización completa del contexto
-    setTimeout(() => {
-      console.log("Actualizando contexto con nueva ciudad:", newCity);
-    }, 0);
+    // setTimeout(() => {
+    //   console.log("Actualizando contexto con nueva ciudad:", newCity);
+    // }, 0);
   };
 
   return (
