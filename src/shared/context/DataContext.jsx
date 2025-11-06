@@ -1,4 +1,4 @@
-import { createContext, useMemo } from 'react'; 
+import { createContext, useMemo } from 'react';
 import { HDate } from '@hebcal/core';
 
 import useGregorianTime from '../../modules/time/hooks/useGregorianTime.js';
@@ -14,32 +14,43 @@ export const AppContext = createContext(null);
 const toStr = (v) => (typeof v === 'string' ? v : v?.toString?.() ?? '');
 
 const buildStudyCards = ({
-  todayJumash,
-  todayTehilim,
-  todaySH,
-  parasha,
-  haftara,
-  daf_yomi,
-  Tanya, //viene de useSefaria, es el unico que viene por ahi
   rambam1,
   rambam3,
-  dafYomi,
-  yerushalmiYomi,
-  mishnaYomi,
-  nachYomi,
-  tehillimYomi,
+  SH,
+  Jumash,
+  Tehilim,
+  DafYomi,
+  Yerushalmi,
+  MishnaYomi,
+  NachYomi,
+  TanakhYomi,
+  parasha,
+  haftara,
+  Tanya, //viene de useSefaria, es el unico que viene por ahi
 }) => {
   return [
     {
+      key: 'PARASHA',
+      labelKey: 'PARASHA_TITLE',
+      value: toStr(parasha?.he),
+      sourceLang: 'he',
+    },
+    {
+      key: 'HAFTARA',
+      labelKey: 'HAFTARA_TITLE',
+      value: toStr(haftara?.he),
+      sourceLang: 'he',
+    },
+    {
       key: 'JUMASH',
       labelKey: 'JUMASH_TITLE',
-      value: toStr(todayJumash),
+      value: toStr(Jumash),
       sourceLang: 'he',
     },
     {
       key: 'TEHILIM',
       labelKey: 'TEHILIM_TITLE',
-      value: toStr(todayTehilim),
+      value: toStr(Tehilim),
       sourceLang: 'he',
     },
     {
@@ -51,7 +62,7 @@ const buildStudyCards = ({
     {
       key: 'SEFER_HAMITZVOT',
       labelKey: 'SEFER_HAMITZVOT_TITLE',
-      value: toStr(todaySH),
+      value: toStr(SH),
       sourceLang: 'he',
     },
     {
@@ -67,54 +78,36 @@ const buildStudyCards = ({
       sourceLang: 'he',
     },
     {
-      key: 'PARASHA',
-      labelKey: 'PARASHA_TITLE',
-      value: toStr(parasha?.he),
-      sourceLang: 'he',
-    },
-    {
-      key: 'HAFTARA',
-      labelKey: 'HAFTARA_TITLE',
-      value: toStr(haftara?.he),
-      sourceLang: 'he',
-    },
-    {
       key: 'DAF_YOMI',
       labelKey: 'DAF_YOMI_TITLE',
-      value: toStr(dafYomi || daf_yomi?.he), // Prioriza useStudy (Hebcal) sobre useSefaria
+      value: toStr(DafYomi), // Prioriza useStudy (Hebcal) sobre useSefaria
       sourceLang: 'he', // Correcto
     },
     {
       key: 'YERUSHALMI_YOMI',
       labelKey: 'YERUSHALMI_YOMI_TITLE',
-      value: toStr(yerushalmiYomi),
+      value: toStr(Yerushalmi),
       sourceLang: 'he',
     },
     {
       key: 'MISHNA_YOMI',
       labelKey: 'MISHNA_YOMI_TITLE',
-      value: toStr(mishnaYomi),
+      value: toStr(MishnaYomi),
       sourceLang: 'he',
     },
     {
       key: 'NACH_YOMI',
       labelKey: 'NACH_YOMI_TITLE',
-      value: toStr(nachYomi),
+      value: toStr(NachYomi),
       sourceLang: 'he',
     },
     {
-      key: 'TEHILLIM_YOMI',
-      labelKey: 'TEHILLIM_YOMI_TITLE',
-      value: toStr(tehillimYomi),
+      key: 'TANACH_YOMI',
+      labelKey: 'TANACH_YOMI_TITLE',
+      value: toStr(TanakhYomi),
       sourceLang: 'he',
     },
-    {
-      key: 'HAYOM_YOM',
-      labelKey: 'HAYOM_YOM_TITLE',
-      value: ' ', // El valor se maneja en su propio componente
-      sourceLang: 'he',
-    },
-  ]
+  ];
 };
 
 export const DataProvider = ({ children, userCity }) => {
@@ -127,7 +120,12 @@ export const DataProvider = ({ children, userCity }) => {
 
   // 3) Fuentes
   const sefariaData = useSefaria({ ...gregorianData, userCity });
-  const studyData = useStudy({ ...gregorianData, ...hebrewData, lang: 'he', userCity });
+  const studyData = useStudy({
+    ...gregorianData,
+    ...hebrewData,
+    lang: 'he',
+    userCity,
+  });
   const hayomYom = useHayomYom();
   const hdateData = useHdate({ ...gregorianData, userCity });
 
@@ -150,30 +148,42 @@ export const DataProvider = ({ children, userCity }) => {
   );
 
   // 6) Valor final
-  const value = useMemo(() => ({
-    time: {
-      ...gregorianData,
+  const value = useMemo(
+    () => ({
+      time: {
+        ...gregorianData,
+        hebrewDate,
+        loading: gregorianData.loading,
+        error: gregorianData.error,
+      },
+      zmanim: {
+        ...hdateData,
+        loading: hdateData.loading,
+      },
+      study: {
+        studyCards,
+        loading: studyData.loading || sefariaData.loading,
+      },
+      hayomYom: {
+        hayomYom,
+        loading: hayomYom.loading,
+      },
+      // Jadashot: {
+      //   hayomYom,
+      //   loading: hayomYom.loading,
+      // },
+    }),
+    [
+      gregorianData,
+      hebrewData,
       hebrewDate,
-      loading: gregorianData.loading,
-      error: gregorianData.error,
-    },
-    zmanim: {
-      ...hdateData,
-      loading: hdateData.loading,
-    },
-    study: {
-      studyCards,
-      loading: studyData.loading || sefariaData.loading,
-    },
-    hayomYom: {
+      hdateData,
+      studyData,
+      sefariaData,
       hayomYom,
-      loading: hayomYom.loading,
-    },
-    // Jadashot: {
-    //   hayomYom,
-    //   loading: hayomYom.loading,
-    // },
-  }), [gregorianData, hebrewData, hebrewDate, hdateData, studyData, sefariaData, hayomYom, studyCards]);
+      studyCards,
+    ]
+  );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
