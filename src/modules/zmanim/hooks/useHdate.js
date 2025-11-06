@@ -1,10 +1,30 @@
-import { useMemo } from 'react';
+// useHdate.js
+import { useMemo, useState, useEffect } from 'react';
 import useUserLocation from "../../time/hooks/useUserLocation.js";
+import calculateSeventhHourMedian from "./use7th.js";
 import { GeoLocation, Zmanim } from '@hebcal/core';
 
 export default function useHdate({ userCity }) {
   const { latitude, longitude, tzid, city, loading, error } = useUserLocation({ city: userCity || "Jerusalem" });
   const date = new Date();
+
+  const [seventhHour, setSeventhHour] = useState(null);
+
+  // Calculamos la séptima hora async
+  useEffect(() => {
+    if (loading || error || !latitude || !longitude || !tzid) return;
+
+    const fetchSeventhHour = async () => {
+      try {
+        const result = await calculateSeventhHourMedian(latitude, longitude, tzid, city);
+        setSeventhHour(result);
+      } catch (e) {
+        console.error("Error calculando séptima hora:", e);
+      }
+    };
+
+    fetchSeventhHour();
+  }, [latitude, longitude, tzid, city, loading, error]);
 
   const zmanim = useMemo(() => {
     if (loading || error || !latitude || !longitude || !tzid) {
@@ -13,16 +33,15 @@ export default function useHdate({ userCity }) {
 
     const gloc = new GeoLocation(city, latitude, longitude, 0, tzid);
     const zmanimCalculator = new Zmanim(gloc, date, false);
-    // Todos los métodos de Zmanim.prototype
+
     const methods = Object.getOwnPropertyNames(Zmanim.prototype)
       .filter(fn => {
-        if (fn === 'constructor') return false;       // ignorar constructor
-        if (fn.startsWith('get') || fn.startsWith('set')) return false; // ignorar helpers
+        if (fn === 'constructor') return false;
+        if (fn.startsWith('get') || fn.startsWith('set')) return false;
         return typeof zmanimCalculator[fn] === 'function';
       });
 
     const result = {};
-    //console.log(methods)
     methods.forEach(fn => {
       try {
         const dateObj = zmanimCalculator[fn]();
@@ -42,5 +61,5 @@ export default function useHdate({ userCity }) {
     return result;
   }, [latitude, longitude, tzid, city, loading, error, date]);
 
-  return { ...zmanim, loading };
+  return { ...zmanim, seventhHour, loading };
 }

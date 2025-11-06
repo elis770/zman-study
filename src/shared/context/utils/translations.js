@@ -94,6 +94,7 @@ export const translations = {
     RESET_DEFAULT: 'Por Defecto',
     CITY_LABEL: 'Ubicación por Ciudad',
     CITY_PLACEHOLDER: 'Ej: New York',
+    SETH_HS: "7ma hora",
   },
   he: {
     ZMANIM_TITLE: "זמנים",
@@ -190,6 +191,7 @@ export const translations = {
     RESET_DEFAULT: 'ברירת מחדל',
     CITY_LABEL: 'מיקום לפי עיר',
     CITY_PLACEHOLDER: 'לדוגמה: ירושלים',
+    SETH_HS: "שעה שביעית",
   },
   en: {
     ZMANIM_TITLE: "Zmanim",
@@ -286,5 +288,6 @@ export const translations = {
     RESET_DEFAULT: 'Reset to Default',
     CITY_LABEL: 'Location by City',
     CITY_PLACEHOLDER: 'E.g., New York',
+    SETH_HS: "7th hour",
   },
 };

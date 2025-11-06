@@ -30,6 +30,7 @@ const iconMap = {
     seaLevelSunset: '🌇',
     sunset: '🌇',
     beinHaShmashos: '🌆',
+    seventhHour: '🕖',
     dusk: '🌆',
     tzeit: '🌃',
     tzeit42min: '🌃',
@@ -42,7 +43,7 @@ const ZmanimComponent = ({ visibleZmanim }) => {
   const { t } = useLanguage();
   const appData = useAppData()?.zmanim;
 
-  //console.log(zmanimData);
+  //console.log(appData);
   // Mapa de íconos para cada zman
   if (!appData || Object.keys(appData).length === 0) return <div>No hay datos de zmanim disponibles.</div>;
 

@@ -31,4 +31,5 @@ export const allZmanim = [
   { key: 'chatzotNight', labelKey: 'CHATZOT_NIGHT' },
   { key: 'gregEve', labelKey: 'GREG_EVE' },
   { key: 'neitzHaChama', labelKey: 'NEITZ_HACHAMA' },
+  { key: 'seventhHour', labelKey: 'SETH_HS' },
 ];
