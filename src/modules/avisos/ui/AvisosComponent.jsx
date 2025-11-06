@@ -9,19 +9,20 @@ const useAvisos = () => {
 };
 
 const AvisosComponent = ({ customAvisos }) => {
-  // const a = useAppData();
-  // console.log(a)
+  //const a = useAppData().jadashot;
+  //console.log(a)
   //const { parasha, haftara, loading, loadingGeo, date, candleLighting, tzet } = useAppData();
-  let parasha = "julin"
-  let haftara = "haftara julin"
-  let loading = false
+  const { parasha, haftara, loading} = useAppData().jadashot;
+  // let parasha = "julin"
+  // let haftara = "haftara julin"
+  // let loading = false
   let loadingGeo = false
   let date = new Date()
   let candleLighting = "18:30"
   let tzet = "19:45"
   //console.log(tzet)
   //console.log(x)
-const { specialDay } = useAvisos();
+  // const { specialDay } = useAvisos();
   const [visibleAvisoIndex, setVisibleAvisoIndex] = useState(0);
 
   const avisos = useMemo(() => {

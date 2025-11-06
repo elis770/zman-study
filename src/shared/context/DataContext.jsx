@@ -12,102 +12,52 @@ export const AppContext = createContext(null);
 
 // --- HELPERS ---
 const toStr = (v) => (typeof v === 'string' ? v : v?.toString?.() ?? '');
+const keyMapping = {
+  Jumash: { key: 'JUMASH', labelKey: 'JUMASH_TITLE', lang: 'he' },
+  Tehilim: { key: 'TEHILIM', labelKey: 'TEHILIM_TITLE', lang: 'he' },
+  'Tanya.en': { key: 'TANYA', labelKey: 'TANYA_TITLE', lang: 'en' },
+  SH: { key: 'SEFER_HAMITZVOT', labelKey: 'SEFER_HAMITZVOT_TITLE', lang: 'he' },
+  rambam1: { key: 'RAMBAM_1', labelKey: 'RAMBAM_1_TITLE', lang: 'he' },
+  rambam3: { key: 'RAMBAM_3', labelKey: 'RAMBAM_3_TITLE', lang: 'he' },
+  DafYomi: { key: 'DAF_YOMI', labelKey: 'DAF_YOMI_TITLE', lang: 'he' },
+  Yerushalmi: { key: 'YERUSHALMI_YOMI', labelKey: 'YERUSHALMI_YOMI_TITLE', lang: 'he' },
+  MishnaYomi: { key: 'MISHNA_YOMI', labelKey: 'MISHNA_YOMI_TITLE', lang: 'he' },
+  NachYomi: { key: 'NACH_YOMI', labelKey: 'NACH_YOMI_TITLE', lang: 'he' },
+  TanakhYomi: { key: 'TANACH_YOMI', labelKey: 'TANACH_YOMI_TITLE', lang: 'he' },
+};
+const keyMapping2 = {
+  'parasha.he': { key: 'PARASHA', labelKey: 'PARASHA_TITLE', lang: 'he' },
+  'haftara.he': { key: 'HAFTARA', labelKey: 'HAFTARA_TITLE', lang: 'he' },
+};
 
-const buildStudyCards = ({
-  rambam1,
-  rambam3,
-  SH,
-  Jumash,
-  Tehilim,
-  DafYomi,
-  Yerushalmi,
-  MishnaYomi,
-  NachYomi,
-  TanakhYomi,
-  parasha,
-  haftara,
-  Tanya, //viene de useSefaria, es el unico que viene por ahi
-}) => {
-  return [
-    {
-      key: 'PARASHA',
-      labelKey: 'PARASHA_TITLE',
-      value: toStr(parasha?.he),
-      sourceLang: 'he',
-    },
-    {
-      key: 'HAFTARA',
-      labelKey: 'HAFTARA_TITLE',
-      value: toStr(haftara?.he),
-      sourceLang: 'he',
-    },
-    {
-      key: 'JUMASH',
-      labelKey: 'JUMASH_TITLE',
-      value: toStr(Jumash),
-      sourceLang: 'he',
-    },
-    {
-      key: 'TEHILIM',
-      labelKey: 'TEHILIM_TITLE',
-      value: toStr(Tehilim),
-      sourceLang: 'he',
-    },
-    {
-      key: 'TANYA',
-      labelKey: 'TANYA_TITLE',
-      value: toStr(Tanya?.en),
-      sourceLang: 'en',
-    },
-    {
-      key: 'SEFER_HAMITZVOT',
-      labelKey: 'SEFER_HAMITZVOT_TITLE',
-      value: toStr(SH),
-      sourceLang: 'he',
-    },
-    {
-      key: 'RAMBAM_1',
-      labelKey: 'RAMBAM_1_TITLE',
-      value: toStr(rambam1),
-      sourceLang: 'he',
-    },
-    {
-      key: 'RAMBAM_3',
-      labelKey: 'RAMBAM_3_TITLE',
-      value: toStr(rambam3),
-      sourceLang: 'he',
-    },
-    {
-      key: 'DAF_YOMI',
-      labelKey: 'DAF_YOMI_TITLE',
-      value: toStr(DafYomi), // Prioriza useStudy (Hebcal) sobre useSefaria
-      sourceLang: 'he', // Correcto
-    },
-    {
-      key: 'YERUSHALMI_YOMI',
-      labelKey: 'YERUSHALMI_YOMI_TITLE',
-      value: toStr(Yerushalmi),
-      sourceLang: 'he',
-    },
-    {
-      key: 'MISHNA_YOMI',
-      labelKey: 'MISHNA_YOMI_TITLE',
-      value: toStr(MishnaYomi),
-      sourceLang: 'he',
-    },
-    {
-      key: 'NACH_YOMI',
-      labelKey: 'NACH_YOMI_TITLE',
-      value: toStr(NachYomi),
-      sourceLang: 'he',
-    },
-    {
-      key: 'TANACH_YOMI',
-      labelKey: 'TANACH_YOMI_TITLE',
-      value: toStr(TanakhYomi),
-      sourceLang: 'he',
-    },
-  ];
+const buildCards = (data, keyMapping) => {
+  // Crear un mapeo de claves de datos a claves de configuración
+  if (!data || typeof data !== 'object') return [];
+
+  return Object.entries(keyMapping).map(([dataKey, config]) => {
+    let value = '';
+    
+    if (dataKey.includes('.')) {
+      // Acceso a propiedades anidadas: 'parasha.he' -> data.parasha?.he
+      const parts = dataKey.split('.');
+      let nestedValue = data;
+      for (const part of parts) {
+        if (nestedValue === undefined || nestedValue === null) break;
+        nestedValue = nestedValue[part];
+      }
+      value = toStr(nestedValue);
+    } else {
+      // Acceso directo: 'Jumash' -> data.Jumash
+      value = toStr(data[dataKey]);
+    }
+    
+    return {
+      key: config.key,
+      labelKey: config.labelKey,
+      value,
+      sourceLang: config.lang,
+    };
+  }).filter(card => card.value); // Filtrar tarjetas vacías
 };
 
 export const DataProvider = ({ children, userCity }) => {
@@ -143,8 +93,13 @@ export const DataProvider = ({ children, userCity }) => {
 
   // 5) Study cards finales
   const studyCards = useMemo(
-    () => buildStudyCards({ ...studyData, ...sefariaData }),
+    () => buildCards({ ...studyData, ...sefariaData }, keyMapping),
     [studyData, sefariaData]
+  );
+  // 5) Study cards finales
+  const jadashotCards = useMemo(
+    () => buildCards({ ...sefariaData }, keyMapping2),
+    [sefariaData]
   );
 
   // 6) Valor final
@@ -168,10 +123,10 @@ export const DataProvider = ({ children, userCity }) => {
         hayomYom,
         loading: hayomYom.loading,
       },
-      // Jadashot: {
-      //   hayomYom,
-      //   loading: hayomYom.loading,
-      // },
+      jadashot: {
+        jadashotCards,
+        loading: sefariaData.loading,
+      },
     }),
     [
       gregorianData,
@@ -182,6 +137,7 @@ export const DataProvider = ({ children, userCity }) => {
       sefariaData,
       hayomYom,
       studyCards,
+      jadashotCards,
     ]
   );
 
