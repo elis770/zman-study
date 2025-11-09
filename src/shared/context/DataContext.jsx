@@ -125,6 +125,8 @@ export const DataProvider = ({ children, userCity }) => {
       },
       jadashot: {
         jadashotCards,
+        candleLighting: hdateData.shkiah,
+        tzet_hashabat: hdateData.tzeit,
         loading: sefariaData.loading,
       },
     }),

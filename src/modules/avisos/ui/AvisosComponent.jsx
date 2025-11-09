@@ -9,79 +9,93 @@ const useAvisos = () => {
 };
 
 const AvisosComponent = ({ customAvisos }) => {
-  //const a = useAppData().jadashot;
-  //console.log(a)
-  //const { parasha, haftara, loading, loadingGeo, date, candleLighting, tzet } = useAppData();
-  const { parasha, haftara, loading} = useAppData().jadashot;
-  // let parasha = "julin"
-  // let haftara = "haftara julin"
-  // let loading = false
-  let loadingGeo = false
-  let date = new Date()
-  let candleLighting = "18:30"
-  let tzet = "19:45"
-  //console.log(tzet)
-  //console.log(x)
-  // const { specialDay } = useAvisos();
+  const { time, jadashot } = useAppData();
+  const { date, loading: loadingGeo } = time;
+  const dayOfWeek = date ? date.getDay() : -1;
+  const {
+    jadashotCards,
+    candleLighting,
+    tzet_hashabat: tzet,
+    loading: loadingJadashot,
+  } = jadashot;
+  //console.log(candleLighting)
+
+  const loading = loadingGeo || loadingJadashot;
+
+  const { specialDay } = useAvisos();
   const [visibleAvisoIndex, setVisibleAvisoIndex] = useState(0);
 
   const avisos = useMemo(() => {
     if (loading || loadingGeo) return [];
 
-    const allAvisos = [];
-    const dayOfWeek = date ? date.getDay() : -1;
+    let allAvisos = [];
 
-    // Viernes: Mostrar horario de encendido de velas
-    if (dayOfWeek === 5 && candleLighting) {
-      allAvisos.push({
-        id: 'candle-lighting',
-        title: 'Encendido de Velas',
-        content: candleLighting,
-        icon: '🕯️',
-      });
-    }
+    // Config for all announcements
+    const avisosConfig = [
+      // Viernes: Encendido de velas
+      {
+        condition: dayOfWeek === 5 && candleLighting,
+        getAvisos: () => [{
+          id: 'candle-lighting',
+          title: 'Encendido de Velas',
+          content: candleLighting,
+          icon: '🕯️',
+        }],
+      },
+      // Sábado: Fin de Shabat
+      {
+        condition: dayOfWeek === 6 && tzet,
+        getAvisos: () => [{
+          id: 'shabbat-end',
+          title: 'Fin de Shabat (Tzet Hakojabim)',
+          content: tzet,
+          icon: '🌃',
+        }],
+      },
+      // Weekly readings: Parasha and Haftara
+      {
+        condition: true, // Always check for these
+        getAvisos: () => {
+          const weeklyReadingsConfig = [
+            { key: 'PARASHA', title: 'Parashá de la Semana', icon: '📜' },
+            { key: 'HAFTARA', title: 'Haftará', icon: '🗣️' },
+          ];
+          return weeklyReadingsConfig
+            .map(reading => {
+              const card = jadashotCards.find(c => c.key === reading.key);
+              if (card?.value) {
+                return {
+                  id: reading.key.toLowerCase(),
+                  title: reading.title,
+                  content: card.value,
+                  icon: reading.icon,
+                };
+              }
+              return null;
+            })
+            .filter(Boolean); // remove nulls
+        },
+      },
+      // Día especial
+      {
+        condition: specialDay,
+        getAvisos: () => [specialDay],
+      },
+      // Avisos personalizados
+      {
+        condition: customAvisos && customAvisos.length > 0,
+        getAvisos: () => customAvisos,
+      },
+    ];
 
-    // Sábado: Mostrar horario de fin de Shabat
-    if (dayOfWeek === 6 && tzet) {
-      allAvisos.push({
-        id: 'shabbat-end',
-        title: 'Fin de Shabat (Tzet Hakojabim)',
-        content: tzet,
-        icon: '🌃',
-      });
-    }
+    avisosConfig.forEach(config => {
+      if (config.condition) {
+        allAvisos = allAvisos.concat(config.getAvisos());
+      }
+    });
 
-    // 1. Parashá de la semana
-    if (parasha?.he) {
-      allAvisos.push({
-        id: 'parasha',
-        title: 'Parashá de la Semana',
-        content: parasha.he,
-        icon: '📜',
-      });
-    }
-
-    // 2. Haftará
-    if (haftara?.he) {
-      allAvisos.push({
-        id: 'haftara',
-        title: 'Haftará',
-        content: haftara.he,
-        icon: '🗣️',
-      });
-    }
-
-    // 3. Día especial (from the placeholder hook)
-    if (specialDay) {
-      allAvisos.push(specialDay);
-    }
-
-    // 4. Avisos personalizados from settings
-    if (customAvisos && customAvisos.length > 0) {
-      allAvisos.push(...customAvisos);
-    }
     return allAvisos;
-  }, [parasha, haftara, specialDay, customAvisos, loading, loadingGeo, date, candleLighting, tzet]);
+  }, [jadashotCards, specialDay, customAvisos, loading, loadingGeo, dayOfWeek, candleLighting, tzet]);
 
   useEffect(() => {
     // Reset index if the list of announcements changes to avoid out-of-bounds errors

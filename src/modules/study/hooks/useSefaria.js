@@ -16,6 +16,8 @@ const useSefaria = (gregorianData) => {
   const [loading, setLoading] = useState(true);
   const [dateUsed, setDateUsed] = useState("");
 
+  const dayIdentifier = date ? date.toLocaleDateString() : null;
+
   useEffect(() => {
     if (!tzid || !date) return;
 
@@ -55,7 +57,7 @@ const useSefaria = (gregorianData) => {
     };
 
     fetchSefariaData();
-  }, [tzid, date]);
+  }, [tzid, dayIdentifier]);
 
   return {
     ...studies,
