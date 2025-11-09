@@ -168,7 +168,7 @@ const App = () => {
     <DataProvider key={userCity} userCity={userCity}>
       {/* 2. AppContent recibe la ciudad y la función para cambiarla desde el modal. */}
       <AppContent userCity={userCity} onUserCityChange={handleCityChange} />
-      <Analytics />
+      {/* //<Analytics /> */}
     </DataProvider>
   );
 };
