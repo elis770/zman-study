@@ -4,7 +4,7 @@ import useUserLocation from "../../time/hooks/useUserLocation.js";
 import calculateSeventhHourMedian from "./use7th.js";
 import { GeoLocation, Zmanim } from '@hebcal/core';
 
-export default function useHdate({ userCity }) {
+export default function useHdate({ userCity, timeFormat }) {
   const { latitude, longitude, tzid, city, loading, error } = useUserLocation({ city: userCity || "Jerusalem" });
   const date = new Date();
 
@@ -50,7 +50,7 @@ export default function useHdate({ userCity }) {
             timeZone: tzid,
             hour: '2-digit',
             minute: '2-digit',
-            hour12: false,
+            hour12: timeFormat === '12h',
           });
         }
       } catch (e) {
@@ -59,7 +59,7 @@ export default function useHdate({ userCity }) {
     });
 
     return result;
-  }, [latitude, longitude, tzid, city, loading, error, date]);
+  }, [latitude, longitude, tzid, city, loading, error, date, timeFormat]);
 
   return { ...zmanim, seventhHour, loading };
 }

@@ -60,9 +60,9 @@ const buildCards = (data, keyMapping) => {
   }).filter(card => card.value); // Filtrar tarjetas vacías
 };
 
-export const DataProvider = ({ children, userCity }) => {
+export const DataProvider = ({ children, userCity, timeFormat }) => {
   // 1) Tiempo / geoloc
-  const gregorianData = useGregorianTime({ city: userCity });
+  const gregorianData = useGregorianTime({ city: userCity, timeFormat });
   const { date } = gregorianData;
 
   // 2) Fecha hebrea
@@ -77,7 +77,7 @@ export const DataProvider = ({ children, userCity }) => {
     userCity,
   });
   const hayomYom = useHayomYom();
-  const hdateData = useHdate({ ...gregorianData, userCity });
+  const hdateData = useHdate({ ...gregorianData, userCity, timeFormat });
 
   // 4) Hebrew date fallback
   const hebrewDate = useMemo(() => {

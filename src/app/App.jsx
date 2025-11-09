@@ -22,6 +22,8 @@ const defaultStudies = ['JUMASH', 'TEHILIM', 'TANYA', 'SEFER_HAMITZVOT', 'RAMBAM
 const AppContent = ({
   userCity,
   onUserCityChange,
+  timeFormat,
+  toggleTimeFormat,
 }) => {
   const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
@@ -100,7 +102,7 @@ const AppContent = ({
       </div>
       <div className="main-content">
 
-        <TimeComponent />
+        <TimeComponent timeFormat={timeFormat} />
         <AvisosComponent customAvisos={customAvisos} />
         <StudyContainer
           customAvisos={customAvisos}
@@ -136,6 +138,8 @@ const AppContent = ({
         onDeleteAviso={deleteAviso}
         autoSwitchDelay={autoSwitchDelay}
         onAutoSwitchDelayChange={setAutoSwitchDelay}
+        timeFormat={timeFormat}
+        toggleTimeFormat={toggleTimeFormat}
       />
       <AboutMeModal
         isOpen={isAboutMeOpen}
@@ -151,24 +155,25 @@ const AppContent = ({
 };
 
 const App = () => {
-  // El estado de la ciudad ahora vive aquí, en el componente padre.
   const [userCity, setUserCity] = usePersistentState('userCity', '');
+  const [timeFormat, setTimeFormat] = usePersistentState('timeFormat', '24h');
 
-  // Función para actualizar la ciudad y forzar una recarga completa
+  const toggleTimeFormat = () => {
+    setTimeFormat(prev => (prev === '12h' ? '24h' : '12h'));
+  };
+
   const handleCityChange = (newCity) => {
     setUserCity(newCity);
-    // Forzamos una actualización completa del contexto
-    // setTimeout(() => {
-    //   console.log("Actualizando contexto con nueva ciudad:", newCity);
-    // }, 0);
   };
 
   return (
-    // 1. DataProvider recibe la ciudad para que pueda recalcular los datos.
-    <DataProvider key={userCity} userCity={userCity}>
-      {/* 2. AppContent recibe la ciudad y la función para cambiarla desde el modal. */}
-      <AppContent userCity={userCity} onUserCityChange={handleCityChange} />
-      {/* //<Analytics /> */}
+    <DataProvider key={userCity} userCity={userCity} timeFormat={timeFormat}>
+      <AppContent
+        userCity={userCity}
+        onUserCityChange={handleCityChange}
+        timeFormat={timeFormat}
+        toggleTimeFormat={toggleTimeFormat}
+      />
     </DataProvider>
   );
 };

@@ -10,11 +10,16 @@ const GeneralSettings = ({
   toggleShowHayomYom,
   autoSwitchDelay,
   onAutoSwitchDelayChange,
+  timeFormat,
+  toggleTimeFormat,
 }) => {
   return (
     <div className={styles.buttonGroup}>
       <button onClick={toggleLanguage} className={styles.modalButton}>
         {t(language === 'es' ? 'CHANGE_TO_HEBREW' : 'CHANGE_TO_SPANISH')}
+      </button>
+      <button onClick={toggleTimeFormat} className={styles.modalButton}>
+        {`${t('TIME_FORMAT_LABEL')}: ${timeFormat === '12h' ? t('TIME_FORMAT_12H') : t('TIME_FORMAT_24H')} (${timeFormat === '12h' ? t('CHANGE_TO_24H') : t('CHANGE_TO_12H')})`}
       </button>
       <button onClick={toggleShowMinian} className={styles.modalButton}>
         {showMinian ? t('HIDE_MINIAN') : t('SHOW_MINIAN')}

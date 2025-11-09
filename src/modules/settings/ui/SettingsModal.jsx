@@ -16,7 +16,8 @@ const SettingsModal = ({
   visibleZmanim, onZmanimChange, onZmanimSelectionChange,
   visibleStudies, onStudiesChange, onStudiesSelectionChange,
   customAvisos, onAddAviso, onDeleteAviso,
-  autoSwitchDelay, onAutoSwitchDelayChange
+  autoSwitchDelay, onAutoSwitchDelayChange,
+  timeFormat, toggleTimeFormat
 }) => {
   const [expanded, setExpanded] = useState({
     general: true, zmanim: true, study: true, avisos: true
@@ -114,6 +115,8 @@ const SettingsModal = ({
                   btnStyle={btnStyle}
                   autoSwitchDelay={autoSwitchDelay}
                   onAutoSwitchDelayChange={onAutoSwitchDelayChange}
+                  timeFormat={timeFormat}
+                  toggleTimeFormat={toggleTimeFormat}
                 />
                 <hr />
                 <div className={styles.cityInputContainer}>
