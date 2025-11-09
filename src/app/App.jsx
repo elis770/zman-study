@@ -13,6 +13,7 @@ import AboutMeModal from '../modules/AboutMe/ui/AboutMeModal.jsx';
 import AboutProyectModal from '../modules/AboutProyect/ui/AboutProyectModal.jsx';
 import { allZmanim } from '../modules/zmanim/context/zmanimConfig.js';
 import { allStudy } from '../modules/study/context/studyConfig.js';
+import { Analytics } from "@vercel/analytics/next"
 
 // Valores por defecto y listas completas de claves
 const defaultZmanim = ['sunrise', 'sofZmanShma', 'shkiah', 'tzeit'];
@@ -167,6 +168,7 @@ const App = () => {
     <DataProvider key={userCity} userCity={userCity}>
       {/* 2. AppContent recibe la ciudad y la función para cambiarla desde el modal. */}
       <AppContent userCity={userCity} onUserCityChange={handleCityChange} />
+      <Analytics />
     </DataProvider>
   );
 };
