@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from '../styles/SettingsModal.module.css';
 import GeneralSettings from '../../general-settings/ui/GeneralSettings.jsx';
 import ZmanimSettings from '../../zmanim/ui/ZmanimSettings.jsx';
 import StudySettings from '../../study/ui/StudySettings.jsx';
 import AvisosSettings from '../../avisos/ui/AvisosSettings.jsx';
+import { cityList } from '../../../shared/lib/cities.js';
 
 const SettingsModal = ({
   isOpen, onClose,
@@ -21,12 +22,26 @@ const SettingsModal = ({
     general: true, zmanim: true, study: true, avisos: true
   });
   const [cityInput, setCityInput] = useState(userCity || '');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const cityInputWrapperRef = useRef(null);
 
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose();
     if (isOpen) window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (cityInputWrapperRef.current && !cityInputWrapperRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
 
   if (!isOpen) return null;
 
@@ -37,9 +52,32 @@ const SettingsModal = ({
 
   const toggle = (k) => setExpanded(s => ({ ...s, [k]: !s[k] }));
 
+  const handleCityChange = (e) => {
+    const value = e.target.value;
+    setCityInput(value);
+    if (value.length > 1) {
+      const filtered = cityList.filter(city =>
+        city.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    const cityName = suggestion.split(',')[0];
+    setCityInput(cityName);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
+
   const handleSaveCity = () => {
-    onUserCityChange(cityInput.trim());
-    // Opcional: podrías cerrar el modal o mostrar una confirmación
+    const cityName = cityInput.split(',')[0].trim();
+    onUserCityChange(cityName);
+    setShowSuggestions(false);
   };
 
   return (
@@ -52,12 +90,10 @@ const SettingsModal = ({
         <div className={styles.modalHeader}>
           <button className={styles.closeButton} onClick={onClose} aria-label="Cerrar">×</button>
           <h2 id="modal-title">{t('SETTINGS_TITLE') || 'Configuración'}</h2>
-          {/* espacio a la derecha para balancear layout */}
           <span style={{ width: 28 }} />
         </div>
 
         <div className={styles.scrollableContent}>
-          {/* General */}
           <div className={styles.settingsSection}>
             <div className={styles.sectionHeader} onClick={() => toggle('general')}>
               <h3>{t('GENERAL_SETTINGS') || 'Configuración General'}</h3>
@@ -82,14 +118,31 @@ const SettingsModal = ({
                 <hr />
                 <div className={styles.cityInputContainer}>
                   <label htmlFor="city-input">{t('CITY_LABEL') || 'Ciudad'}</label>
-                  <div className={styles.cityInputWrapper}>
-                    <input
-                      id="city-input"
-                      type="text"
-                      value={cityInput}
-                      onChange={(e) => setCityInput(e.target.value)}
-                      placeholder={t('CITY_PLACEHOLDER') || 'Ej: New York'}
-                    />
+                  <div className={styles.cityInputWrapper} ref={cityInputWrapperRef}>
+                    <div className={styles.suggestionsWrapper}>
+                      <input
+                        id="city-input"
+                        type="text"
+                        value={cityInput}
+                        onChange={handleCityChange}
+                        onFocus={() => cityInput.length > 1 && setShowSuggestions(true)}
+                        placeholder={t('CITY_PLACEHOLDER') || 'Ej: New York'}
+                        autoComplete="off"
+                      />
+                      {showSuggestions && suggestions.length > 0 && (
+                        <ul className={styles.suggestionsList}>
+                          {suggestions.map(suggestion => (
+                            <li
+                              key={suggestion}
+                              className={styles.suggestionItem}
+                              onClick={() => handleSuggestionClick(suggestion)}
+                            >
+                              {suggestion}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                     <button onClick={handleSaveCity} className={styles.saveButton}>{t('SAVE')}</button>
                   </div>
                 </div>
@@ -97,7 +150,6 @@ const SettingsModal = ({
             )}
           </div>
 
-          {/* Zmanim */}
           <div className={styles.settingsSection}>
             <div className={styles.sectionHeader} onClick={() => toggle('zmanim')}>
               <h3>{t('ZMANIM_TITLE')}</h3>
@@ -114,7 +166,7 @@ const SettingsModal = ({
               </div>
             )}
           </div>
-          {/* Estudio */}
+
           <div className={styles.settingsSection}>
             <div className={styles.sectionHeader} onClick={() => toggle('study')}>
               <h3>{t('STUDY_TITLE')}</h3>
@@ -132,7 +184,6 @@ const SettingsModal = ({
             )}
           </div>
 
-          {/* Avisos y Eventos */}
           <div className={styles.settingsSection}>
             <div className={styles.sectionHeader} onClick={() => toggle('avisos')}>
               <h3>{t('AVISOS_EVENTS_TITLE') || 'Avisos y Eventos'}</h3>

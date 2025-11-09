@@ -125,6 +125,41 @@
 }
 .checkboxLabel:hover { background: var(--hover); }
 
+/* ===== Autocomplete/Suggestions ===== */
+.suggestionsWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.suggestionsList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1001; /* Above modal content */
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 150px; /* Scrollable */
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+
+.suggestionItem {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.suggestionItem:hover {
+  background: var(--hover);
+}
+
+
 @media (max-width: 768px) {
   .modalOverlay { align-items: flex-start; }       /* que “baje” un poco */
   .modalContent {
