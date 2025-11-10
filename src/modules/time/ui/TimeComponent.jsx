@@ -13,6 +13,7 @@ export const TimeComponent = () => {
       country,
       hebrewDate,
       loading: loadingGeo,
+      dayDifference,
     },
   } = useAppData();
   // const { language, translateDynamicText } = useLanguage();
@@ -34,7 +35,14 @@ export const TimeComponent = () => {
     <>
     <div className={`${styles['container-sm']}`}>
       <div className={styles.hola}>
-      <h2 className={`${styles.time}`}>{time}</h2>
+      <h2 className={`${styles.time}`}>
+        {time}
+        {dayDifference !== 0 && (
+          <span className={styles.dayDifference}>
+            {dayDifference > 0 ? `+${dayDifference}` : dayDifference}
+          </span>
+        )}
+      </h2>
       </div>
       <div className={styles.hola2}>
       <h3 className={styles.date}>

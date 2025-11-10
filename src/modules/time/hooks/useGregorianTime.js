@@ -21,11 +21,29 @@ export default function useGregorianTime(options = {}) {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState("");
 
-  // 3. Efecto para actualizar la hora cada segundo.
+  // 3. Estado para la diferencia de días
+  const [dayDifference, setDayDifference] = useState(0);
+
+  // 4. Efecto para actualizar la hora cada segundo.
   useEffect(() => {
     const tick = () => {
       const localDate = new Date();
       setDate(localDate);
+      
+      // Calcular la diferencia de días entre la zona horaria seleccionada y la local
+      try {
+        const tzDate = new Date(localDate.toLocaleString("en-US", { timeZone: tzid }));
+        const localDateOnly = new Date(localDate.toLocaleString("en-US", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }));
+        
+        const tzDay = tzDate.getDate();
+        const localDay = localDateOnly.getDate();
+        
+        const diff = tzDay - localDay;
+        setDayDifference(diff);
+      } catch {
+        setDayDifference(0);
+      }
+      
       // Intentar con tz; si falla, sin tz (usa local)
       try {
         setTime(
@@ -51,7 +69,7 @@ export default function useGregorianTime(options = {}) {
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [tzid]);
+  }, [tzid, options.timeFormat]);
 
   // 4. Memoizar la fecha formateada para evitar recálculos innecesarios.
   const formattedDate = useMemo(() => {
@@ -84,5 +102,6 @@ export default function useGregorianTime(options = {}) {
     loading,
     detectionMethod,
     error,
+    dayDifference,
   };
 }

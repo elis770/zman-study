@@ -33,6 +33,29 @@ border-radius: 10px;
   font-size: 2.5em;
   font-weight: 700;
   margin: 0.2rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dayDifference {
+  font-size: 0.4em;
+  font-weight: 600;
+  padding: 0.3em 0.6em;
+  border-radius: 8px;
+  background-color: rgba(100, 150, 255, 0.2);
+  color: #4a90e2;
+  border: 1px solid rgba(100, 150, 255, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2em;
+}
+
+body.dark .dayDifference {
+  background-color: rgba(100, 150, 255, 0.15);
+  color: #7bb3ff;
+  border-color: rgba(100, 150, 255, 0.25);
 }
 
 .timezone {

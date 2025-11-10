@@ -28,6 +28,7 @@ export default function useUserLocation(options = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [detectionMethod, setDetectionMethod] = useState('default');
+  const [trigger, setTrigger] = useState(0);
 
   useEffect(() => {
     let mounted = true;
@@ -141,7 +142,92 @@ export default function useUserLocation(options = {}) {
     return () => {
       mounted = false;
     };
-  }, [options.manualLat, options.manualLon, options.manualTz, options.city]);
+  }, [options.manualLat, options.manualLon, options.manualTz, options.city, trigger]);
 
-  return { latitude, longitude, tzid, city, country, loading, error, detectionMethod };
+  // Función para forzar la detección de ubicación por IP
+  const getUserLocation = async () => {
+    setLoading(true);
+    setError(null);
+
+    // Intentar primero con geolocalización del navegador
+    try {
+      const pos = await new Promise((resolve, reject) => {
+        if (!navigator.geolocation) return reject(new Error("Geolocation no soportado"));
+        navigator.geolocation.getCurrentPosition(resolve, reject, { 
+          enableHighAccuracy: true, 
+          timeout: 10000 
+        });
+      });
+      
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      
+      // Buscar la ciudad más cercana usando las coordenadas
+      try {
+        const tz = tzlookup(lat, lon);
+        const cityResults = cityTimezones.findFromCoordsAsObject(lat, lon);
+        
+        setLoading(false);
+        return {
+          latitude: lat,
+          longitude: lon,
+          tzid: tz,
+          city: cityResults?.city || "Ubicación detectada",
+          country: cityResults?.country || "",
+        };
+      } catch (e) {
+        console.warn("Error buscando ciudad por coordenadas:", e);
+        const tz = tzlookup(lat, lon);
+        setLoading(false);
+        return {
+          latitude: lat,
+          longitude: lon,
+          tzid: tz,
+          city: "Ubicación detectada",
+          country: "",
+        };
+      }
+    } catch (geoErr) {
+      console.warn("Geolocation failed:", geoErr.message);
+      
+      // Si falla geolocalización, intentar por IP
+      try {
+        const data = await fetchWithTimeout("https://worldtimeapi.org/api/ip");
+        if (data) {
+          const tz = data.timezone || data.tzid;
+          
+          // Intentar extraer ciudad del timezone (ej: America/New_York -> New York)
+          const cityFromTz = tz.split('/').pop()?.replace(/_/g, ' ') || "Ubicación por IP";
+          
+          setLoading(false);
+          return {
+            latitude: fallbackLat,
+            longitude: fallbackLon,
+            tzid: tz,
+            city: cityFromTz,
+            country: "",
+          };
+        }
+      } catch (ipErr) {
+        console.warn("IP Geolocation failed:", ipErr.message);
+        setLoading(false);
+        throw new Error("No se pudo detectar la ubicación");
+      }
+    }
+    
+    setLoading(false);
+    throw new Error("No se pudo detectar la ubicación");
+  };
+
+  return { 
+    latitude, 
+    longitude, 
+    tzid, 
+    city, 
+    country, 
+    loading, 
+    error, 
+    detectionMethod,
+    getUserLocation 
+  };
 }
