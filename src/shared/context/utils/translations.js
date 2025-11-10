@@ -100,6 +100,9 @@ export const translations = {
     TIME_FORMAT_24H: "24hs",
     CHANGE_TO_12H: "Cambiar a 12hs",
     CHANGE_TO_24H: "Cambiar a 24hs",
+    DETECT_IP_BUTTON: "Detectar IP",
+    DETECTING_IP_MESSAGE: "Detectando IP...",
+    IP_DETECTED_MESSAGE: "IP detectada",
   },
   he: {
     ZMANIM_TITLE: "זמנים",
@@ -202,6 +205,9 @@ export const translations = {
     TIME_FORMAT_24H: "24שעות",
     CHANGE_TO_12H: "שנה ל-12שעות",
     CHANGE_TO_24H: "שנה ל-24שעות",
+    DETECT_IP_BUTTON: "זיהוי IP",
+    DETECTING_IP_MESSAGE: "מזהה IP...",
+    IP_DETECTED_MESSAGE: "IP זוהה",
   },
   en: {
     ZMANIM_TITLE: "Zmanim",
@@ -304,5 +310,8 @@ export const translations = {
     TIME_FORMAT_24H: "24h",
     CHANGE_TO_12H: "Change to 12h",
     CHANGE_TO_24H: "Change to 24h",
+    DETECT_IP_BUTTON: "Detect IP",
+    DETECTING_IP_MESSAGE: "Detecting IP...",
+    IP_DETECTED_MESSAGE: "IP detected",
   },
 };
