@@ -75,7 +75,9 @@ const AvisosComponent = ({ customAvisos }) => {
 
   useEffect(() => {
     if (avisos.length > 0) {
-      setVisibleAvisoIndex(current => (current >= avisos.length ? 0 : current));
+      setTimeout(() => {
+        setVisibleAvisoIndex(current => (current >= avisos.length ? 0 : current));
+      }, 0);
     }
   }, [avisos]);
 

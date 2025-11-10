@@ -1,4 +1,4 @@
-import { useState, createContext } from 'react';
+import { useState } from 'react';
 import icon from '../../public/icon.png';
 import { DataProvider } from '../shared/context/DataContext.jsx';
 import '../shared/styles/App.css';

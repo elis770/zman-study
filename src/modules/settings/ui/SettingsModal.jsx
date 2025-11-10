@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from '../styles/SettingsModal.module.css';
 import GeneralSettings from '../../general-settings/ui/GeneralSettings.jsx';
 import ZmanimSettings from '../../zmanim/ui/ZmanimSettings.jsx';
 import StudySettings from '../../study/ui/StudySettings.jsx';
 import AvisosSettings from '../../avisos/ui/AvisosSettings.jsx';
 import { cityList } from '../../../shared/lib/cities.js';
+import { useUserLocation } from '../../time/hooks/useUserLocation.js';
 
 const SettingsModal = ({
   isOpen, onClose,
@@ -19,6 +20,8 @@ const SettingsModal = ({
   autoSwitchDelay, onAutoSwitchDelayChange,
   timeFormat, toggleTimeFormat
 }) => {
+  const { getUserLocation } = useUserLocation(); // Moved here
+
   const [expanded, setExpanded] = useState({
     general: true, zmanim: true, study: true, avisos: true
   });
@@ -27,6 +30,23 @@ const SettingsModal = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const cityInputWrapperRef = useRef(null);
 
+  const handleDetectByIp = useCallback(async () => {
+    try {
+      const location = await getUserLocation();
+      if (location && location.city) {
+        const detectedCity = location.city;
+        setCityInput(detectedCity);
+        onUserCityChange(detectedCity);
+        setShowSuggestions(false);
+      } else {
+        alert(t('LOCATION_NOT_DETECTED') || 'No se pudo detectar la ubicación.');
+      }
+    } catch (error) {
+      console.error('Error detecting location by IP:', error);
+      alert(t('LOCATION_DETECTION_ERROR') || 'Error al detectar la ubicación.');
+    }
+  }, [getUserLocation, onUserCityChange, t]);
+  
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose();
     if (isOpen) window.addEventListener('keydown', onKey);
@@ -147,6 +167,7 @@ const SettingsModal = ({
                       )}
                     </div>
                     <button onClick={handleSaveCity} className={styles.saveButton}>{t('SAVE')}</button>
+                    <button onClick={handleDetectByIp} className={styles.detectIpButton}>{t('DETECT_BY_IP') || 'Detectar por IP'}</button>
                   </div>
                 </div>
               </div>
