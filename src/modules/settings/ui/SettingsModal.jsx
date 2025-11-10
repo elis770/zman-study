@@ -5,7 +5,7 @@ import ZmanimSettings from '../../zmanim/ui/ZmanimSettings.jsx';
 import StudySettings from '../../study/ui/StudySettings.jsx';
 import AvisosSettings from '../../avisos/ui/AvisosSettings.jsx';
 import { cityList } from '../../../shared/lib/cities.js';
-import { useUserLocation } from '../../time/hooks/useUserLocation.js';
+import useUserLocation from '../../time/hooks/useUserLocation.js';
 
 const SettingsModal = ({
   isOpen, onClose,
