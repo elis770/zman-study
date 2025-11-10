@@ -1,28 +1,22 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAppData } from '@/shared/hooks/useAppData.js';
 import styles from '../styles/Avisos.module.css';
+import useSpecialDay from './useSpecialDay';
 
-// Placeholder for a future hook that will provide information about special days.
-const useAvisos = () => {
-  // This is a placeholder. In the future, this could fetch special announcements.
-  return { specialDay: null };
-};
+function useAvisos() {
+  const specialDay = useSpecialDay();
+  return { specialDay: specialDay || '' };
+}
 
 const AvisosComponent = ({ customAvisos }) => {
   const { time, jadashot } = useAppData();
   const { date, loading: loadingGeo } = time;
   const dayOfWeek = date ? date.getDay() : -1;
-  const {
-    jadashotCards,
-    candleLighting,
-    tzet_hashabat: tzet,
-    loading: loadingJadashot,
-  } = jadashot;
-  //console.log(candleLighting)
 
+  const { jadashotCards, candleLighting, tzet_hashabat: tzet, loading: loadingJadashot } = jadashot;
   const loading = loadingGeo || loadingJadashot;
 
-  const { specialDay } = useAvisos();
+  const { specialDay } = useAvisos(); // array de objetos
   const [visibleAvisoIndex, setVisibleAvisoIndex] = useState(0);
 
   const avisos = useMemo(() => {
@@ -30,58 +24,42 @@ const AvisosComponent = ({ customAvisos }) => {
 
     let allAvisos = [];
 
-    // Config for all announcements
     const avisosConfig = [
-      // Viernes: Encendido de velas
       {
         condition: dayOfWeek === 5 && candleLighting,
-        getAvisos: () => [{
-          id: 'candle-lighting',
-          title: 'Encendido de Velas',
-          content: candleLighting,
-          icon: '🕯️',
-        }],
+        getAvisos: () => [
+          { id: 'candle-lighting', title: 'Encendido de Velas', content: candleLighting, icon: '🕯️' },
+        ],
       },
-      // Sábado: Fin de Shabat
       {
         condition: dayOfWeek === 6 && tzet,
-        getAvisos: () => [{
-          id: 'shabbat-end',
-          title: 'Fin de Shabat (Tzet Hakojabim)',
-          content: tzet,
-          icon: '🌃',
-        }],
+        getAvisos: () => [
+          { id: 'shabbat-end', title: 'Fin de Shabat (Tzet Hakojabim)', content: tzet, icon: '🌃' },
+        ],
       },
-      // Weekly readings: Parasha and Haftara
       {
-        condition: true, // Always check for these
+        condition: true,
         getAvisos: () => {
           const weeklyReadingsConfig = [
             { key: 'PARASHA', title: 'Parashá de la Semana', icon: '📜' },
             { key: 'HAFTARA', title: 'Haftará', icon: '🗣️' },
           ];
+
           return weeklyReadingsConfig
             .map(reading => {
               const card = jadashotCards.find(c => c.key === reading.key);
               if (card?.value) {
-                return {
-                  id: reading.key.toLowerCase(),
-                  title: reading.title,
-                  content: card.value,
-                  icon: reading.icon,
-                };
+                return { id: reading.key.toLowerCase(), title: reading.title, content: card.value, icon: reading.icon };
               }
               return null;
             })
-            .filter(Boolean); // remove nulls
+            .filter(Boolean);
         },
       },
-      // Día especial
       {
-        condition: specialDay,
-        getAvisos: () => [specialDay],
+        condition: specialDay.length > 0,
+        getAvisos: () => specialDay, // todos los avisos especiales
       },
-      // Avisos personalizados
       {
         condition: customAvisos && customAvisos.length > 0,
         getAvisos: () => customAvisos,
@@ -89,33 +67,25 @@ const AvisosComponent = ({ customAvisos }) => {
     ];
 
     avisosConfig.forEach(config => {
-      if (config.condition) {
-        allAvisos = allAvisos.concat(config.getAvisos());
-      }
+      if (config.condition) allAvisos = allAvisos.concat(config.getAvisos());
     });
 
     return allAvisos;
   }, [jadashotCards, specialDay, customAvisos, loading, loadingGeo, dayOfWeek, candleLighting, tzet]);
 
   useEffect(() => {
-    // Reset index if the list of announcements changes to avoid out-of-bounds errors
     if (avisos.length > 0) {
       setVisibleAvisoIndex(current => (current >= avisos.length ? 0 : current));
     }
   }, [avisos]);
 
   useEffect(() => {
-    if (avisos.length <= 1) return; // No rotation needed for 0 or 1 item
-
-    const timer = setTimeout(() => {
-      setVisibleAvisoIndex((currentIndex) => (currentIndex + 1) % avisos.length);
-    }, 5000); // Cambia cada 5 segundos
-
+    if (avisos.length <= 1) return;
+    const timer = setTimeout(() => setVisibleAvisoIndex((i) => (i + 1) % avisos.length), 5000);
     return () => clearTimeout(timer);
   }, [visibleAvisoIndex, avisos.length]);
 
   if (avisos.length === 0) {
-    // Render a container to maintain layout space even when there are no announcements
     return <div className={styles.avisoContainer} style={{ minHeight: '100px' }}></div>;
   }
 
