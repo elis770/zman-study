@@ -1,10 +1,19 @@
-import { HebrewCalendar } from '@hebcal/core';
+import { useAppData } from '@/shared/hooks/useAppData.js';
+import { HDate, HebrewCalendar } from '@hebcal/core';
 import specialDaysConfig from './specialDaysConfig.js';
 
-export function getSpecialDays(hdate, date) {
-  if (!hdate || !date) return [];
+export default function useSpecialDay() {
+  const { time } = useAppData();
+  const { date } = time;
+  // Si la fecha no está disponible, no devolver nada.
+  if (!date) {
+    return [];
+  }
 
-  // --- 1) Filtrar lista estática ---
+  // Crear un objeto HDate para la fecha actual. Es más robusto que usar strings.
+  const hdate = new HDate(date);
+
+  // --- 1) Filtrar lista estática usando la fecha hebrea renderizada ---
   const staticDays = specialDaysConfig
     .filter(item => item.dayCondition.some(day => hdate.renderGematriya().includes(day)))
     .map(item => item.aviso);
@@ -13,6 +22,7 @@ export function getSpecialDays(hdate, date) {
   const year = date.getFullYear();
   const hebcalEvents = HebrewCalendar.calendar({ year, isHebrewYear: false });
 
+  // Filtrar eventos de Hebcal comparando objetos de fecha, que es el método correcto.
   const dynamicDays = hebcalEvents
     .filter(ev => ev.getDate().isSameDate(hdate))
     .map(ev => ({
@@ -22,6 +32,6 @@ export function getSpecialDays(hdate, date) {
       icon: '✨',
     }));
 
-  // --- 3) Combinar ambos arrays ---
+  // --- 3) Combinar y devolver ambos arrays ---
   return [...staticDays, ...dynamicDays];
 }

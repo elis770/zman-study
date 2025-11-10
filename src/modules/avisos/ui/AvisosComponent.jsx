@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAppData } from '@/shared/hooks/useAppData.js';
 import styles from '../styles/Avisos.module.css';
-import useSpecialDay from './useSpecialDay';
+import useSpecialDay from '../context/useSpecialDay';
 
 function useAvisos() {
   const specialDay = useSpecialDay();
