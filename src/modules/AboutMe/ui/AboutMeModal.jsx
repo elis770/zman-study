@@ -18,7 +18,7 @@ const AboutMeModal = ({ isOpen, onClose }) => {
         </div>
         <div className={styles.scrollableContent}>
           <div className={styles.aboutSection}>
-            <img src="/public/122.png" alt="Eliahu" className={styles.profilePic} />
+            <img src="/122.png" alt="Eliahu" className={styles.profilePic} />
             <h3>Eliahu Steynberg</h3>
             <p>Desarrollador de Software</p>
             <p>
