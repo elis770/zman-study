@@ -63,10 +63,10 @@ const buildCards = (data, keyMapping) => {
 export const DataProvider = ({ children, userCity, timeFormat }) => {
   // 1) Tiempo / geoloc
   const gregorianData = useGregorianTime({ city: userCity, timeFormat });
-  const { date } = gregorianData;
+  const { date, tzid } = gregorianData;
 
-  // 2) Fecha hebrea
-  const hebrewData = useHebrewDate(date);
+  // 2) Fecha hebrea (usando la zona horaria)
+  const hebrewData = useHebrewDate(date, tzid);
 
   // 3) Fuentes
   const sefariaData = useSefaria({ ...gregorianData, userCity });
@@ -85,11 +85,17 @@ export const DataProvider = ({ children, userCity, timeFormat }) => {
       return hebrewData.hebrewDate;
     }
     try {
-      return new HDate(date).toString();
+      // Usar la fecha en la zona horaria correcta para el fallback también
+      let dateToUse = date;
+      if (tzid) {
+        const dateString = date.toLocaleString("en-US", { timeZone: tzid });
+        dateToUse = new Date(dateString);
+      }
+      return new HDate(dateToUse).toString();
     } catch {
       return '';
     }
-  }, [hebrewData.hebrewDate, date]);
+  }, [hebrewData.hebrewDate, date, tzid]);
 
   // 5) Study cards finales
   const studyCards = useMemo(

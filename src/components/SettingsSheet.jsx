@@ -1,347 +1,370 @@
-import { useState } from "react";
-import { 
-  Drawer, 
-  Button, 
-  Switch, 
-  TextField, 
-  Divider, 
-  FormControlLabel,
-  Typography,
+import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  Drawer,
   Box,
-  Slider,
-  IconButton
+  Typography,
+  IconButton,
+  Divider,
+  TextField,
+  Button,
+  Paper,
+  List,
+  ListItemButton,
+  ListItemText
 } from "@mui/material";
-import { Settings, Clock, BookOpen, BookHeart, Church, CalendarDays, MapPin, Globe, X } from "lucide-react";
-import { useSettings } from "./SettingsContext";
+import {
+  X,
+  MapPin,
+  Settings
+} from "lucide-react";
 
-export function SettingsSheet() {
-  const [open, setOpen] = useState(false);
+import GeneralSettings from "../modules/general-settings/ui/GeneralSettings.jsx";
+import ZmanimSettings from "../modules/zmanim/ui/ZmanimSettings.jsx";
+import StudySettings from "../modules/study/ui/StudySettings.jsx";
+import AvisosSettings from "../modules/avisos/ui/AvisosSettings.jsx";
+import { cityList } from "../shared/lib/cities.js";
+import useUserLocation from "../modules/time/hooks/useUserLocation.js";
+
+import { useTheme } from "../shared/hooks/useTheme.js";
+import { useLanguage } from "../shared/hooks/useLanguage.js";
+import { useSettings } from "./SettingsContext.jsx";
+
+export const SettingsSheet = ({
+  isOpen,
+  onClose,
+}) => {
+  const { theme, toggleTheme } = useTheme();
+  const { t, language, toggleLanguage } = useLanguage();
   const { 
-    visibleZmanim, 
-    visibleEstudios, 
-    visibleSections, 
-    city,
-    timezone,
-    carouselInterval,
-    toggleZman, 
-    toggleEstudio, 
-    toggleSection,
-    setCity,
-    setTimezone,
-    setCarouselInterval
+    visibleZmanim, toggleZman, 
+    visibleEstudios, toggleEstudio, 
+    city: userCity, setCity: onUserCityChange,
+    timeFormat, toggleTimeFormat,
+    showMinian, toggleShowMinian,
+    showHayomYom, toggleShowHayomYom,
+    carouselInterval, setCarouselInterval
   } = useSettings();
 
-  const [tempCity, setTempCity] = useState(city);
-  const [tempTimezone, setTempTimezone] = useState(timezone);
+  // Convert interval from seconds to milliseconds for internal use
+  const autoSwitchDelay = carouselInterval * 1000;
+  const onAutoSwitchDelayChange = (val) => setCarouselInterval(val / 1000);
 
-  const handleSaveLocation = () => {
-    setCity(tempCity);
-    setTimezone(tempTimezone);
+  // Helper to convert object to array for child components
+  const visibleZmanimArray = Object.keys(visibleZmanim).filter(k => visibleZmanim[k]);
+  const visibleStudiesArray = Object.keys(visibleEstudios).filter(k => visibleEstudios[k]);
+
+  // Handlers for bulk selection (mock implementation as context doesn't support bulk yet)
+  const onZmanimSelectionChange = (action) => {
+    // Implementation would go here, currently no-op or manual toggle loop
+    console.log("Bulk change requested:", action);
+  };
+  const onStudiesSelectionChange = (action) => {
+    console.log("Bulk change requested:", action);
+  };
+  
+  // Dummy handlers for Avisos as they seem fully managed by props in original
+  const [customAvisos, setCustomAvisos] = useState([]);
+  const onAddAviso = (aviso) => setCustomAvisos(prev => [...prev, { ...aviso, id: Date.now() }]);
+  const onDeleteAviso = (id) => setCustomAvisos(prev => prev.filter(a => a.id !== id));
+
+  const { getUserLocation } = useUserLocation();
+
+  const [expanded, setExpanded] = useState({
+    general: true,
+    zmanim: true,
+    study: true,
+    avisos: true
+  });
+
+  const [cityInput, setCityInput] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const cityInputWrapperRef = useRef(null);
+
+  // ===============================
+  // IP
+  // ===============================
+  const handleDetectByIp = useCallback(async () => {
+    try {
+      const location = await getUserLocation();
+      if (location?.city) {
+        onUserCityChange(location.city);
+        setCityInput(""); // Limpiar el input, la ciudad se mostrará en el placeholder
+        setShowSuggestions(false);
+      } else {
+        alert("No se pudo detectar la ubicación.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error al detectar la ubicación.");
+    }
+  }, [getUserLocation, onUserCityChange]);
+
+  // ===============================
+  // ESC
+  // ===============================
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && onClose();
+    if (isOpen) window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, onClose]);
+
+  // ===============================
+  // CLICK FUERA
+  // ===============================
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        cityInputWrapperRef.current &&
+        !cityInputWrapperRef.current.contains(e.target)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // ===============================
+  // AUTOCOMPLETE (MISMO CÓDIGO)
+  // ===============================
+  const handleCityChange = (e) => {
+    const value = e.target.value;
+    setCityInput(value);
+
+    if (value.length > 1) {
+      const filtered = cityList.filter((city) =>
+        city.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
   };
 
-  const zmanimList = [
-    { id: "netz", name: "Netz Hajama", nameHebrew: "נץ החמה" },
-    { id: "shema", name: "Sof Zman Shema", nameHebrew: "סוף זמן קריאת שמע" },
-    { id: "jatzot", name: "Jatzot Hayom", nameHebrew: "חצות היום" },
-    { id: "shkia", name: "Shkiá", nameHebrew: "שקיעת החמה" },
-    { id: "tzet", name: "Tzet Hakojabim", nameHebrew: "צאת הכוכבים" }
-  ];
+  const handleSuggestionClick = (suggestion) => {
+    const cityName = suggestion.split(",")[0];
+    onUserCityChange(cityName); // Guardar inmediatamente
+    setCityInput(""); // Limpiar el input
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
 
-  const estudiosList = [
-    { id: "jumash", name: "Jumash", nameHebrew: "חומש" },
-    { id: "tehilim", name: "Tehilim", nameHebrew: "תהלים" },
-    { id: "tanya", name: "Tanya", nameHebrew: "תניא" },
-    { id: "rambam1", name: "Rambam (1 Capítulo)", nameHebrew: "רמב״ם" },
-    { id: "rambam3", name: "Rambam (3 Capítulos)", nameHebrew: "רמב״ם" },
-    { id: "sefer-mitzvot", name: "Sefer HaMitzvot", nameHebrew: "ספר המצוות" },
-    { id: "daf-yomi", name: "Daf Yomi", nameHebrew: "דף יומי" },
-    { id: "hayom-yom", name: "Hayom Yom", nameHebrew: "היום יום" }
-  ];
+  const handleSaveCity = () => {
+    // Si el input está vacío, no hacer nada
+    if (!cityInput.trim()) {
+      setShowSuggestions(false);
+      return;
+    }
+    const cityName = cityInput.split(",")[0].trim();
+    onUserCityChange(cityName);
+    setCityInput(""); // Limpiar el input después de guardar
+    setShowSuggestions(false);
+  };
 
-  const sectionsList = [
-    { id: "zmanim", name: "Zmanim", icon: <Clock style={{ width: '16px', height: '16px' }} /> },
-    { id: "estudio", name: "Estudio de Hoy", icon: <BookOpen style={{ width: '16px', height: '16px' }} /> },
-    { id: "hayom", name: "Hayom Yom", icon: <BookHeart style={{ width: '16px', height: '16px' }} /> },
-    { id: "tefilot", name: "Horario de Tefilot", icon: <Church style={{ width: '16px', height: '16px' }} /> },
-    { id: "seider", name: "Seider del Día", icon: <CalendarDays style={{ width: '16px', height: '16px' }} /> }
-  ];
+  const toggle = (key) =>
+    setExpanded((s) => ({ ...s, [key]: !s[key] }));
 
+  if (!isOpen) return null;
+
+  // ===============================
+  // RENDER
+  // ===============================
   return (
-    <>
-      <IconButton
-        onClick={() => setOpen(true)}
-        sx={{
-          borderRadius: '50%',
-          '&:hover': {
-            backgroundColor: 'rgba(188, 168, 134, 0.2)'
-          }
-        }}
-      >
-        <Settings style={{ width: '24px', height: '24px', color: '#8b7355' }} />
-      </IconButton>
-      
-      <Drawer
-        anchor="right"
-        open={open}
-        onClose={() => setOpen(false)}
-        PaperProps={{
-          sx: {
-            width: { xs: '100%', sm: 400 },
-            background: 'linear-gradient(to bottom right, #f5efe3, #e8dcc3)',
-            padding: 3
-          }
-        }}
-      >
-        <Box>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5" sx={{ color: '#8b7355', fontWeight: 600 }}>
-              Configuración
-            </Typography>
-            <IconButton onClick={() => setOpen(false)} size="small">
-              <X style={{ width: '20px', height: '20px', color: '#8b7355' }} />
-            </IconButton>
-          </Box>
-          
-          <Typography variant="body2" sx={{ color: 'rgba(139, 115, 85, 0.7)', mb: 4 }}>
-            Personaliza qué elementos deseas ver en la aplicación
+    <Drawer
+      anchor="right"
+      open={isOpen}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          width: { xs: "100%", sm: 420 },
+          background: "linear-gradient(to bottom right, #f5efe3, #e8dcc3)",
+          p: 3
+        }
+      }}
+    >
+      <Box>
+        {/* HEADER */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+          <Typography variant="h5" sx={{ color: "#8b7355", fontWeight: 600 }}>
+            {t("SETTINGS_TITLE") || "Configuración"}
+          </Typography>
+          <IconButton onClick={onClose}>
+            <X color="#8b7355" />
+          </IconButton>
+        </Box>
+
+        {/* GENERAL */}
+        <Box sx={{ mb: 4 }}>
+          <Typography
+            variant="h6"
+            sx={{ color: "#8b7355", mb: 1, cursor: "pointer" }}
+            onClick={() => toggle("general")}
+          >
+            {t("GENERAL_SETTINGS") || "Configuración General"}
           </Typography>
 
-          {/* Ubicación */}
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <MapPin style={{ width: '20px', height: '20px', color: '#bca886' }} />
-              <Typography variant="h6" sx={{ color: '#8b7355' }}>
-                Ubicación
-              </Typography>
-            </Box>
-            <Box sx={{ pl: 1 }}>
-              <TextField
-                fullWidth
-                label="Ciudad"
-                value={tempCity}
-                onChange={(e) => setTempCity(e.target.value)}
-                placeholder="Ej: Bogotá"
-                sx={{ 
-                  mb: 2,
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                    '& fieldset': {
-                      borderColor: 'rgba(188, 168, 134, 0.3)'
-                    }
-                  }
-                }}
+          {expanded.general && (
+            <>
+              <GeneralSettings
+                t={t}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                language={language}
+                toggleLanguage={toggleLanguage}
+                showMinian={showMinian}
+                toggleShowMinian={toggleShowMinian}
+                showHayomYom={showHayomYom}
+                toggleShowHayomYom={toggleShowHayomYom}
+                autoSwitchDelay={autoSwitchDelay}
+                onAutoSwitchDelayChange={onAutoSwitchDelayChange}
+                timeFormat={timeFormat}
+                toggleTimeFormat={toggleTimeFormat}
               />
-              <TextField
-                fullWidth
-                label="Zona Horaria"
-                value={tempTimezone}
-                onChange={(e) => setTempTimezone(e.target.value)}
-                placeholder="Ej: America/Bogota"
-                sx={{ 
-                  mb: 1,
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                    '& fieldset': {
-                      borderColor: 'rgba(188, 168, 134, 0.3)'
-                    }
-                  }
-                }}
-                InputProps={{
-                  startAdornment: <Globe style={{ width: '16px', height: '16px', marginRight: '8px', color: '#8b7355' }} />
-                }}
-              />
-              <Typography variant="caption" sx={{ color: 'rgba(139, 115, 85, 0.6)', display: 'block', mb: 2 }}>
-                Ejemplos: America/New_York, America/Buenos_Aires, Europe/London
-              </Typography>
-              <Button
-                fullWidth
-                onClick={handleSaveLocation}
-                sx={{
-                  backgroundColor: '#bca886',
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: '#a89474'
-                  }
-                }}
-              >
-                Guardar Ubicación
-              </Button>
-            </Box>
-          </Box>
 
-          <Divider sx={{ my: 3, backgroundColor: 'rgba(188, 168, 134, 0.3)' }} />
+              <Divider sx={{ my: 3 }} />
 
-          {/* Carrusel Principal */}
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <Clock style={{ width: '20px', height: '20px', color: '#bca886' }} />
-              <Typography variant="h6" sx={{ color: '#8b7355' }}>
-                Carrusel Principal
-              </Typography>
-            </Box>
-            <Box sx={{ pl: 1 }}>
-              <Typography variant="body2" sx={{ color: '#8b7355', mb: 1 }}>
-                Cambiar cada {carouselInterval} segundos
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Slider
-                  value={carouselInterval}
-                  onChange={(e, newValue) => setCarouselInterval(newValue)}
-                  min={3}
-                  max={30}
-                  step={1}
-                  sx={{
-                    flex: 1,
-                    color: '#bca886',
-                    '& .MuiSlider-thumb': {
-                      backgroundColor: '#bca886'
-                    },
-                    '& .MuiSlider-track': {
-                      backgroundColor: '#bca886'
-                    },
-                    '& .MuiSlider-rail': {
-                      backgroundColor: 'rgba(188, 168, 134, 0.2)'
+              {/* CIUDAD */}
+              <Box>
+                <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+                  <MapPin color="#bca886" />
+                  <Typography sx={{ color: "#8b7355" }}>
+                    {t("CITY_LABEL") || "Ciudad"}
+                  </Typography>
+                </Box>
+
+                <Box ref={cityInputWrapperRef} sx={{ position: "relative" }}>
+                  <TextField
+                    fullWidth
+                    value={cityInput}
+                    onChange={handleCityChange}
+                    onFocus={() =>
+                      cityInput.length > 1 && setShowSuggestions(true)
                     }
-                  }}
-                />
-                <Typography variant="body2" sx={{ color: '#8b7355', minWidth: '3rem', textAlign: 'center', fontWeight: 600 }}>
-                  {carouselInterval}s
-                </Typography>
+                    placeholder={userCity || t("CITY_PLACEHOLDER") || "Ej: New York"}
+                    autoComplete="off"
+                    sx={{
+                      mb: 2,
+                      "& .MuiOutlinedInput-root": {
+                        backgroundColor: "rgba(255,255,255,0.6)"
+                      }
+                    }}
+                  />
+
+                  {showSuggestions && suggestions.length > 0 && (
+                    <Paper
+                      sx={{
+                        position: "absolute",
+                        width: "100%",
+                        zIndex: 10,
+                        maxHeight: 200,
+                        overflowY: "auto"
+                      }}
+                    >
+                      <List dense>
+                        {suggestions.map((s) => (
+                          <ListItemButton
+                            key={s}
+                            onClick={() => handleSuggestionClick(s)}
+                          >
+                            <ListItemText primary={s} />
+                          </ListItemButton>
+                        ))}
+                      </List>
+                    </Paper>
+                  )}
+                </Box>
+
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button
+                    fullWidth
+                    onClick={handleSaveCity}
+                    sx={{
+                      backgroundColor: "#bca886",
+                      color: "white",
+                      "&:hover": { backgroundColor: "#a89474" }
+                    }}
+                  >
+                    {t("SAVE") || "Guardar"}
+                  </Button>
+
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={handleDetectByIp}
+                  >
+                    {t("DETECT_BY_IP") || "Detectar por IP"}
+                  </Button>
+                </Box>
               </Box>
-              <Typography variant="caption" sx={{ color: 'rgba(139, 115, 85, 0.6)' }}>
-                Tiempo entre cada tarjeta en el carrusel principal
-              </Typography>
-            </Box>
-          </Box>
-
-          <Divider sx={{ my: 3, backgroundColor: 'rgba(188, 168, 134, 0.3)' }} />
-
-          {/* Secciones */}
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <Settings style={{ width: '20px', height: '20px', color: '#bca886' }} />
-              <Typography variant="h6" sx={{ color: '#8b7355' }}>
-                Secciones
-              </Typography>
-            </Box>
-            <Box sx={{ pl: 1 }}>
-              {sectionsList.map((section) => (
-                <FormControlLabel
-                  key={section.id}
-                  control={
-                    <Switch
-                      checked={visibleSections[section.id]}
-                      onChange={() => toggleSection(section.id)}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#bca886',
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#bca886',
-                        }
-                      }}
-                    />
-                  }
-                  label={
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box sx={{ color: '#8b7355' }}>{section.icon}</Box>
-                      <Typography sx={{ color: '#8b7355' }}>{section.name}</Typography>
-                    </Box>
-                  }
-                  sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', ml: 0, py: 1 }}
-                  labelPlacement="start"
-                />
-              ))}
-            </Box>
-          </Box>
-
-          <Divider sx={{ my: 3, backgroundColor: 'rgba(188, 168, 134, 0.3)' }} />
-
-          {/* Zmanim */}
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <Clock style={{ width: '20px', height: '20px', color: '#bca886' }} />
-              <Typography variant="h6" sx={{ color: '#8b7355' }}>
-                Zmanim
-              </Typography>
-            </Box>
-            <Box sx={{ pl: 1 }}>
-              {zmanimList.map((zman) => (
-                <FormControlLabel
-                  key={zman.id}
-                  control={
-                    <Switch
-                      checked={visibleZmanim[zman.id]}
-                      onChange={() => toggleZman(zman.id)}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#bca886',
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#bca886',
-                        }
-                      }}
-                    />
-                  }
-                  label={
-                    <Box>
-                      <Typography sx={{ color: '#8b7355' }}>{zman.name}</Typography>
-                      <Typography className="hebrew-text" sx={{ color: 'rgba(139, 115, 85, 0.6)', fontSize: '0.75rem' }}>
-                        {zman.nameHebrew}
-                      </Typography>
-                    </Box>
-                  }
-                  sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', ml: 0, py: 1 }}
-                  labelPlacement="start"
-                />
-              ))}
-            </Box>
-          </Box>
-
-          <Divider sx={{ my: 3, backgroundColor: 'rgba(188, 168, 134, 0.3)' }} />
-
-          {/* Estudios */}
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <BookOpen style={{ width: '20px', height: '20px', color: '#bca886' }} />
-              <Typography variant="h6" sx={{ color: '#8b7355' }}>
-                Estudios
-              </Typography>
-            </Box>
-            <Box sx={{ pl: 1 }}>
-              {estudiosList.map((estudio) => (
-                <FormControlLabel
-                  key={estudio.id}
-                  control={
-                    <Switch
-                      checked={visibleEstudios[estudio.id]}
-                      onChange={() => toggleEstudio(estudio.id)}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#bca886',
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#bca886',
-                        }
-                      }}
-                    />
-                  }
-                  label={
-                    <Box>
-                      <Typography sx={{ color: '#8b7355' }}>{estudio.name}</Typography>
-                      <Typography className="hebrew-text" sx={{ color: 'rgba(139, 115, 85, 0.6)', fontSize: '0.75rem' }}>
-                        {estudio.nameHebrew}
-                      </Typography>
-                    </Box>
-                  }
-                  sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', ml: 0, py: 1 }}
-                  labelPlacement="start"
-                />
-              ))}
-            </Box>
-          </Box>
+            </>
+          )}
         </Box>
-      </Drawer>
-    </>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* ZMANIM */}
+        <Typography
+          variant="h6"
+          sx={{ color: "#8b7355", cursor: "pointer" }}
+          onClick={() => toggle("zmanim")}
+        >
+          {t("ZMANIM_TITLE")}
+        </Typography>
+
+        {expanded.zmanim && (
+          <ZmanimSettings
+            t={t}
+            visibleZmanim={visibleZmanimArray}
+            onZmanimChange={toggleZman}
+            onSelectionChange={onZmanimSelectionChange}
+          />
+        )}
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* STUDY */}
+        <Typography
+          variant="h6"
+          sx={{ color: "#8b7355", cursor: "pointer" }}
+          onClick={() => toggle("study")}
+        >
+          {t("STUDY_TITLE")}
+        </Typography>
+
+        {expanded.study && (
+          <StudySettings
+            t={t}
+            visibleStudies={visibleStudiesArray}
+            onStudiesChange={toggleEstudio}
+            onSelectionChange={onStudiesSelectionChange}
+          />
+        )}
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* AVISOS */}
+        <Typography
+          variant="h6"
+          sx={{ color: "#8b7355", cursor: "pointer" }}
+          onClick={() => toggle("avisos")}
+        >
+          {t("AVISOS_EVENTS_TITLE") || "Avisos y Eventos"}
+        </Typography>
+
+        {expanded.avisos && (
+          <AvisosSettings
+            customAvisos={customAvisos}
+            onAddAviso={onAddAviso}
+            onDeleteAviso={onDeleteAviso}
+          />
+        )}
+      </Box>
+    </Drawer>
   );
-}
+};
+
+export default SettingsSheet;

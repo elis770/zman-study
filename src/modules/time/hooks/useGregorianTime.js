@@ -80,13 +80,13 @@ export default function useGregorianTime(options = {}) {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-      });
+      }).replace(/ de /g, ' ');
     } catch {
       return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-      });
+      }).replace(/ de /g, ' ');
     }
   }, [date, tzid]);
 

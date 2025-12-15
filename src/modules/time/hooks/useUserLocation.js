@@ -162,31 +162,20 @@ export default function useUserLocation(options = {}) {
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
       
-      // Buscar la ciudad más cercana usando las coordenadas
-      try {
-        const tz = tzlookup(lat, lon);
-        const cityResults = cityTimezones.findFromCoordsAsObject(lat, lon);
-        
-        setLoading(false);
-        return {
-          latitude: lat,
-          longitude: lon,
-          tzid: tz,
-          city: cityResults?.city || "Ubicación detectada",
-          country: cityResults?.country || "",
-        };
-      } catch (e) {
-        console.warn("Error buscando ciudad por coordenadas:", e);
-        const tz = tzlookup(lat, lon);
-        setLoading(false);
-        return {
-          latitude: lat,
-          longitude: lon,
-          tzid: tz,
-          city: "Ubicación detectada",
-          country: "",
-        };
-      }
+      // Obtener timezone usando tz-lookup
+      const tz = tzlookup(lat, lon);
+      
+      // Extraer nombre de ciudad del timezone (ej: America/New_York -> New York)
+      const cityFromTz = tz.split('/').pop()?.replace(/_/g, ' ') || "Ubicación detectada";
+      
+      setLoading(false);
+      return {
+        latitude: lat,
+        longitude: lon,
+        tzid: tz,
+        city: cityFromTz,
+        country: "",
+      };
     } catch (geoErr) {
       console.warn("Geolocation failed:", geoErr.message);
       

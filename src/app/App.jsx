@@ -1,9 +1,8 @@
 import { Header } from "../components/Header";
 import { MainCardCarousel } from "../components/MainCardCarousel";
 import { Box } from "@mui/material";
-import { SettingsProvider, useSettings } from "../components/SettingsContext";
 
-function AppContent() {
+export default function App() {
   return (
     <Box sx={{ minHeight: '100vh', pb: 12, background: 'linear-gradient(to bottom, #f5efe3, #e8dcc3)' }}>
       <Header />
@@ -14,13 +13,5 @@ function AppContent() {
         </Box>
       </Box>
     </Box>
-  );
-}
-
-export default function App() {
-  return (
-    <SettingsProvider>
-      <AppContent />
-    </SettingsProvider>
   );
 }

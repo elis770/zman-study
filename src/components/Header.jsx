@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Typography, IconButton, useTheme } from "@mui/material";
-import { Star, User } from "lucide-react";
+import { Star, User, Settings } from "lucide-react";
 import { MapPin } from "lucide-react";
 import { SettingsSheet } from "./SettingsSheet";
 import { AboutProjectDialog } from "./AboutProjectDialog";
@@ -8,21 +8,36 @@ import { AboutMeDialog } from "./AboutMeDialog";
 import { useSettings } from "./SettingsContext";
 import { motion, AnimatePresence } from "motion/react";
 
+import { useAppData } from '@/shared/hooks/useAppData.js';
+
 export function Header() {
   const theme = useTheme();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showHebrewDate, setShowHebrewDate] = useState(false);
   const [aboutProjectOpen, setAboutProjectOpen] = useState(false);
   const [aboutMeOpen, setAboutMeOpen] = useState(false);
-  const { city, timezone } = useSettings();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  //const { city, timezone } = useSettings();
+  const {
+    time: {
+      formattedDate,
+      time,
+      tzid,
+      city,
+      country,
+      hebrewDate,
+      loading: loadingGeo,
+      dayDifference,
+    } = {}
+  } = useAppData();
 
   // Update time every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setCurrentTime(new Date());
+  //   }, 1000);
+  //   return () => clearInterval(timer);
+  // }, []);
 
   // Switch between Spanish and Hebrew date every 5 seconds
   useEffect(() => {
@@ -50,7 +65,7 @@ export function Header() {
   };
 
   // Mock Hebrew date - in production, this would come from a Hebrew calendar library
-  const hebrewDate = "כ״ח אלול תשפ״ה";
+  // const hebrewDate = "כ״ח אלול תשפ״ה";
 
   return (
     <>
@@ -108,7 +123,7 @@ export function Header() {
                 mb: 2
               }}
             >
-              {formatTime(currentTime)}
+              {time}
             </Typography>
 
             {/* Date display with animation */}
@@ -151,7 +166,7 @@ export function Header() {
                     <Typography 
                       sx={{ color: theme.palette.text.primary, fontSize: '1.25rem', textTransform: 'capitalize' }}
                     >
-                      {formatGregorianDate(currentTime)}
+                      {formattedDate}
                     </Typography>
                   </motion.div>
                 )}
@@ -162,7 +177,7 @@ export function Header() {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: theme.custom.colors.text.quaternary }}>
               <MapPin style={{ width: '14px', height: '14px' }} />
               <Typography sx={{ fontSize: '0.75rem' }}>
-                {city} • {timezone}
+                {city} • {tzid}
               </Typography>
             </Box>
           </Box>
@@ -203,7 +218,17 @@ export function Header() {
               <User style={{ width: '20px', height: '20px' }} />
             </IconButton>
             
-            <SettingsSheet />
+            <IconButton
+              onClick={() => setSettingsOpen(true)}
+              sx={{
+                color: theme.palette.text.primary,
+                '&:hover': { backgroundColor: theme.custom.colors.border.light }
+              }}
+            >
+              <Settings style={{ width: '20px', height: '20px' }} />
+            </IconButton>
+
+            <SettingsSheet isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
           </Box>
         </Box>
       </Box>
