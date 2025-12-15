@@ -14,7 +14,7 @@ import {
 import { Settings, Clock, BookOpen, BookHeart, Church, CalendarDays, MapPin, Globe, X } from "lucide-react";
 import { useSettings } from "./SettingsContext";
 
-export function SettingsSheet() {
+export function SettingsSheet2() {
   const [open, setOpen] = useState(false);
   const { 
     visibleZmanim, 

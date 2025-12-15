@@ -1,22 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import {
-  Drawer,
-  Box,
-  Typography,
-  IconButton,
-  Divider,
-  TextField,
-  Button,
-  Paper,
-  List,
-  ListItemButton,
-  ListItemText
-} from "@mui/material";
-import {
-  X,
-  MapPin,
-  Settings
-} from "lucide-react";
+import { Drawer, Box, Typography, IconButton, Divider, TextField, Button, Paper, List, ListItemButton, ListItemText } from "@mui/material";
+import { X, MapPin, } from "lucide-react";
 
 import GeneralSettings from "../modules/general-settings/ui/GeneralSettings.jsx";
 import ZmanimSettings from "../modules/zmanim/ui/ZmanimSettings.jsx";
@@ -29,40 +13,23 @@ import { useTheme } from "../shared/hooks/useTheme.js";
 import { useLanguage } from "../shared/hooks/useLanguage.js";
 import { useSettings } from "./SettingsContext.jsx";
 
-export const SettingsSheet = ({
-  isOpen,
-  onClose,
-}) => {
+export const SettingsSheet = ({ isOpen, onClose }) => {
   const { theme, toggleTheme } = useTheme();
   const { t, language, toggleLanguage } = useLanguage();
-  const { 
-    visibleZmanim, toggleZman, 
-    visibleEstudios, toggleEstudio, 
-    city: userCity, setCity: onUserCityChange,
-    timeFormat, toggleTimeFormat,
-    showMinian, toggleShowMinian,
-    showHayomYom, toggleShowHayomYom,
-    carouselInterval, setCarouselInterval
-  } = useSettings();
+  const { visibleZmanim, toggleZman, visibleEstudios, toggleEstudio,
+    city: userCity, setCity: onUserCityChange, timeFormat, toggleTimeFormat,
+    showMinian, toggleShowMinian, showHayomYom, toggleShowHayomYom,
+    carouselInterval, setCarouselInterval } = useSettings();
 
-  // Convert interval from seconds to milliseconds for internal use
   const autoSwitchDelay = carouselInterval * 1000;
   const onAutoSwitchDelayChange = (val) => setCarouselInterval(val / 1000);
 
-  // Helper to convert object to array for child components
   const visibleZmanimArray = Object.keys(visibleZmanim).filter(k => visibleZmanim[k]);
   const visibleStudiesArray = Object.keys(visibleEstudios).filter(k => visibleEstudios[k]);
 
-  // Handlers for bulk selection (mock implementation as context doesn't support bulk yet)
-  const onZmanimSelectionChange = (action) => {
-    // Implementation would go here, currently no-op or manual toggle loop
-    console.log("Bulk change requested:", action);
-  };
-  const onStudiesSelectionChange = (action) => {
-    console.log("Bulk change requested:", action);
-  };
-  
-  // Dummy handlers for Avisos as they seem fully managed by props in original
+  const onZmanimSelectionChange = (action) => { console.log("Bulk change requested:", action); };
+  const onStudiesSelectionChange = (action) => { console.log("Bulk change requested:", action); };
+
   const [customAvisos, setCustomAvisos] = useState([]);
   const onAddAviso = (aviso) => setCustomAvisos(prev => [...prev, { ...aviso, id: Date.now() }]);
   const onDeleteAviso = (id) => setCustomAvisos(prev => prev.filter(a => a.id !== id));
@@ -79,17 +46,15 @@ export const SettingsSheet = ({
   const [cityInput, setCityInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const cityInputWrapperRef = useRef(null);
 
-  // ===============================
-  // IP
-  // ===============================
   const handleDetectByIp = useCallback(async () => {
     try {
       const location = await getUserLocation();
       if (location?.city) {
         onUserCityChange(location.city);
-        setCityInput(""); // Limpiar el input, la ciudad se mostrará en el placeholder
+        setCityInput("");
         setShowSuggestions(false);
       } else {
         alert("No se pudo detectar la ubicación.");
@@ -100,18 +65,12 @@ export const SettingsSheet = ({
     }
   }, [getUserLocation, onUserCityChange]);
 
-  // ===============================
-  // ESC
-  // ===============================
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
     if (isOpen) window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, onClose]);
 
-  // ===============================
-  // CLICK FUERA
-  // ===============================
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -126,12 +85,10 @@ export const SettingsSheet = ({
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ===============================
-  // AUTOCOMPLETE (MISMO CÓDIGO)
-  // ===============================
   const handleCityChange = (e) => {
     const value = e.target.value;
     setCityInput(value);
+    setSelectedSuggestionIndex(-1); // Reset selection on typing
 
     if (value.length > 1) {
       const filtered = cityList.filter((city) =>
@@ -142,6 +99,25 @@ export const SettingsSheet = ({
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedSuggestionIndex((prev) =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedSuggestionIndex((prev) => (prev > -1 ? prev - 1 : -1));
+    } else if (e.key === "Enter") {
+      if (selectedSuggestionIndex >= 0) {
+        e.preventDefault();
+        handleSuggestionClick(suggestions[selectedSuggestionIndex]);
+      }
     }
   };
 
@@ -170,22 +146,8 @@ export const SettingsSheet = ({
 
   if (!isOpen) return null;
 
-  // ===============================
-  // RENDER
-  // ===============================
   return (
-    <Drawer
-      anchor="right"
-      open={isOpen}
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          width: { xs: "100%", sm: 420 },
-          background: "linear-gradient(to bottom right, #f5efe3, #e8dcc3)",
-          p: 3
-        }
-      }}
-    >
+    <Drawer anchor="right" open={isOpen} onClose={onClose} PaperProps={{ sx: { width: { xs: "100%", sm: 420 }, background: "linear-gradient(to bottom right, #f5efe3, #e8dcc3)", p: 3 } }}>
       <Box>
         {/* HEADER */}
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
@@ -197,13 +159,64 @@ export const SettingsSheet = ({
           </IconButton>
         </Box>
 
+        <Typography variant="body2" sx={{ color: 'rgba(139, 115, 85, 0.7)', mb: 4 }}>
+          Personaliza qué elementos deseas ver en la aplicación
+        </Typography>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* CIUDAD */}
+        <Box>
+          <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+            <MapPin color="#bca886" />
+            <Typography sx={{ color: "#8b7355" }}>
+              {t("CITY_LABEL") || "Ciudad"}
+            </Typography>
+          </Box>
+
+          <Box ref={cityInputWrapperRef} sx={{ position: "relative" }}>
+            <TextField fullWidth value={cityInput} onChange={handleCityChange} onKeyDown={handleKeyDown} onFocus={() => cityInput.length > 1 && setShowSuggestions(true)} placeholder={userCity || t("CITY_PLACEHOLDER") || "Ej: New York"} autoComplete="off" sx={{ mb: 2, "& .MuiOutlinedInput-root": { backgroundColor: "rgba(255,255,255,0.6)" } }} />
+
+            {showSuggestions && suggestions.length > 0 && (
+              <Paper sx={{ position: "absolute", width: "100%", zIndex: 10, maxHeight: 200, overflowY: "auto" }}>
+                <List dense>
+                  {suggestions.map((s, index) => (
+                    <ListItemButton
+                      key={s}
+                      onClick={() => handleSuggestionClick(s)}
+                      selected={index === selectedSuggestionIndex}
+                      sx={{
+                        "&.Mui-selected": {
+                          backgroundColor: "#bca886",
+                          color: "white",
+                          "&:hover": { backgroundColor: "#a89474" }
+                        }
+                      }}
+                    >
+                      <ListItemText primary={s} />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Paper>
+            )}
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button fullWidth onClick={handleSaveCity} sx={{ backgroundColor: "#bca886", color: "white", "&:hover": { backgroundColor: "#a89474" } }}>
+              {t("SAVE") || "Guardar"}
+            </Button>
+
+            <Button fullWidth variant="outlined" onClick={handleDetectByIp}>
+              {t("DETECT_IP_BUTTON") || "Detectar por IP"}
+            </Button>
+          </Box>
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
         {/* GENERAL */}
         <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h6"
-            sx={{ color: "#8b7355", mb: 1, cursor: "pointer" }}
-            onClick={() => toggle("general")}
-          >
+          <Typography variant="h6" sx={{ color: "#8b7355", mb: 1, cursor: "pointer" }} onClick={() => toggle("general")}>
             {t("GENERAL_SETTINGS") || "Configuración General"}
           </Typography>
 
@@ -224,82 +237,6 @@ export const SettingsSheet = ({
                 timeFormat={timeFormat}
                 toggleTimeFormat={toggleTimeFormat}
               />
-
-              <Divider sx={{ my: 3 }} />
-
-              {/* CIUDAD */}
-              <Box>
-                <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-                  <MapPin color="#bca886" />
-                  <Typography sx={{ color: "#8b7355" }}>
-                    {t("CITY_LABEL") || "Ciudad"}
-                  </Typography>
-                </Box>
-
-                <Box ref={cityInputWrapperRef} sx={{ position: "relative" }}>
-                  <TextField
-                    fullWidth
-                    value={cityInput}
-                    onChange={handleCityChange}
-                    onFocus={() =>
-                      cityInput.length > 1 && setShowSuggestions(true)
-                    }
-                    placeholder={userCity || t("CITY_PLACEHOLDER") || "Ej: New York"}
-                    autoComplete="off"
-                    sx={{
-                      mb: 2,
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "rgba(255,255,255,0.6)"
-                      }
-                    }}
-                  />
-
-                  {showSuggestions && suggestions.length > 0 && (
-                    <Paper
-                      sx={{
-                        position: "absolute",
-                        width: "100%",
-                        zIndex: 10,
-                        maxHeight: 200,
-                        overflowY: "auto"
-                      }}
-                    >
-                      <List dense>
-                        {suggestions.map((s) => (
-                          <ListItemButton
-                            key={s}
-                            onClick={() => handleSuggestionClick(s)}
-                          >
-                            <ListItemText primary={s} />
-                          </ListItemButton>
-                        ))}
-                      </List>
-                    </Paper>
-                  )}
-                </Box>
-
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <Button
-                    fullWidth
-                    onClick={handleSaveCity}
-                    sx={{
-                      backgroundColor: "#bca886",
-                      color: "white",
-                      "&:hover": { backgroundColor: "#a89474" }
-                    }}
-                  >
-                    {t("SAVE") || "Guardar"}
-                  </Button>
-
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    onClick={handleDetectByIp}
-                  >
-                    {t("DETECT_BY_IP") || "Detectar por IP"}
-                  </Button>
-                </Box>
-              </Box>
             </>
           )}
         </Box>
@@ -307,11 +244,7 @@ export const SettingsSheet = ({
         <Divider sx={{ my: 3 }} />
 
         {/* ZMANIM */}
-        <Typography
-          variant="h6"
-          sx={{ color: "#8b7355", cursor: "pointer" }}
-          onClick={() => toggle("zmanim")}
-        >
+        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("zmanim")}>
           {t("ZMANIM_TITLE")}
         </Typography>
 
@@ -327,11 +260,7 @@ export const SettingsSheet = ({
         <Divider sx={{ my: 3 }} />
 
         {/* STUDY */}
-        <Typography
-          variant="h6"
-          sx={{ color: "#8b7355", cursor: "pointer" }}
-          onClick={() => toggle("study")}
-        >
+        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("study")}>
           {t("STUDY_TITLE")}
         </Typography>
 
@@ -347,11 +276,7 @@ export const SettingsSheet = ({
         <Divider sx={{ my: 3 }} />
 
         {/* AVISOS */}
-        <Typography
-          variant="h6"
-          sx={{ color: "#8b7355", cursor: "pointer" }}
-          onClick={() => toggle("avisos")}
-        >
+        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("avisos")}>
           {t("AVISOS_EVENTS_TITLE") || "Avisos y Eventos"}
         </Typography>
 
