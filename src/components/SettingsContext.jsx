@@ -107,6 +107,8 @@ export function SettingsProvider({ children }) {
         setScrollSpeed,
         toggleZman,
         toggleEstudio,
+        setBulkZmanim: setVisibleZmanim, // Expose setter for bulk updates
+        setBulkEstudios: setVisibleEstudios, // Expose setter for bulk updates
         toggleSection,
         toggleTimeFormat,
         toggleShowMinian,

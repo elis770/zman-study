@@ -1,4 +1,5 @@
 import styles from '../styles/GeneralSettings.module.css';
+import { Slider, Typography, Divider } from "@mui/material";
 
 const GeneralSettings = ({
   t,
@@ -12,6 +13,8 @@ const GeneralSettings = ({
   onAutoSwitchDelayChange,
   timeFormat,
   toggleTimeFormat,
+  scrollSpeed,
+  setScrollSpeed
 }) => {
   return (
     <div className={styles.buttonGroup}>
@@ -28,18 +31,33 @@ const GeneralSettings = ({
         {showHayomYom ? t('HIDE_HAYOM_YOM') : t('SHOW_HAYOM_YOM')}
       </button>
 
-      <div className={styles.sliderContainer}>
-        <label htmlFor="autoSwitchDelay">Intervalo de rotación de estudios (segundos)</label>
-        <input
-          type="range"
-          id="autoSwitchDelay"
-          min="1"
-          max="30"
+      <Divider sx={{ my: 3 }} />
+
+      <div className={styles.sliderContainer} style={{ marginTop: '1rem' }}>
+        <Typography sx={{ color: '#8b7355', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+          Intervalo de rotación de estudios (segundos)
+        </Typography>
+        <Slider
           value={autoSwitchDelay / 1000}
-          onChange={(e) => onAutoSwitchDelayChange(e.target.value * 1000)}
-          className={styles.slider}
+          min={1}
+          max={30}
+          step={1}
+          onChange={(_, val) => onAutoSwitchDelayChange(val * 1000)}
+          sx={{ color: '#bca886' }}
         />
-        <span>{autoSwitchDelay / 1000}s</span>
+      </div>
+      <div className={styles.sliderContainer} style={{ marginTop: '1rem' }}>
+        <Typography sx={{ color: '#8b7355', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+          Velocidad del scroll
+        </Typography>
+        <Slider
+          value={scrollSpeed}
+          min={0.8}
+          max={3}
+          step={0.1}
+          onChange={(_, val) => setScrollSpeed(val)}
+          sx={{ color: '#bca886' }}
+        />
       </div>
     </div>
   );

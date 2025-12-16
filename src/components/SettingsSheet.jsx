@@ -12,6 +12,8 @@ import useUserLocation from "../modules/time/hooks/useUserLocation.js";
 import { useTheme } from "../shared/hooks/useTheme.js";
 import { useLanguage } from "../shared/hooks/useLanguage.js";
 import { useSettings } from "./SettingsContext.jsx";
+import { allZmanim } from "../modules/zmanim/context/zmanimConfig.js";
+import { allStudies } from "../modules/study/hooks/studyConfig.js";
 
 export const SettingsSheet = ({ isOpen, onClose }) => {
   const { theme, toggleTheme } = useTheme();
@@ -19,7 +21,8 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
   const { visibleZmanim, toggleZman, visibleEstudios, toggleEstudio,
     city: userCity, setCity: onUserCityChange, timeFormat, toggleTimeFormat,
     showMinian, toggleShowMinian, showHayomYom, toggleShowHayomYom,
-    carouselInterval, setCarouselInterval, scrollSpeed, setScrollSpeed } = useSettings();
+    carouselInterval, setCarouselInterval, scrollSpeed, setScrollSpeed,
+    setBulkZmanim, setBulkEstudios } = useSettings();
 
   const autoSwitchDelay = carouselInterval * 1000;
   const onAutoSwitchDelayChange = (val) => setCarouselInterval(val / 1000);
@@ -27,8 +30,30 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
   const visibleZmanimArray = Object.keys(visibleZmanim).filter(k => visibleZmanim[k]);
   const visibleStudiesArray = Object.keys(visibleEstudios).filter(k => visibleEstudios[k]);
 
-  const onZmanimSelectionChange = (action) => { console.log("Bulk change requested:", action); };
-  const onStudiesSelectionChange = (action) => { console.log("Bulk change requested:", action); };
+
+
+  const onZmanimSelectionChange = (action) => {
+    if (action === 'all') {
+      const newSettings = {};
+      allZmanim.forEach(z => newSettings[z.key] = true);
+      setBulkZmanim(newSettings);
+    } else {
+      // Default/None -> Deselect all so card disappears? Or reset to defaultZmanim?
+      // User said: "cuando desclikee zmanim y study quiero que no se muestre".
+      // So deselect all makes sense to hide it.
+      setBulkZmanim({});
+    }
+  };
+
+  const onStudiesSelectionChange = (action) => {
+    if (action === 'all') {
+      const newSettings = {};
+      allStudies.forEach(s => newSettings[s.key] = true);
+      setBulkEstudios(newSettings);
+    } else {
+      setBulkEstudios({});
+    }
+  };
 
   const [customAvisos, setCustomAvisos] = useState([]);
   const onAddAviso = (aviso) => setCustomAvisos(prev => [...prev, { ...aviso, id: Date.now() }]);
@@ -235,18 +260,8 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
                 onAutoSwitchDelayChange={onAutoSwitchDelayChange}
                 timeFormat={timeFormat}
                 toggleTimeFormat={toggleTimeFormat}
-              />
-              <Typography sx={{ mt: 2, color: '#8b7355' }}>
-                Velocidad del scroll
-              </Typography>
-
-              <Slider
-                value={scrollSpeed}
-                min={0.8}
-                max={3}
-                step={0.1}
-                onChange={(_, val) => setScrollSpeed(val)}
-                sx={{ color: '#bca886' }}
+                scrollSpeed={scrollSpeed}
+                setScrollSpeed={setScrollSpeed}
               />
 
             </>

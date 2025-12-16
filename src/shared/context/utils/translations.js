@@ -1,6 +1,7 @@
 export const translations = {
   es: {
     ZMANIM_TITLE: 'Zmanim',
+    NEXT_ZMANIM: 'Próximos Zmanim',
     ALOT_HASHACHAR: "Alot Hashajar",
     ALOT_HASHACHAR_72: "Alot Hashajar (72 min)",
     MISHEYAKIR: "Misheyakir",
@@ -106,6 +107,7 @@ export const translations = {
   },
   he: {
     ZMANIM_TITLE: "זמנים",
+    NEXT_ZMANIM: "זמנים הבאים",
     ALOT_HASHACHAR: "עלות השחר",
     MISHEYAKIR: "משיכיר",
     ALOT_HASHACHAR_72: "עלות השחר (72 דק')",

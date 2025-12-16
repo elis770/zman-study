@@ -9,7 +9,7 @@ import { useLanguage } from '@/shared/hooks/useLanguage.js';
 
 export function MainCardCarousel() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const { carouselInterval, registerCard, visibleCards, scrollSpeed } = useSettings();
+  const { carouselInterval, registerCard, visibleCards, scrollSpeed, visibleZmanim, visibleEstudios } = useSettings();
 
   const { study, zmanim } = useAppData();
   //console.log(zmanim)
@@ -35,17 +35,42 @@ export function MainCardCarousel() {
   const zmanimCards = Object.entries(zmanim || {})
     .filter(([key]) => key !== 'loading' && key !== 'seventhHour' && zmanimConfig[key])
     .map(([key, value]) => {
+      // Check if this specific zman is visible in settings
+      // If config is not in visibleZmanim or is false, skip it
+      if (!visibleZmanim?.[key]) return null;
+
       const config = zmanimConfig[key];
       if (!config) return null;
 
+      // Helper to parse time string "HH:mm" or "HH:mm PM" to minutes
+      // Assuming value matches local time format. 
+      // If 12h: "05:30 PM", if 24h: "17:30"
+      let minutes = 0;
+      try {
+        const [timePart, modifier] = value.split(' ');
+        let [hours, mins] = timePart.split(':').map(Number);
+
+        if (modifier) {
+          if (modifier.toLowerCase() === 'pm' && hours < 12) hours += 12;
+          if (modifier.toLowerCase() === 'am' && hours === 12) hours = 0;
+        }
+        minutes = hours * 60 + mins;
+      } catch (e) {
+        minutes = 0;
+      }
+
       return {
+        key: key, // Keep key for sorting ref if needed
         icon: config.icon,
         title: t ? t(config.titleKey) : config.titleKey,
-        hebrewTitle: null, // Removed hardcoded hebrewTitle, relying on translations if needed or removing completely if UI adapts
+        hebrewTitle: null,
         value: value,
+        minutes: minutes
       };
     })
-    .filter(Boolean); // Remove nulls if any
+    .filter(Boolean)
+    // Sort by time (minutes)
+    .sort((a, b) => a.minutes - b.minutes);
 
   // Configuration for Study
   const studyIcons = {
@@ -62,15 +87,17 @@ export function MainCardCarousel() {
     SEFER_HAMITZVOT: Scale
   };
 
-  const studyCards = (study?.studyCards || []).map(item => {
-    const Icon = studyIcons[item.key] || BookOpen;
-    return {
-      icon: Icon,
-      title: t ? t(item.labelKey) : item.key, // Use translation or fallback to key
-      hebrewTitle: null, // DataContext doesn't provide separate hebrew title yet
-      value: item.value,
-    };
-  });
+  const studyCards = (study?.studyCards || [])
+    .filter(item => visibleEstudios?.[item.key]) // Filter based on settings
+    .map(item => {
+      const Icon = studyIcons[item.key] || BookOpen;
+      return {
+        icon: Icon,
+        title: t ? t(item.labelKey) : item.key, // Use translation or fallback to key
+        hebrewTitle: null, // DataContext doesn't provide separate hebrew title yet
+        value: item.value,
+      };
+    });
 
   // Reusable function to render card items
   const renderCardItems = (data) => {
@@ -238,20 +265,25 @@ export function MainCardCarousel() {
     );
   };
 
-  const cardConfigs = [
-    {
+  const cardConfigs = [];
+
+  if (zmanimCards.length > 0) {
+    cardConfigs.push({
       id: 'zmanim',
-      title: 'Próximos Zmanim',
+      title: t('NEXT_ZMANIM'),
       icon: Clock,
-      component: createCard('zmanim', 'Próximos Zmanim', Clock, zmanimCards),
-    },
-    {
+      component: createCard('zmanim', t('NEXT_ZMANIM'), Clock, zmanimCards),
+    });
+  }
+
+  if (studyCards.length > 0) {
+    cardConfigs.push({
       id: 'study',
-      title: 'Estudio de Hoy',
+      title: t('STUDY_TITLE'),
       icon: BookOpen,
-      component: createCard('study', 'Estudio de Hoy', BookOpen, studyCards),
-    },
-  ];
+      component: createCard('study', t('STUDY_TITLE'), BookOpen, studyCards),
+    });
+  }
 
   // Register cards on mount
   useEffect(() => {
@@ -271,6 +303,11 @@ export function MainCardCarousel() {
 
   // Update carousel interval effect to use cards length
   useEffect(() => {
+    // Reset index if out of bounds (e.g. cards removed via settings)
+    if (currentCardIndex >= cards.length) {
+      setCurrentCardIndex(0);
+    }
+
     if (cards.length <= 1) return; // Don't auto-advance if only one card
 
     const interval = setInterval(() => {
@@ -278,7 +315,7 @@ export function MainCardCarousel() {
     }, carouselInterval * 1000);
 
     return () => clearInterval(interval);
-  }, [carouselInterval, cards.length]);
+  }, [carouselInterval, cards.length, currentCardIndex]);
 
   const handleDotClick = (index) => {
     setCurrentCardIndex(index);
@@ -304,6 +341,9 @@ export function MainCardCarousel() {
       </Card>
     );
   }
+
+  // Safe access for rendering
+  const activeCard = cards[currentCardIndex] || cards[0];
 
   return (
     <Box>
@@ -346,13 +386,13 @@ export function MainCardCarousel() {
         <CardContent sx={{ padding: 0 }}>
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentCardIndex}
+              key={activeCard ? activeCard.id : 'empty'}
               initial={{ opacity: 0, x: 300 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -300 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              {cards[currentCardIndex].component}
+              {activeCard ? activeCard.component : null}
             </motion.div>
           </AnimatePresence>
         </CardContent>
