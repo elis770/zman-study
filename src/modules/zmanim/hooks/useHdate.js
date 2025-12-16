@@ -4,8 +4,14 @@ import useUserLocation from "../../time/hooks/useUserLocation.js";
 import calculateSeventhHourMedian from "./use7th.js";
 import { GeoLocation, Zmanim } from '@hebcal/core';
 
-export default function useHdate({ userCity, timeFormat }) {
-  const { latitude, longitude, tzid, city, loading, error } = useUserLocation({ city: userCity || "Jerusalem" });
+export default function useHdate({ userCity, timeFormat, latitude: latProp, longitude: lonProp, tzid: tzidProp }) {
+  // Si nos pasan coordenadas (desde DataProvider -> useGregorianTime), las usamos "manual" para evitar doble fetch
+  const { latitude, longitude, tzid, city, loading, error } = useUserLocation({ 
+    city: userCity || "Jerusalem",
+    manualLat: latProp,
+    manualLon: lonProp,
+    manualTz: tzidProp
+  });
   const date = new Date();
 
   const [seventhHour, setSeventhHour] = useState(null);

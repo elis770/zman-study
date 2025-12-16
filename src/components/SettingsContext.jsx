@@ -40,7 +40,8 @@ export function SettingsProvider({ children }) {
   const [timeFormat, setTimeFormat] = usePersistentState("timeFormat", "24h");
   const [showMinian, setShowMinian] = usePersistentState("showMinian", true);
   const [showHayomYom, setShowHayomYom] = usePersistentState("showHayomYom", true);
-  
+  const [scrollSpeed, setScrollSpeed] = usePersistentState("scrollSpeed", 2.6);
+
   // Dynamic card configuration
   const [visibleCards, setVisibleCards] = usePersistentState("visibleCards", {});
   const [cardDefinitions, setCardDefinitions] = usePersistentState("cardDefinitions", {});
@@ -75,7 +76,7 @@ export function SettingsProvider({ children }) {
       ...prev,
       [id]: { title, icon }
     }));
-    
+
     // Initialize as visible by default if not already set
     setVisibleCards(prev => ({
       ...prev,
@@ -102,6 +103,8 @@ export function SettingsProvider({ children }) {
         timeFormat,
         showMinian,
         showHayomYom,
+        scrollSpeed,
+        setScrollSpeed,
         toggleZman,
         toggleEstudio,
         toggleSection,

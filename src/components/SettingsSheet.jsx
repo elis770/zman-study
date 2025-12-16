@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Drawer, Box, Typography, IconButton, Divider, TextField, Button, Paper, List, ListItemButton, ListItemText } from "@mui/material";
+import { Drawer, Box, Typography, IconButton, Divider, TextField, Button, Paper, List, ListItemButton, ListItemText, Slider } from "@mui/material";
 import { X, MapPin, } from "lucide-react";
 
 import GeneralSettings from "../modules/general-settings/ui/GeneralSettings.jsx";
@@ -19,7 +19,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
   const { visibleZmanim, toggleZman, visibleEstudios, toggleEstudio,
     city: userCity, setCity: onUserCityChange, timeFormat, toggleTimeFormat,
     showMinian, toggleShowMinian, showHayomYom, toggleShowHayomYom,
-    carouselInterval, setCarouselInterval } = useSettings();
+    carouselInterval, setCarouselInterval, scrollSpeed, setScrollSpeed } = useSettings();
 
   const autoSwitchDelay = carouselInterval * 1000;
   const onAutoSwitchDelayChange = (val) => setCarouselInterval(val / 1000);
@@ -149,7 +149,6 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
   return (
     <Drawer anchor="right" open={isOpen} onClose={onClose} PaperProps={{ sx: { width: { xs: "100%", sm: 420 }, background: "linear-gradient(to bottom right, #f5efe3, #e8dcc3)", p: 3 } }}>
       <Box>
-        {/* HEADER */}
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
           <Typography variant="h5" sx={{ color: "#8b7355", fontWeight: 600 }}>
             {t("SETTINGS_TITLE") || "Configuración"}
@@ -237,6 +236,19 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
                 timeFormat={timeFormat}
                 toggleTimeFormat={toggleTimeFormat}
               />
+              <Typography sx={{ mt: 2, color: '#8b7355' }}>
+                Velocidad del scroll
+              </Typography>
+
+              <Slider
+                value={scrollSpeed}
+                min={0.8}
+                max={3}
+                step={0.1}
+                onChange={(_, val) => setScrollSpeed(val)}
+                sx={{ color: '#bca886' }}
+              />
+
             </>
           )}
         </Box>
