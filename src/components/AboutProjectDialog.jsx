@@ -19,7 +19,23 @@ export function AboutProjectDialog({ open, onClose }) {
         }
       }}
     >
-      <DialogTitle sx={{ 
+      <Box
+        component="img"
+        src="/icon.png"
+        alt="kosherClock"
+        sx={{
+          width: '120px',
+          height: '120px',
+          borderRadius: '50%',
+          objectFit: 'cover',
+          display: 'block',
+          mx: 'auto',
+          mt: 3,
+          mb: '1rem',
+          border: `3px solid ${theme.custom.colors.border.main}`
+        }}
+      />
+      <DialogTitle sx={{
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
@@ -57,9 +73,19 @@ export function AboutProjectDialog({ open, onClose }) {
             <li>Tefilot y oraciones</li>
             <li>Seider Hayom - orden del día</li>
           </Box>
+
+          <Typography sx={{ color: theme.palette.text.secondary, mb: 1, fontWeight: 600 }}>
+            Informe Técnico:
+          </Typography>
+          <Box component="ul" sx={{ color: theme.palette.text.secondary, pl: 3, mb: 2 }}>
+            <li>Desarrollado con React para una interfaz dinámica y receptiva</li>
+            <li>Integración con hebcal y APIs de Sefaria para datos precisos</li>
+            <li>Diseño centrado en la facilidad de uso y acceso rápido</li>
+            <li>Optimizado para detección automática de ubicación y horarios globales</li>
+          </Box>
           
           <Typography sx={{ color: theme.custom.colors.text.tertiary, fontSize: '0.875rem', fontStyle: 'italic' }}>
-            Desarrollado con dedicación para servir a la comunidad.
+            Puedes encontrar más sobre este proyecto en <a href="https://github.com/elis770/zman-study" target="_blank" rel="noopener noreferrer">este link de GitHub</a>.
           </Typography>
         </Box>
       </DialogContent>

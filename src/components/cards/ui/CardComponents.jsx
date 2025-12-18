@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 
 export const CardItemList = ({ data }) => {
@@ -42,77 +42,73 @@ export const CardItemList = ({ data }) => {
 export const ScrollingContent = ({ children, interval, scrollKey, speedFactor }) => {
     const containerRef = useRef(null);
     const innerRef = useRef(null);
+    const singleBlockRef = useRef(null);
     const rafRef = useRef(null);
     const scrollPos = useRef(0);
+    const [shouldScroll, setShouldScroll] = useState(false);
 
     useEffect(() => {
         const container = containerRef.current;
         const inner = innerRef.current;
-        if (!container || !inner) return;
+        const singleBlock = singleBlockRef.current;
+        if (!container || !singleBlock) return;
 
-        let loopHeight = 0;
-        let speed = 0;
-
-        // Function to update measurements
         const updateMeasurements = () => {
-            if (!inner) return;
+            const contentHeight = singleBlock.offsetHeight;
+            const containerHeight = container.offsetHeight;
 
-            // The total height is the height of the inner container (which has 2 copies)
-            const totalHeight = inner.offsetHeight;
-            // The loop height is half of that (height of one copy)
-            loopHeight = totalHeight / 2;
-
-            // Calculate speed (px per ms)
-            // We want to traverse 1 loopHeight in (interval) seconds * speedFactor
-            if (loopHeight > 0 && interval > 0 && speedFactor > 0) {
-                speed = loopHeight / (interval * 1000 * speedFactor);
+            if (contentHeight > containerHeight) {
+                setShouldScroll(true);
+            } else {
+                setShouldScroll(false);
+                scrollPos.current = 0;
+                if (inner) inner.style.transform = 'translateY(0)';
             }
         };
 
-        // Initial measurement
         updateMeasurements();
+        const resizeObserver = new ResizeObserver(updateMeasurements);
+        resizeObserver.observe(singleBlock);
+        resizeObserver.observe(container);
 
-        const resizeObserver = new ResizeObserver(() => {
-            updateMeasurements();
-        });
+        return () => resizeObserver.disconnect();
+    }, [children, scrollKey]);
 
-        // Observe the inner content for size changes
-        resizeObserver.observe(inner);
+    useEffect(() => {
+        if (!shouldScroll) return;
+
+        const container = containerRef.current;
+        const inner = innerRef.current;
+        const singleBlock = singleBlockRef.current;
+        if (!container || !inner || !singleBlock) return;
+
+        let loopHeight = singleBlock.offsetHeight;
+        let speed = loopHeight / (interval * 1000 * speedFactor);
 
         let lastTime = performance.now();
-
         const loop = (now) => {
             const delta = now - lastTime;
             lastTime = now;
 
             if (loopHeight > 0 && speed > 0) {
                 scrollPos.current += speed * delta;
-
-                // 🔁 Loop logic
                 if (scrollPos.current >= loopHeight) {
                     scrollPos.current -= loopHeight;
                 }
-
-                // Apply transform
                 inner.style.transform = `translateY(-${scrollPos.current}px)`;
             }
-
             rafRef.current = requestAnimationFrame(loop);
         };
 
         rafRef.current = requestAnimationFrame(loop);
-
-        return () => {
-            cancelAnimationFrame(rafRef.current);
-            resizeObserver.disconnect();
-        };
-    }, [interval, scrollKey, speedFactor, children]);
+        return () => cancelAnimationFrame(rafRef.current);
+    }, [shouldScroll, interval, speedFactor, children]);
 
     return (
         <Box
             ref={containerRef}
             sx={{
-                maxHeight: '60vh',
+                maxHeight: '58vh',
                 overflow: 'hidden',
                 position: 'relative',
             }}
@@ -122,12 +118,11 @@ export const ScrollingContent = ({ children, interval, scrollKey, speedFactor })
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    willChange: 'transform' // Hardware acceleration hint
+                    willChange: 'transform'
                 }}
             >
-                {/* Blocks wrapped with keys to avoid React warnings */}
-                <Box key="block-1">{children}</Box>
-                <Box key="block-2">{children}</Box>
+                <Box ref={singleBlockRef} key="block-1">{children}</Box>
+                {shouldScroll && <Box key="block-2">{children}</Box>}
             </Box>
         </Box>
     );
@@ -135,23 +130,25 @@ export const ScrollingContent = ({ children, interval, scrollKey, speedFactor })
 
 export const GenericCard = ({ id, title, icon: IconComponent, content, interval, speedFactor }) => {
     return (
-        <Box sx={{ p: 4, height: '100%' }}>
-            <Box sx={{ textAlign: 'center', mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2 }}>
-                    <IconComponent style={{ width: '28px', height: '28px', color: '#bca886' }} />
+        <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ textAlign: 'center', mb: 1, flexShrink: 0 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
+                    <IconComponent style={{ width: '24px', height: '24px', color: '#bca886' }} />
                 </Box>
-                <Typography sx={{ color: '#8b7355', fontSize: '1.5rem', fontWeight: 600 }}>
+                <Typography sx={{ color: '#8b7355', fontSize: '1.25rem', fontWeight: 600 }}>
                     {title}
                 </Typography>
             </Box>
 
-            <ScrollingContent
-                interval={interval}
-                scrollKey={id}
-                speedFactor={speedFactor}
-            >
-                {content}
-            </ScrollingContent>
+            <Box sx={{ flex: 1, minHeight: 0 }}>
+                <ScrollingContent
+                    interval={interval}
+                    scrollKey={id}
+                    speedFactor={speedFactor}
+                >
+                    {content}
+                </ScrollingContent>
+            </Box>
         </Box>
     );
 };

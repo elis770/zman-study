@@ -1,11 +1,11 @@
 import { createContext, useMemo } from 'react';
 import { HDate } from '@hebcal/core';
 
-import useGregorianTime from '../../modules/time/hooks/useGregorianTime.js';
-import useHebrewDate from '../../modules/time/hooks/useHebrewDate.js';
+import useGregorianTime from '../../modules/time/useGregorianTime.js';
+import useHebrewDate from '../../modules/time/useHebrewDate.js';
 import useSefaria from '../../modules/study/hooks/useSefaria.js';
 import useHdate from '../../modules/zmanim/hooks/useHdate.js';
-import useHayomYom from '../../modules/hayom-yom/hooks/useHayomYom.js';
+import useHayomYom from '../../modules/hayom-yom/useHayomYom.js';
 import useStudy from '../../modules/study/hooks/useStudy.js';
 
 export const AppContext = createContext(null);
@@ -36,7 +36,7 @@ const buildCards = (data, keyMapping) => {
 
   return Object.entries(keyMapping).map(([dataKey, config]) => {
     let value = '';
-    
+
     if (dataKey.includes('.')) {
       // Acceso a propiedades anidadas: 'parasha.he' -> data.parasha?.he
       const parts = dataKey.split('.');
@@ -50,7 +50,7 @@ const buildCards = (data, keyMapping) => {
       // Acceso directo: 'Jumash' -> data.Jumash
       value = toStr(data[dataKey]);
     }
-    
+
     return {
       key: config.key,
       labelKey: config.labelKey,

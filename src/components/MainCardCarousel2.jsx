@@ -1,39 +1,40 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, Box, Typography, IconButton } from "@mui/material";
-import { Clock, BookOpen, Scroll } from "lucide-react";
+import { Clock, Scroll } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSettings } from "./SettingsContext";
 import { useLanguage } from '@/shared/hooks/useLanguage.js';
 
-import { useListCards } from "./cards/hooks/useListCards";
-import { useTextCards } from "./cards/hooks/useTextCards";
 import { GenericCard, CardItemList } from "./cards/ui/CardComponents";
+import { useMinianCards } from "./cards/hooks/useMinianCards";
+import { useAvisosCards } from "./cards/hooks/useAvisosCards";
 
-export function MainCardCarousel() {
+export function MainCardCarousel2() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const { carouselInterval, registerCard, visibleCards, scrollSpeed } = useSettings();
   const { t } = useLanguage();
 
-  const { zmanimCards, studyCards } = useListCards();
-  const { hayomYomData } = useTextCards();
+  const { minianimCards } = useMinianCards();
+  const { avisosCards } = useAvisosCards();
 
   const cardConfigs = [];
 
-  if (zmanimCards.length > 0) {
+  // MINIAN Card
+  if (minianimCards.length > 0) {
     cardConfigs.push({
-      id: 'zmanim',
-      title: t('NEXT_ZMANIM'),
+      id: 'minian',
+      title: t('MINIAN_TITLE') || 'Minianim',
       icon: Clock,
       component: (
         <GenericCard
-          id="zmanim"
-          title={t('NEXT_ZMANIM')}
+          id="minian"
+          title={t('MINIAN_TITLE') || 'Minianim'}
           icon={Clock}
           interval={carouselInterval}
           speedFactor={scrollSpeed}
           content={
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pb: 2 }}>
-              <CardItemList data={zmanimCards} />
+              <CardItemList data={minianimCards} />
             </Box>
           }
         />
@@ -41,66 +42,24 @@ export function MainCardCarousel() {
     });
   }
 
-  if (studyCards.length > 0) {
+  // AVISOS Card
+  if (avisosCards.length > 0) {
     cardConfigs.push({
-      id: 'study',
-      title: t('STUDY_TITLE'),
-      icon: BookOpen,
+      id: 'avisos',
+      title: t('AVISOS_TITLE') || 'Avisos',
+      icon: Scroll,
       component: (
         <GenericCard
-          id="study"
-          title={t('STUDY_TITLE')}
-          icon={BookOpen}
+          id="avisos"
+          title={t('AVISOS_TITLE') || 'Avisos'}
+          icon={Scroll}
           interval={carouselInterval}
           speedFactor={scrollSpeed}
           content={
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pb: 2 }}>
-              <CardItemList data={studyCards} />
+              <CardItemList data={avisosCards} />
             </Box>
           }
-        />
-      ),
-    });
-  }
-
-  if (hayomYomData) {
-    const hayomYomContent = (
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-        pb: 2,
-        backgroundColor: 'rgba(255, 255, 255, 0.5)',
-        borderRadius: '8px',
-        p: 2
-      }}>
-        <Typography
-          className="hebrew-text"
-          sx={{
-            color: '#5d4037',
-            fontSize: '1rem',
-            whiteSpace: 'pre-wrap',
-            textAlign: 'right',
-            lineHeight: 1.6
-          }}
-        >
-          {hayomYomData.text}
-        </Typography>
-      </Box>
-    );
-
-    cardConfigs.push({
-      id: 'hayom-yom',
-      title: t('HAIOM_IOM_TITLE') || 'Hayom Yom',
-      icon: Scroll,
-      component: (
-        <GenericCard
-          id="hayom-yom"
-          title={t('HAIOM_IOM_TITLE') || 'Hayom Yom'}
-          icon={Scroll}
-          interval={carouselInterval}
-          speedFactor={scrollSpeed}
-          content={hayomYomContent}
         />
       ),
     });

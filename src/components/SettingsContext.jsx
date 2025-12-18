@@ -44,6 +44,8 @@ export function SettingsProvider({ children }) {
 
   // Dynamic card configuration
   const [visibleCards, setVisibleCards] = usePersistentState("visibleCards", {});
+  const [minianimList, setMinianimList] = usePersistentState("minianimList", []);
+  const [customAvisos, setCustomAvisos] = usePersistentState("customAvisos", []);
   const [cardDefinitions, setCardDefinitions] = usePersistentState("cardDefinitions", {});
 
   const toggleZman = (id) => {
@@ -117,7 +119,11 @@ export function SettingsProvider({ children }) {
         toggleCard,
         setCity,
         setTimezone,
-        setCarouselInterval
+        setCarouselInterval,
+        minianimList,
+        setMinianimList,
+        customAvisos,
+        setCustomAvisos
       }}
     >
       {children}

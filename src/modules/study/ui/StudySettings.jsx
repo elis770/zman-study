@@ -1,4 +1,3 @@
-import styles from '../styles/StudySettings.module.css';
 import { allStudies } from '../hooks/studyConfig.js';
 
 const StudySettings = ({ t, visibleStudies, onStudiesChange, onSelectionChange }) => { 

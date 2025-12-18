@@ -1,4 +1,3 @@
-import styles from '../styles/ZmanimSettings.module.css';
 import { allZmanim } from '../context/zmanimConfig.js';
 
 const ZmanimSettings = ({ t, visibleZmanim, onZmanimChange, onSelectionChange }) => {

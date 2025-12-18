@@ -4,7 +4,6 @@ import AppContent from "@/app/App.jsx";
 import AppProviders from "@/app/providers/AppProviders.jsx";
 import { ThemeProvider } from '@mui/material'
 import theme from './theme.js'
-import "@/shared/styles/globals.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

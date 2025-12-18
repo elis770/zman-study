@@ -6,8 +6,9 @@ import GeneralSettings from "../modules/general-settings/ui/GeneralSettings.jsx"
 import ZmanimSettings from "../modules/zmanim/ui/ZmanimSettings.jsx";
 import StudySettings from "../modules/study/ui/StudySettings.jsx";
 import AvisosSettings from "../modules/avisos/ui/AvisosSettings.jsx";
+import MinianSettings from "../modules/minian/MinianSettings.jsx";
 import { cityList } from "../shared/lib/cities.js";
-import useUserLocation from "../modules/time/hooks/useUserLocation.js";
+import useUserLocation from "../modules/time/useUserLocation.js";
 
 import { useTheme } from "../shared/hooks/useTheme.js";
 import { useLanguage } from "../shared/hooks/useLanguage.js";
@@ -18,11 +19,23 @@ import { allStudies } from "../modules/study/hooks/studyConfig.js";
 export const SettingsSheet = ({ isOpen, onClose }) => {
   const { theme, toggleTheme } = useTheme();
   const { t, language, toggleLanguage } = useLanguage();
-  const { visibleZmanim, toggleZman, visibleEstudios, toggleEstudio,
+  const {
+    visibleZmanim, toggleZman, visibleEstudios, toggleEstudio,
     city: userCity, setCity: onUserCityChange, timeFormat, toggleTimeFormat,
     showMinian, toggleShowMinian, showHayomYom, toggleShowHayomYom,
     carouselInterval, setCarouselInterval, scrollSpeed, setScrollSpeed,
-    setBulkZmanim, setBulkEstudios } = useSettings();
+    setBulkZmanim, setBulkEstudios, minianimList, setMinianimList,
+    customAvisos, setCustomAvisos
+  } = useSettings();
+
+  const handleSaveMinian = (minian) => {
+    const newMinian = { ...minian, id: Date.now() };
+    setMinianimList(prev => [...prev, newMinian].sort((a, b) => a.time.localeCompare(b.time)));
+  };
+
+  const handleDeleteMinian = (id) => {
+    setMinianimList(prev => prev.filter(m => m.id !== id));
+  };
 
   const autoSwitchDelay = carouselInterval * 1000;
   const onAutoSwitchDelayChange = (val) => setCarouselInterval(val / 1000);
@@ -55,7 +68,6 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
     }
   };
 
-  const [customAvisos, setCustomAvisos] = useState([]);
   const onAddAviso = (aviso) => setCustomAvisos(prev => [...prev, { ...aviso, id: Date.now() }]);
   const onDeleteAviso = (id) => setCustomAvisos(prev => prev.filter(a => a.id !== id));
 
@@ -65,7 +77,8 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
     general: true,
     zmanim: true,
     study: true,
-    avisos: true
+    avisos: true,
+    minian: true
   });
 
   const [cityInput, setCityInput] = useState("");
@@ -312,6 +325,21 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
             customAvisos={customAvisos}
             onAddAviso={onAddAviso}
             onDeleteAviso={onDeleteAviso}
+          />
+        )}
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* MINIAN */}
+        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("minian")}>
+          {t("MINIAN_TITLE") || "Minyanim"}
+        </Typography>
+
+        {expanded.minian && (
+          <MinianSettings
+            minianimList={minianimList}
+            onSaveMinian={handleSaveMinian}
+            onDeleteMinian={handleDeleteMinian}
           />
         )}
       </Box>

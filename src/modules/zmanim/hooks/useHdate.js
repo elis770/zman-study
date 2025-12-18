@@ -1,6 +1,6 @@
 // useHdate.js
 import { useMemo, useState, useEffect } from 'react';
-import useUserLocation from "../../time/hooks/useUserLocation.js";
+import useUserLocation from "../../time/useUserLocation.js";
 import calculateSeventhHourMedian from "./use7th.js";
 import { GeoLocation, Zmanim } from '@hebcal/core';
 
