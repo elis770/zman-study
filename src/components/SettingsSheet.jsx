@@ -185,7 +185,21 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <Drawer anchor="right" open={isOpen} onClose={onClose} PaperProps={{ sx: { width: { xs: "100%", sm: 420 }, background: "linear-gradient(to bottom right, #f5efe3, #e8dcc3)", p: 3 } }}>
+    <Drawer
+      anchor="right"
+      open={isOpen}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          width: { xs: "70%", sm: "70%", md: 420 },
+          maxWidth: '100%',
+          background: "linear-gradient(to bottom right, #f5efe3, #e8dcc3)",
+          p: { xs: 2, sm: 3 },
+          borderRadius: { xs: '16px 0 0 16px', md: 0 },
+          boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
+        }
+      }}
+    >
       <Box>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
           <Typography variant="h5" sx={{ color: "#8b7355", fontWeight: 600 }}>

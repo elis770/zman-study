@@ -1,3 +1,4 @@
+import { Box, Button, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { allZmanim } from '../context/zmanimConfig.js';
 
 const ZmanimSettings = ({ t, visibleZmanim, onZmanimChange, onSelectionChange }) => {
@@ -9,23 +10,47 @@ const ZmanimSettings = ({ t, visibleZmanim, onZmanimChange, onSelectionChange })
   const buttonText = areAllSelected ? t('RESET_DEFAULT') : t('SELECT_ALL');
 
   return (
-    <div>
-      <div className={styles.selectionButtons}>
-        <button onClick={() => onSelectionChange(nextAction)}>{buttonText}</button>
-      </div>
-      <div className={styles.checkboxGroup}>
+    <Box>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => onSelectionChange(nextAction)}
+          sx={{ borderColor: '#bca886', color: '#8b7355', '&:hover': { borderColor: '#8b7355', backgroundColor: 'rgba(139, 115, 85, 0.04)' } }}
+        >
+          {buttonText}
+        </Button>
+      </Box>
+
+      <FormGroup sx={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+        gap: 1
+      }}>
         {allZmanim.map(zman => (
-          <label key={zman.key} className={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              checked={visibleZmanim.includes(zman.key)}
-              onChange={() => onZmanimChange(zman.key)}
-            />
-            {t(zman.labelKey)}
-          </label>
+          <FormControlLabel
+            key={zman.key}
+            control={
+              <Checkbox
+                checked={visibleZmanim.includes(zman.key)}
+                onChange={() => onZmanimChange(zman.key)}
+                sx={{
+                  color: '#bca886',
+                  '&.Mui-checked': { color: '#8b7355' }
+                }}
+              />
+            }
+            label={t(zman.labelKey)}
+            sx={{
+              '& .MuiFormControlLabel-label': {
+                fontSize: '0.9rem',
+                color: '#8b7355'
+              }
+            }}
+          />
         ))}
-      </div>
-    </div>
+      </FormGroup>
+    </Box>
   );
 };
 

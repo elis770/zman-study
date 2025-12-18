@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Box, Typography, Button, TextField, Select, MenuItem, FormControl, InputLabel, Paper, List, ListItem, ListItemText, IconButton } from "@mui/material";
+import { X } from "lucide-react";
 import { useLanguage } from '@/shared/hooks/useLanguage.js';
 
 const MinianSettings = ({ minianimList, onSaveMinian, onDeleteMinian }) => {
@@ -19,14 +21,14 @@ const MinianSettings = ({ minianimList, onSaveMinian, onDeleteMinian }) => {
         const hours = [];
         for (let i = 0; i < 24; i++) {
             const hourStr = i.toString().padStart(2, '0');
-            hours.push(<option key={hourStr} value={hourStr}>{hourStr}</option>);
+            hours.push(<MenuItem key={hourStr} value={hourStr}>{hourStr}</MenuItem>);
         }
         return hours;
     };
 
     const renderMinuteOptions = () => {
         return ['00', '15', '30', '45'].map(min => (
-            <option key={min} value={min}>{min}</option>
+            <MenuItem key={min} value={min}>{min}</MenuItem>
         ));
     };
 
@@ -37,68 +39,91 @@ const MinianSettings = ({ minianimList, onSaveMinian, onDeleteMinian }) => {
     };
 
     return (
-        <div className={styles.settingsContainer}>
-            <h4>{t('ADD_MINIAN')}</h4>
-            <form onSubmit={handleAdd} className={styles.modalForm} style={{ position: 'static', padding: 0, boxShadow: 'none' }}>
-                <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>{t('PRAYER')}</label>
-                    <select value={prayerType} onChange={(e) => setPrayerType(e.target.value)} className={styles.formSelect}>
-                        <option value="shajarit">🌅 {t('SHAJARIT')}</option>
-                        <option value="minja">🌇 {t('MINJA')}</option>
-                        <option value="maariv">🌃 {t('MAARIV')}</option>
-                    </select>
-                </div>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="h6" sx={{ color: '#8b7355', fontSize: '1rem' }}>
+                {t('ADD_MINIAN') || 'Agregar Minian'}
+            </Typography>
 
-                <div className={styles.timeSelector}>
-                    <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>{t('HOUR')}</label>
-                        <select value={hour} onChange={(e) => setHour(e.target.value)} className={styles.formSelect}>
+            <Box component="form" onSubmit={handleAdd} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <FormControl fullWidth size="small">
+                    <InputLabel sx={{ color: '#8b7355' }}>{t('PRAYER') || 'Tefilá'}</InputLabel>
+                    <Select
+                        value={prayerType}
+                        label={t('PRAYER') || 'Tefilá'}
+                        onChange={(e) => setPrayerType(e.target.value)}
+                        sx={{ backgroundColor: 'rgba(255,255,255,0.6)' }}
+                    >
+                        <MenuItem value="shajarit">🌅 {t('SHAJARIT')}</MenuItem>
+                        <MenuItem value="minja">🌇 {t('MINJA')}</MenuItem>
+                        <MenuItem value="maariv">🌃 {t('MAARIV')}</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    <FormControl fullWidth size="small">
+                        <InputLabel>{t('HOUR') || 'Hora'}</InputLabel>
+                        <Select
+                            value={hour}
+                            label={t('HOUR') || 'Hora'}
+                            onChange={(e) => setHour(e.target.value)}
+                            sx={{ backgroundColor: 'rgba(255,255,255,0.6)' }}
+                        >
                             {renderHourOptions()}
-                        </select>
-                    </div>
-                    <span className={styles.timeSeparator}>:</span>
-                    <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>{t('MINUTE')}</label>
-                        <select value={minute} onChange={(e) => setMinute(e.target.value)} className={styles.formSelect}>
+                        </Select>
+                    </FormControl>
+                    <Typography>:</Typography>
+                    <FormControl fullWidth size="small">
+                        <InputLabel>{t('MINUTE') || 'Minuto'}</InputLabel>
+                        <Select
+                            value={minute}
+                            label={t('MINUTE') || 'Minuto'}
+                            onChange={(e) => setMinute(e.target.value)}
+                            sx={{ backgroundColor: 'rgba(255,255,255,0.6)' }}
+                        >
                             {renderMinuteOptions()}
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" className={styles.saveButton} style={{ width: '100%', marginTop: '1rem' }}>
-                    {t('SAVE')}
-                </button>
-            </form>
+                        </Select>
+                    </FormControl>
+                </Box>
+
+                <Button
+                    type="submit"
+                    variant="contained"
+                    sx={{ backgroundColor: '#bca886', color: 'white', '&:hover': { backgroundColor: '#a89474' } }}
+                >
+                    {t('SAVE') || 'Guardar'}
+                </Button>
+            </Box>
 
             {minianimList.length > 0 && (
-                <div style={{ marginTop: '2rem' }}>
-                    <h4>{t('MANAGE_MINIANIM') || 'Gestionar Minianim'}</h4>
-                    <div className={styles.minianList} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant="h6" sx={{ color: '#8b7355', fontSize: '1rem', mb: 1 }}>
+                        {t('MANAGE_MINIANIM') || 'Gestionar Minianim'}
+                    </Typography>
+                    <List dense sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         {minianimList.map(minian => (
-                            <div key={minian.id} style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                padding: '0.75rem',
-                                backgroundColor: 'rgba(255,255,255,0.5)',
-                                borderRadius: '8px'
-                            }}>
-                                <span>{prayerIcons[minian.type]} {t(minian.type.toUpperCase())} - {minian.time}</span>
-                                <button
-                                    onClick={() => onDeleteMinian(minian.id)}
-                                    style={{
-                                        border: 'none',
-                                        background: 'none',
-                                        fontSize: '1.2rem',
-                                        cursor: 'pointer',
-                                        color: '#8b7355'
-                                    }}
-                                >&times;</button>
-                            </div>
+                            <ListItem
+                                key={minian.id}
+                                sx={{
+                                    backgroundColor: 'rgba(255,255,255,0.5)',
+                                    borderRadius: '8px',
+                                    border: '1px solid rgba(188, 168, 134, 0.2)'
+                                }}
+                                secondaryAction={
+                                    <IconButton edge="end" onClick={() => onDeleteMinian(minian.id)}>
+                                        <X size={18} color="#8b7355" />
+                                    </IconButton>
+                                }
+                            >
+                                <ListItemText
+                                    primary={`${prayerIcons[minian.type]} ${t(minian.type.toUpperCase())} - ${minian.time}`}
+                                    sx={{ '& .MuiListItemText-primary': { color: '#8b7355', fontSize: '0.9rem' } }}
+                                />
+                            </ListItem>
                         ))}
-                    </div>
-                </div>
+                    </List>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 };
 

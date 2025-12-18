@@ -1,5 +1,4 @@
-import styles from '../styles/GeneralSettings.module.css';
-import { Slider, Typography, Divider } from "@mui/material";
+import { Slider, Typography, Divider, Box, Button } from "@mui/material";
 
 const GeneralSettings = ({
   t,
@@ -16,26 +15,60 @@ const GeneralSettings = ({
   scrollSpeed,
   setScrollSpeed
 }) => {
+  const buttonStyle = {
+    justifyContent: 'flex-start',
+    borderColor: 'rgba(188, 168, 134, 0.3)',
+    color: '#8b7355',
+    mb: 1,
+    '&:hover': {
+      backgroundColor: 'rgba(139, 115, 85, 0.04)',
+      borderColor: '#8b7355'
+    }
+  };
+
   return (
-    <div className={styles.buttonGroup}>
-      <button onClick={toggleLanguage} className={styles.modalButton}>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Button
+        fullWidth
+        variant="outlined"
+        onClick={toggleLanguage}
+        sx={buttonStyle}
+      >
         {t(language === 'es' ? 'CHANGE_TO_HEBREW' : 'CHANGE_TO_SPANISH')}
-      </button>
-      <button onClick={toggleTimeFormat} className={styles.modalButton}>
-        {`${t('TIME_FORMAT_LABEL')}: ${timeFormat === '12h' ? t('TIME_FORMAT_12H') : t('TIME_FORMAT_24H')} (${timeFormat === '12h' ? t('CHANGE_TO_24H') : t('CHANGE_TO_12H')})`}
-      </button>
-      <button onClick={toggleShowMinian} className={styles.modalButton}>
-        {showMinian ? t('HIDE_MINIAN') : t('SHOW_MINIAN')}
-      </button>
-      <button onClick={toggleShowHayomYom} className={styles.modalButton}>
-        {showHayomYom ? t('HIDE_HAYOM_YOM') : t('SHOW_HAYOM_YOM')}
-      </button>
+      </Button>
+
+      <Button
+        fullWidth
+        variant="outlined"
+        onClick={toggleTimeFormat}
+        sx={buttonStyle}
+      >
+        {`${t('TIME_FORMAT_LABEL') || 'Formato de hora'}: ${timeFormat === '12h' ? t('TIME_FORMAT_12H') || '12h' : t('TIME_FORMAT_24H') || '24h'} (${timeFormat === '12h' ? t('CHANGE_TO_24H') || 'Cambiar a 24h' : t('CHANGE_TO_12H') || 'Cambiar a 12h'})`}
+      </Button>
+
+      <Button
+        fullWidth
+        variant="outlined"
+        onClick={toggleShowMinian}
+        sx={buttonStyle}
+      >
+        {showMinian ? t('HIDE_MINIAN') || 'Ocultar Minianim' : t('SHOW_MINIAN') || 'Mostrar Minianim'}
+      </Button>
+
+      <Button
+        fullWidth
+        variant="outlined"
+        onClick={toggleShowHayomYom}
+        sx={buttonStyle}
+      >
+        {showHayomYom ? t('HIDE_HAYOM_YOM') || 'Ocultar Hayom Yom' : t('SHOW_HAYOM_YOM') || 'Mostrar Hayom Yom'}
+      </Button>
 
       <Divider sx={{ my: 3 }} />
 
-      <div className={styles.sliderContainer} style={{ marginTop: '1rem' }}>
-        <Typography sx={{ color: '#8b7355', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-          Intervalo de rotación de estudios (segundos)
+      <Box sx={{ mt: 1 }}>
+        <Typography sx={{ color: '#8b7355', fontSize: '0.9rem', mb: 1 }}>
+          {t('ROTATION_INTERVAL') || 'Intervalo de rotación de estudios (segundos)'}
         </Typography>
         <Slider
           value={autoSwitchDelay / 1000}
@@ -43,12 +76,17 @@ const GeneralSettings = ({
           max={30}
           step={1}
           onChange={(_, val) => onAutoSwitchDelayChange(val * 1000)}
-          sx={{ color: '#bca886' }}
+          sx={{
+            color: '#bca886',
+            '& .MuiSlider-thumb': { backgroundColor: '#8b7355' },
+            '& .MuiSlider-track': { backgroundColor: '#8b7355' }
+          }}
         />
-      </div>
-      <div className={styles.sliderContainer} style={{ marginTop: '1rem' }}>
-        <Typography sx={{ color: '#8b7355', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-          Velocidad del scroll
+      </Box>
+
+      <Box sx={{ mt: 2 }}>
+        <Typography sx={{ color: '#8b7355', fontSize: '0.9rem', mb: 1 }}>
+          {t('SCROLL_SPEED') || 'Velocidad del scroll'}
         </Typography>
         <Slider
           value={scrollSpeed}
@@ -56,10 +94,14 @@ const GeneralSettings = ({
           max={3}
           step={0.1}
           onChange={(_, val) => setScrollSpeed(val)}
-          sx={{ color: '#bca886' }}
+          sx={{
+            color: '#bca886',
+            '& .MuiSlider-thumb': { backgroundColor: '#8b7355' },
+            '& .MuiSlider-track': { backgroundColor: '#8b7355' }
+          }}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
