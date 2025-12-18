@@ -27,31 +27,98 @@ export function Header() {
 
   return (
     <>
-      <Box component="header" sx={{ width: '100%', height: { xs: '96px', sm: '120px' }, backgroundColor: theme.custom.colors.glass.background, backdropFilter: 'blur(12px)', borderBottom: `1px solid ${theme.custom.colors.border.main}`, position: 'sticky', top: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box component="header" sx={{
+        width: '100%',
+        height: { xs: 'auto', sm: '120px' },
+        minHeight: { xs: '180px', sm: '120px' },
+        backgroundColor: theme.custom.colors.glass.background,
+        backdropFilter: 'blur(12px)',
+        borderBottom: `1px solid ${theme.custom.colors.border.main}`,
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        py: { xs: 2, sm: 0 }
+      }}>
         {/* Main content container */}
-        <Box sx={{ maxWidth: '1280px', width: '100%', px: { xs: 2, sm: 3, lg: 4 }, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
-          {/* Empty space for balance (optional) */}
-          <Box sx={{ flex: '0 0 auto', width: { xs: 0, md: '120px' } }} />
+        <Box sx={{
+          maxWidth: '1280px',
+          width: '100%',
+          px: { xs: 1.5, sm: 2, md: 4 },
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: { xs: 0.5, sm: 1.5, md: 4 }
+        }}>
 
-          {/* Center: Time and Date/Location side-by-side */}
-          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: { xs: 2, sm: 4 } }}>
-            {/* Time display */}
-            <Typography sx={{ color: theme.palette.text.primary, letterSpacing: '0.05em', fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' }, fontWeight: 700, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+          {/* Mobile: Icons Row (Top) / Desktop: Empty space or part of flex layout */}
+          <Box sx={{
+            order: { xs: 1, sm: 3 },
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 0.5,
+            alignItems: 'center',
+            width: { xs: '100%', sm: 'auto' },
+            justifyContent: { xs: 'center', sm: 'flex-end' }
+          }}>
+            <IconButton onClick={() => setAboutProjectOpen(true)} sx={{ color: theme.palette.text.primary, '&:hover': { backgroundColor: theme.custom.colors.border.light }, p: { xs: 1, sm: 1.5 } }}>
+              <Star style={{ width: '22px', height: '22px', fill: theme.palette.secondary.main }} />
+            </IconButton>
+
+            <IconButton onClick={() => setAboutMeOpen(true)} sx={{ color: theme.palette.text.primary, '&:hover': { backgroundColor: theme.custom.colors.border.light }, p: { xs: 1, sm: 1.5 } }}>
+              <User style={{ width: '22px', height: '22px' }} />
+            </IconButton>
+
+            <IconButton onClick={() => setSettingsOpen(true)} sx={{ color: theme.palette.text.primary, '&:hover': { backgroundColor: theme.custom.colors.border.light }, p: { xs: 1, sm: 1.5 } }}>
+              <Settings style={{ width: '22px', height: '22px' }} />
+            </IconButton>
+
+            <SettingsSheet isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+          </Box>
+
+          {/* Time Display - Mobile: Middle, Desktop: Center */}
+          <Box sx={{
+            order: { xs: 2, sm: 2 },
+            flex: 1,
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: { xs: 0, sm: 1.5, md: 4 },
+            textAlign: 'center'
+          }}>
+            <Typography sx={{
+              color: theme.palette.text.primary,
+              letterSpacing: '0.05em',
+              fontSize: { xs: '8vh', sm: '3rem', md: '4.5rem' },
+              fontWeight: 700,
+              fontVariantNumeric: 'tabular-nums',
+              lineHeight: 1
+            }}>
               {time}
             </Typography>
 
-            {/* Date and Location stacked Column */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+            {/* Date and Location - Mobile: Bottom, Desktop: Side of time */}
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: { xs: 'center', sm: 'flex-start' },
+              justifyContent: 'center',
+              mt: { xs: 0.5, sm: 0 }
+            }}>
               {/* Date display with animation */}
-              <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', minWidth: '200px', height: '32px' }}>
+              <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-start' }, alignItems: 'center', minWidth: { xs: '100%', sm: '180px', md: '200px' }, height: '32px' }}>
                 <AnimatePresence mode="wait">
                   {showHebrewDate ? (
-                    <motion.div key="hebrew" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.5 }} style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
-                      <Typography className="hebrew-text" sx={{ color: theme.palette.text.primary, fontSize: '1.1rem', fontWeight: 600 }}>{hebrewDate}</Typography>
+                    <motion.div key="hebrew" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.5 }} style={{ display: 'flex', justifyContent: 'inherit', alignItems: 'center', width: '100%' }}>
+                      <Typography className="hebrew-text" sx={{ color: theme.palette.text.primary, fontSize: { xs: '1rem', sm: '1.1rem' }, fontWeight: 600 }}>{hebrewDate}</Typography>
                     </motion.div>
                   ) : (
-                    <motion.div key="gregorian" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.5 }} style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
-                      <Typography sx={{ color: theme.palette.text.primary, fontSize: '1.1rem', textTransform: 'capitalize' }}>{formattedDate}</Typography>
+                    <motion.div key="gregorian" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.5 }} style={{ display: 'flex', justifyContent: 'inherit', alignItems: 'center', width: '100%' }}>
+                      <Typography sx={{ color: theme.palette.text.primary, fontSize: { xs: '1rem', sm: '1.1rem' }, textTransform: 'capitalize' }}>{formattedDate}</Typography>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -59,30 +126,21 @@ export function Header() {
 
               {/* Location info */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: theme.custom.colors.text.quaternary }}>
-                <MapPin style={{ width: '14px', height: '14px' }} />
-                <Typography sx={{ fontSize: '0.75rem' }}>
+                <MapPin style={{ width: '12px', height: '12px' }} />
+                <Typography sx={{ fontSize: '0.7rem' }}>
                   {city} • {tzid}
                 </Typography>
               </Box>
             </Box>
           </Box>
 
-          {/* Right: Buttons horizontal */}
-          <Box sx={{ flex: '0 0 auto', display: 'flex', flexDirection: 'row', gap: 0.5, alignItems: 'center' }}>
-            <IconButton onClick={() => setAboutProjectOpen(true)} sx={{ color: theme.palette.text.primary, '&:hover': { backgroundColor: theme.custom.colors.border.light } }}>
-              <Star style={{ width: '20px', height: '20px', fill: theme.palette.secondary.main }} />
-            </IconButton>
-
-            <IconButton onClick={() => setAboutMeOpen(true)} sx={{ color: theme.palette.text.primary, '&:hover': { backgroundColor: theme.custom.colors.border.light } }}>
-              <User style={{ width: '20px', height: '20px' }} />
-            </IconButton>
-
-            <IconButton onClick={() => setSettingsOpen(true)} sx={{ color: theme.palette.text.primary, '&:hover': { backgroundColor: theme.custom.colors.border.light } }}>
-              <Settings style={{ width: '20px', height: '20px' }} />
-            </IconButton>
-
-            <SettingsSheet isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
-          </Box>
+          {/* Desktop Left Spacer */}
+          <Box sx={{
+            order: 0,
+            flex: '0 0 auto',
+            width: { xs: 0, sm: 0, md: '120px' },
+            display: { xs: 'none', md: 'block' }
+          }} />
         </Box>
       </Box>
 

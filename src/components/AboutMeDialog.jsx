@@ -16,18 +16,25 @@ export function AboutMeDialog({ open, onClose }) {
           backdropFilter: 'blur(12px)',
           border: `1px solid ${theme.custom.colors.border.main}`,
           borderRadius: '16px',
+          maxHeight: { xs: '90vh', md: '80vh' },
+          height: { xs: 'auto', md: '50vh' },
+          width: { xs: '95vw', md: '50vw' },
+          maxWidth: '800px',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
         }
       }}
     >
-      <DialogTitle sx={{ 
+      <DialogTitle sx={{
         textAlign: 'center',
         position: 'relative',
         pt: 4,
         pb: 1
       }}>
-        <IconButton 
+        <IconButton
           onClick={onClose}
-          sx={{ 
+          sx={{
             position: 'absolute',
             right: 12,
             top: 12,
@@ -38,10 +45,10 @@ export function AboutMeDialog({ open, onClose }) {
           <X style={{ width: '20px', height: '20px' }} />
         </IconButton>
 
-        <Box 
+        <Box
           component="img"
-          src="/122.png" 
-          alt="Eliahu" 
+          src="/122.png"
+          alt="Eliahu"
           sx={{
             width: '120px',
             height: '120px',
@@ -52,18 +59,18 @@ export function AboutMeDialog({ open, onClose }) {
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
             display: 'block',
             mx: 'auto'
-          }} 
+          }}
         />
-        
-        <Typography variant="h5" sx={{ 
-          color: theme.palette.text.primary, 
+
+        <Typography variant="h5" sx={{
+          color: theme.palette.text.primary,
           fontWeight: 700,
           letterSpacing: '0.02em'
         }}>
           Sobre Mí
         </Typography>
-        <Typography variant="h5" sx={{ 
-          color: theme.palette.text.primary, 
+        <Typography variant="h5" sx={{
+          color: theme.palette.text.primary,
           fontWeight: 700,
           letterSpacing: '0.02em'
         }}>
@@ -75,7 +82,7 @@ export function AboutMeDialog({ open, onClose }) {
       <DialogContent>
         <Box sx={{ py: 2 }}>
           <Typography sx={{ color: theme.palette.text.primary, mb: 2, lineHeight: 1.7 }}>
-             Apasionado por la tecnología y la creación de soluciones que impactan positivamente.
+            Apasionado por la tecnología y la creación de soluciones que impactan positivamente.
             Este proyecto es una demostración de mis habilidades en React y facilitar el acceso a información
             importante para la vida judía diaria, combinando tecnología moderna con sabiduría ancestral.
           </Typography>
@@ -87,7 +94,7 @@ export function AboutMeDialog({ open, onClose }) {
           </Typography> */}
 
           <Typography sx={{ color: theme.custom.colors.text.tertiary, fontSize: '0.875rem', fontStyle: 'italic' }}>
-             Puedes encontrar más sobre mi trabajo en <a href="https://github.com/elis770" target="_blank" rel="noopener noreferrer">mi GitHub</a>.
+            Puedes encontrar más sobre mi trabajo en <a href="https://github.com/elis770" target="_blank" rel="noopener noreferrer">mi GitHub</a>.
           </Typography>
         </Box>
       </DialogContent>

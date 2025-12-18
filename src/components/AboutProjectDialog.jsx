@@ -3,10 +3,10 @@ import { X } from "lucide-react";
 
 export function AboutProjectDialog({ open, onClose }) {
   const theme = useTheme();
-  
+
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={onClose}
       maxWidth="sm"
       fullWidth
@@ -16,6 +16,13 @@ export function AboutProjectDialog({ open, onClose }) {
           backdropFilter: 'blur(12px)',
           border: `1px solid ${theme.custom.colors.border.main}`,
           borderRadius: '16px',
+          maxHeight: { xs: '90vh', md: '80vh' },
+          height: { xs: 'auto', md: '50vh' },
+          width: { xs: '95vw', md: '50vw' },
+          maxWidth: '800px',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
         }
       }}
     >
@@ -36,17 +43,17 @@ export function AboutProjectDialog({ open, onClose }) {
         }}
       />
       <DialogTitle sx={{
-        display: 'flex', 
-        justifyContent: 'space-between', 
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
         color: theme.palette.text.primary,
         fontWeight: 600,
         pb: 1
       }}>
         Sobre el Proyecto
-        <IconButton 
+        <IconButton
           onClick={onClose}
-          sx={{ 
+          sx={{
             color: theme.palette.text.primary,
             '&:hover': { backgroundColor: theme.custom.colors.border.light }
           }}
@@ -57,14 +64,14 @@ export function AboutProjectDialog({ open, onClose }) {
       <DialogContent>
         <Box sx={{ py: 2 }}>
           <Typography sx={{ color: theme.palette.text.primary, mb: 2, lineHeight: 1.7 }}>
-            <strong>KosherClock</strong> es una aplicación diseñada para ayudar a la comunidad judía 
+            <strong>KosherClock</strong> es una aplicación diseñada para ayudar a la comunidad judía
             a mantenerse conectada con sus tradiciones diarias.
           </Typography>
-          
+
           <Typography sx={{ color: theme.palette.text.secondary, mb: 2, lineHeight: 1.7 }}>
             Proporciona acceso rápido a:
           </Typography>
-          
+
           <Box component="ul" sx={{ color: theme.palette.text.secondary, pl: 3, mb: 2 }}>
             <li>Zmanim (tiempos halájicos) precisos para tu ubicación</li>
             <li>Calendario hebreo y gregoriano</li>
@@ -83,7 +90,7 @@ export function AboutProjectDialog({ open, onClose }) {
             <li>Diseño centrado en la facilidad de uso y acceso rápido</li>
             <li>Optimizado para detección automática de ubicación y horarios globales</li>
           </Box>
-          
+
           <Typography sx={{ color: theme.custom.colors.text.tertiary, fontSize: '0.875rem', fontStyle: 'italic' }}>
             Puedes encontrar más sobre este proyecto en <a href="https://github.com/elis770/zman-study" target="_blank" rel="noopener noreferrer">este link de GitHub</a>.
           </Typography>
