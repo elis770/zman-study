@@ -1,6 +1,5 @@
 import { Header } from "../components/Header";
-import { MainCardCarousel } from "../components/MainCardCarousel";
-import { MainCardCarousel2 } from "../components/MainCardCarousel2";
+import MainCardCarousel from "../components/MainCardCarousel";
 import { Box } from "@mui/material";
 
 export default function App() {
@@ -31,22 +30,8 @@ export default function App() {
           overflowX: 'hidden'
         }}
       >
-        <Box sx={{
-          width: { xs: '90%', md: '45%' },
-          maxWidth: '650px',
-          height: { xs: '550px', md: '72vh' },
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
-          <MainCardCarousel2 />
-        </Box>
-        <Box sx={{
-          width: { xs: '90%', md: '45%' },
-          maxWidth: '650px',
-          height: { xs: '550px', md: '72vh' },
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
+        <Box sx={{ width: { xs: '100%', md: '90%' }, maxWidth: '1300px', display: 'flex', justifyContent: 'center' }}>
+          {/* Unified MainCardCarousel handles two boxes internally (responsive). */}
           <MainCardCarousel />
         </Box>
       </Box>

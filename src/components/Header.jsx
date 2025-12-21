@@ -3,9 +3,8 @@ import { Box, Typography, IconButton, useTheme } from "@mui/material";
 import { Star, User, Settings } from "lucide-react";
 import { MapPin } from "lucide-react";
 import { SettingsSheet } from "./SettingsSheet";
-import { SettingsSheet2 } from "./SettingsSheet2";
-import { AboutProjectDialog } from "./AboutProjectDialog";
-import { AboutMeDialog } from "./AboutMeDialog";
+import { AboutProjectDialog } from "../modules/AboutProyect/AboutProjectDialog";
+import { AboutMeDialog } from "../modules/AboutMe/AboutMeDialog";
 import { motion, AnimatePresence } from "motion/react";
 
 import { useAppData } from '@/shared/hooks/useAppData.js';

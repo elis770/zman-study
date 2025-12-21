@@ -37,6 +37,11 @@ export function SettingsProvider({ children }) {
   const [city, setCity] = usePersistentState("userCity", "Buenos Aires");
   const [timezone, setTimezone] = usePersistentState("timezone", "America/Argentina/Buenos_Aires");
   const [carouselInterval, setCarouselInterval] = usePersistentState("carouselInterval", 5);
+  // layout for the two main carousels: arrays of card ids (order matters)
+  const [carouselLayout, setCarouselLayout] = usePersistentState(
+    "carouselLayout",
+    { left: ["zmanim", "study"], right: ["minian", "avisos", "seider"] }
+  );
   const [timeFormat, setTimeFormat] = usePersistentState("timeFormat", "24h");
   const [showMinian, setShowMinian] = usePersistentState("showMinian", true);
   const [showHayomYom, setShowHayomYom] = usePersistentState("showHayomYom", true);
@@ -45,6 +50,7 @@ export function SettingsProvider({ children }) {
   // Dynamic card configuration
   const [visibleCards, setVisibleCards] = usePersistentState("visibleCards", {});
   const [minianimList, setMinianimList] = usePersistentState("minianimList", []);
+  const [seiderList, setSeiderList] = usePersistentState("seiderList", []);
   const [customAvisos, setCustomAvisos] = usePersistentState("customAvisos", []);
   const [cardDefinitions, setCardDefinitions] = usePersistentState("cardDefinitions", {});
 
@@ -102,6 +108,8 @@ export function SettingsProvider({ children }) {
         city,
         timezone,
         carouselInterval,
+        carouselLayout,
+        setCarouselLayout,
         timeFormat,
         showMinian,
         showHayomYom,
@@ -122,6 +130,8 @@ export function SettingsProvider({ children }) {
         setCarouselInterval,
         minianimList,
         setMinianimList,
+        seiderList, 
+        setSeiderList,
         customAvisos,
         setCustomAvisos
       }}

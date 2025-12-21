@@ -2,11 +2,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Drawer, Box, Typography, IconButton, Divider, TextField, Button, Paper, List, ListItemButton, ListItemText, Slider } from "@mui/material";
 import { X, MapPin, } from "lucide-react";
 
-import GeneralSettings from "../modules/general-settings/ui/GeneralSettings.jsx";
+import GeneralSettings1 from "../modules/general-settings/GeneralSettings1.jsx";
 import ZmanimSettings from "../modules/zmanim/ui/ZmanimSettings.jsx";
 import StudySettings from "../modules/study/ui/StudySettings.jsx";
 import AvisosSettings from "../modules/avisos/ui/AvisosSettings.jsx";
-import MinianSettings from "../modules/minian/MinianSettings.jsx";
+import TimeListSettings from "../modules/minian/TimeListSettings.jsx";
 import { cityList } from "../shared/lib/cities.js";
 import useUserLocation from "../modules/time/useUserLocation.js";
 
@@ -25,6 +25,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
     showMinian, toggleShowMinian, showHayomYom, toggleShowHayomYom,
     carouselInterval, setCarouselInterval, scrollSpeed, setScrollSpeed,
     setBulkZmanim, setBulkEstudios, minianimList, setMinianimList,
+    seiderList, setSeiderList,
     customAvisos, setCustomAvisos
   } = useSettings();
 
@@ -37,13 +38,20 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
     setMinianimList(prev => prev.filter(m => m.id !== id));
   };
 
+  const handleSaveSeider = (item) => {
+    const newItem = { ...item, id: Date.now() };
+    setSeiderList(prev => [...prev, newItem].sort((a, b) => a.time.localeCompare(b.time)));
+  };
+
+  const handleDeleteSeider = (id) => {
+    setSeiderList(prev => prev.filter(s => s.id !== id));
+  };
+
   const autoSwitchDelay = carouselInterval * 1000;
   const onAutoSwitchDelayChange = (val) => setCarouselInterval(val / 1000);
 
   const visibleZmanimArray = Object.keys(visibleZmanim).filter(k => visibleZmanim[k]);
   const visibleStudiesArray = Object.keys(visibleEstudios).filter(k => visibleEstudios[k]);
-
-
 
   const onZmanimSelectionChange = (action) => {
     if (action === 'all') {
@@ -78,7 +86,8 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
     zmanim: true,
     study: true,
     avisos: true,
-    minian: true
+    minian: true,
+    seider: true
   });
 
   const [cityInput, setCityInput] = useState("");
@@ -273,7 +282,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
 
           {expanded.general && (
             <>
-              <GeneralSettings
+              <GeneralSettings1
                 t={t}
                 theme={theme}
                 toggleTheme={toggleTheme}
@@ -350,10 +359,29 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
         </Typography>
 
         {expanded.minian && (
-          <MinianSettings
-            minianimList={minianimList}
-            onSaveMinian={handleSaveMinian}
-            onDeleteMinian={handleDeleteMinian}
+          <TimeListSettings
+            list={minianimList}
+            onSave={handleSaveMinian}
+            onDelete={handleDeleteMinian}
+            addTitleKey={'ADD_MINIAN'}
+            manageTitleKey={'MANAGE_MINIANIM'}
+          />
+        )}
+        
+        <Divider sx={{ my: 3 }} />
+
+        {/* SEIDER */}
+        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("seider")}>
+          {t("SEIDER_TITLE") || "Seider"}
+        </Typography>
+
+        {expanded.seider && (
+          <TimeListSettings
+            list={seiderList}
+            onSave={handleSaveSeider}
+            onDelete={handleDeleteSeider}
+            addTitleKey={'ADD_SEIDER'}
+            manageTitleKey={'MANAGE_SEIDER'}
           />
         )}
       </Box>

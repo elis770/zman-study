@@ -62,14 +62,14 @@ export function AboutMeDialog({ open, onClose }) {
           }}
         />
 
-        <Typography variant="h5" sx={{
+        <Typography variant="h5" component="div" sx={{
           color: theme.palette.text.primary,
           fontWeight: 700,
           letterSpacing: '0.02em'
         }}>
           Sobre Mí
         </Typography>
-        <Typography variant="h5" sx={{
+        <Typography variant="h5" component="div" sx={{
           color: theme.palette.text.primary,
           fontWeight: 700,
           letterSpacing: '0.02em'
