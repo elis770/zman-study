@@ -1,7 +1,7 @@
 import React from 'react';
-import { DataProvider } from '@/shared/context/DataContext.jsx';
-import { LanguageProvider } from '@/shared/context/LanguageContext';
-import { SettingsProvider, useSettings } from '@/components/SettingsContext';
+import { DataProvider } from '@/data/DataContext.jsx';
+import { LanguageProvider } from '@/shared/traslantions/LanguageContext.jsx';
+import { SettingsProvider, useSettings } from '@/modules/settings/context/SettingsContext.jsx';
 
 // Inner component that consumes settings and passes to DataProvider
 function DataProviderWrapper({ children }) {

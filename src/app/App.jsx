@@ -1,5 +1,5 @@
-import { Header } from "../components/Header";
-import MainCardCarousel from "../components/MainCardCarousel";
+import { Header } from "../modules/header/Header";
+import MainCardCarousel from "../modules/mainCard/MainCardCarousel";
 import { Box } from "@mui/material";
 
 export default function App() {
