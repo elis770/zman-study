@@ -1,16 +1,29 @@
 import { useMemo } from 'react';
 import { Flame, Moon, Scroll, Volume2, Star, Megaphone, Calendar, BookOpen, Bell, Heart } from "lucide-react";
-import { useAppData } from '@/data/useAppData.js';
+import { useAppData } from '../../../../data/useAppData.js';
 import { useSettings } from "../../../settings/context/SettingsContext";
 import useSpecialDay from '../../../../data/avisos/useSpecialDay';
 
 export const useAvisosCards = () => {
   const { customAvisos } = useSettings();
-  const { time, jadashot } = useAppData();
+  const { time, jadashot, zmanim } = useAppData();
+  //console.log(useAppData());
   const specialDay = useSpecialDay();
 
   const { date } = time || {};
-  const dayOfWeek = date ? new Date(date).getDay() : -1;
+  
+  // Si ya pasó la puesta del sol, el día "lógico" para los avisos es el de mañana.
+  const effectiveDate = useMemo(() => {
+    if (!date) return null;
+    if (zmanim?.isAfterSunset) {
+      const tomorrow = new Date(date);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return tomorrow;
+    }
+    return date;
+  }, [date, zmanim?.isAfterSunset]);
+
+  const dayOfWeek = effectiveDate ? effectiveDate.getDay() : -1;
   const { jadashotCards, candleLighting, tzet_hashabat: tzet } = jadashot || {};
 
   const categoryIcons = {
@@ -32,7 +45,14 @@ export const useAvisosCards = () => {
       allAvisos.push({
         icon: categoryIcons.shabbat,
         title: 'Encendido de Velas',
-        value: candleLighting
+        value: (() => {
+          const [h, m] = candleLighting.split(':').map(Number);
+          const appData = useAppData();
+          const isJerusalem = appData?.time?.tzid?.toLowerCase().includes('jerusalem');
+          const date = new Date();
+          date.setHours(h, m - (isJerusalem ? 30 : 18));
+          return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        })()
       });
     }
 

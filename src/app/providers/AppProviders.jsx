@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataProvider } from '@/data/DataContext.jsx';
+import { DataProvider } from '../../data/DataContext.jsx';
 import { LanguageProvider } from '@/shared/traslantions/LanguageContext.jsx';
 import { SettingsProvider, useSettings } from '@/modules/settings/context/SettingsContext.jsx';
 

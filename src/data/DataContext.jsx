@@ -1,4 +1,4 @@
-import { createContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { HDate } from '@hebcal/core';
 
 import useGregorianTime from './time/useGregorianTime.js';
@@ -8,7 +8,7 @@ import useHdate from './zmanim/useHdate.js';
 import useHayomYom from './hayom-yom/useHayomYom.js';
 import useStudy from './study/useStudy.js';
 
-export const AppContext = createContext(null);
+import { AppContext } from './AppContext.js';
 
 // --- HELPERS ---
 const toStr = (v) => (typeof v === 'string' ? v : v?.toString?.() ?? '');
@@ -65,10 +65,13 @@ export const DataProvider = ({ children, userCity, timeFormat }) => {
   const gregorianData = useGregorianTime({ city: userCity, timeFormat });
   const { date, tzid } = gregorianData;
 
-  // 2) Fecha hebrea (usando la zona horaria)
-  const hebrewData = useHebrewDate(date, tzid);
+  // 2) Zmanim (necesario para saber si ya pasó la puesta del sol)
+  const hdateData = useHdate({ ...gregorianData, userCity, timeFormat });
 
-  // 3) Fuentes
+  // 3) Fecha hebrea (usando la zona horaria y el flag de puesta del sol)
+  const hebrewData = useHebrewDate(date, tzid, hdateData.isAfterSunset);
+
+  // 4) Fuentes
   const sefariaData = useSefaria({ ...gregorianData, userCity });
   const studyData = useStudy({
     ...gregorianData,
@@ -77,9 +80,8 @@ export const DataProvider = ({ children, userCity, timeFormat }) => {
     userCity,
   });
   const hayomYom = useHayomYom();
-  const hdateData = useHdate({ ...gregorianData, userCity, timeFormat });
 
-  // 4) Hebrew date fallback
+  // 5) Hebrew date fallback
   const hebrewDate = useMemo(() => {
     if (typeof hebrewData.hebrewDate === 'string' && hebrewData.hebrewDate) {
       return hebrewData.hebrewDate;
@@ -114,6 +116,7 @@ export const DataProvider = ({ children, userCity, timeFormat }) => {
       time: {
         ...gregorianData,
         hebrewDate,
+        hebrewObj: hebrewData.hebrewObj,
         loading: gregorianData.loading,
         error: gregorianData.error,
       },

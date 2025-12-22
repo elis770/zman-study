@@ -1,5 +1,5 @@
 import { useSettings } from "../../../settings/context/SettingsContext";
-import { useAppData } from "@/data/useAppData.js";
+import { useAppData } from "../../../../data/useAppData.js";
 import { useLanguage } from "@/shared/traslantions/useLanguage.js";
 
 export const useTextCards = () => {

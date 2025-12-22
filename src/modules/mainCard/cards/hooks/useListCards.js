@@ -1,6 +1,6 @@
 import { Clock, Sunrise, Sun, Sunset, Moon, Scroll, BookOpen, Music, Gavel, Calendar, Scale } from "lucide-react";
 import { useSettings } from "../../../settings/context/SettingsContext";
-import { useAppData } from "@/data/useAppData.js";
+import { useAppData } from "../../../../data/useAppData.js";
 import { useLanguage } from "@/shared/traslantions/useLanguage.js";
 
 export const useListCards = () => {

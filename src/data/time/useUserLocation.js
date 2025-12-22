@@ -82,47 +82,38 @@ export default function useUserLocation(options = {}) {
         }
       }
 
-      // 3️⃣ Geolocalización del navegador (Promisified)
+      // 3️⃣ Detección por IP (Prioridad: Silenciosa y completa)
       try {
-        const pos = await new Promise((resolve, reject) => {
-          if (!navigator.geolocation) return reject(new Error("Geolocation no soportado"));
-          navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
-        });
-        if (mounted) {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          setLatitude(lat);
-          setLongitude(lon);
-          const tz = tzlookup(lat, lon);
-          setTzid(tz);
-          setCity("Ubicación detectada");
-          setCountry("");
-          setDetectionMethod('geolocation');
+        const data = await fetchWithTimeout("https://ipapi.co/json/");
+        if (mounted && data && !data.error) {
+          setLatitude(data.latitude);
+          setLongitude(data.longitude);
+          setTzid(data.timezone);
+          setCity(data.city || "Ubicación por IP");
+          setCountry(data.country_name || "");
+          setDetectionMethod('ip');
           setLoading(false);
           return;
         }
       } catch (err) {
-        console.warn("Geolocation failed:", err.message);
-        // Si falla, continuamos con el siguiente método
+        console.warn("ipapi.co failed, trying worldtimeapi:", err.message);
+        try {
+          const data = await fetchWithTimeout("https://worldtimeapi.org/api/ip");
+          if (mounted && data) {
+            setTzid(data.timezone || data.tzid);
+            setCity("Ubicación por IP (TZ)");
+            setDetectionMethod('ip');
+            setLoading(false);
+            return;
+          }
+        } catch (err2) {
+          console.warn("All IP Geolocation failed:", err2.message);
+        }
       }
 
-      // 4️⃣ Detección por IP (worldtimeapi)
-      try {
-        const data = await fetchWithTimeout("https://worldtimeapi.org/api/ip");
-        if (mounted && data) {
-          const tz = data.timezone || data.tzid;
-          setTzid(tz);
-          // worldtimeapi no siempre trae lat/lon, pero sí el timezone
-          setCity("Ubicación por IP");
-          setDetectionMethod('ip');
-          setCountry("");
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn("IP Geolocation failed:", err.message);
-        // Si falla, continuamos al fallback
-      }
+      // 4️⃣ Detección por Navegador (opcional, solo si no hay IP y queremos fallback)
+      // Nota: En el useEffect automático, es mejor evitar el prompt de geolocalización
+      // para no molestar al usuario al entrar. 
 
       // 5️⃣ Fallback final
       if (mounted) {
@@ -144,12 +135,29 @@ export default function useUserLocation(options = {}) {
     };
   }, [options.manualLat, options.manualLon, options.manualTz, options.city, trigger]);
 
-  // Función para forzar la detección de ubicación por IP
+  // Función para forzar la detección de ubicación (usada por el botón)
   const getUserLocation = async () => {
     setLoading(true);
     setError(null);
 
-    // Intentar primero con geolocalización del navegador
+    // 1️⃣ Intentar primero por IP (Silencioso y completo)
+    try {
+      const data = await fetchWithTimeout("https://ipapi.co/json/");
+      if (data && !data.error) {
+        setLoading(false);
+        return {
+          latitude: data.latitude,
+          longitude: data.longitude,
+          tzid: data.timezone,
+          city: data.city || "Ubicación por IP",
+          country: data.country_name || "",
+        };
+      }
+    } catch (ipErr) {
+      console.warn("IP Geolocation (ipapi) failed:", ipErr.message);
+    }
+
+    // 2️⃣ Si IP falla o queremos más precisión, intentar con geolocalización del navegador (Prompt)
     try {
       const pos = await new Promise((resolve, reject) => {
         if (!navigator.geolocation) return reject(new Error("Geolocation no soportado"));
@@ -161,11 +169,7 @@ export default function useUserLocation(options = {}) {
       
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
-      
-      // Obtener timezone usando tz-lookup
       const tz = tzlookup(lat, lon);
-      
-      // Extraer nombre de ciudad del timezone (ej: America/New_York -> New York)
       const cityFromTz = tz.split('/').pop()?.replace(/_/g, ' ') || "Ubicación detectada";
       
       setLoading(false);
@@ -178,34 +182,9 @@ export default function useUserLocation(options = {}) {
       };
     } catch (geoErr) {
       console.warn("Geolocation failed:", geoErr.message);
-      
-      // Si falla geolocalización, intentar por IP
-      try {
-        const data = await fetchWithTimeout("https://worldtimeapi.org/api/ip");
-        if (data) {
-          const tz = data.timezone || data.tzid;
-          
-          // Intentar extraer ciudad del timezone (ej: America/New_York -> New York)
-          const cityFromTz = tz.split('/').pop()?.replace(/_/g, ' ') || "Ubicación por IP";
-          
-          setLoading(false);
-          return {
-            latitude: fallbackLat,
-            longitude: fallbackLon,
-            tzid: tz,
-            city: cityFromTz,
-            country: "",
-          };
-        }
-      } catch (ipErr) {
-        console.warn("IP Geolocation failed:", ipErr.message);
-        setLoading(false);
-        throw new Error("No se pudo detectar la ubicación");
-      }
+      setLoading(false);
+      throw new Error("No se pudo detectar la ubicación");
     }
-    
-    setLoading(false);
-    throw new Error("No se pudo detectar la ubicación");
   };
 
   return { 

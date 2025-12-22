@@ -4,7 +4,7 @@ import useUserLocation from "../time/useUserLocation.js";
 import calculateSeventhHourMedian from "./use7th.js";
 import { GeoLocation, Zmanim } from '@hebcal/core';
 
-export default function useHdate({ userCity, timeFormat, latitude: latProp, longitude: lonProp, tzid: tzidProp }) {
+export default function useHdate({ date: dateProp, userCity, timeFormat, latitude: latProp, longitude: lonProp, tzid: tzidProp }) {
   // Si nos pasan coordenadas (desde DataProvider -> useGregorianTime), las usamos "manual" para evitar doble fetch
   const { latitude, longitude, tzid, city, loading, error } = useUserLocation({ 
     city: userCity || "Jerusalem",
@@ -12,7 +12,9 @@ export default function useHdate({ userCity, timeFormat, latitude: latProp, long
     manualLon: lonProp,
     manualTz: tzidProp
   });
-  const date = new Date();
+  
+  // Usar la fecha propizada o fallback a la actual si no viene
+  const date = dateProp || new Date();
 
   const [seventhHour, setSeventhHour] = useState(null);
 
@@ -38,7 +40,20 @@ export default function useHdate({ userCity, timeFormat, latitude: latProp, long
     }
 
     const gloc = new GeoLocation(city, latitude, longitude, 0, tzid);
-    const zmanimCalculator = new Zmanim(gloc, date, false);
+    const now = date; // Usar la fecha sincronizada del prop
+    
+    // 1. Calcular la puesta del sol de HOY (referencia para la transición)
+    const todayZmanim = new Zmanim(gloc, now, false);
+    const shkiahToday = todayZmanim.shkiah() || todayZmanim.sunset();
+    
+    const isAfterSunset = shkiahToday && now > shkiahToday;
+    
+    // 2. Si ya pasó la puesta del sol, calculamos los zmanim para el día siguiente
+    const calculationDate = isAfterSunset 
+      ? new Date(now.getTime() + 24 * 60 * 60 * 1000) 
+      : now;
+
+    const zmanimCalculator = new Zmanim(gloc, calculationDate, false);
 
     const methods = Object.getOwnPropertyNames(Zmanim.prototype)
       .filter(fn => {
@@ -47,17 +62,27 @@ export default function useHdate({ userCity, timeFormat, latitude: latProp, long
         return typeof zmanimCalculator[fn] === 'function';
       });
 
-    const result = {};
+    const result = {
+      isAfterSunset,
+      shkiahTodayRaw: shkiahToday,
+    };
     methods.forEach(fn => {
       try {
         const dateObj = zmanimCalculator[fn]();
         if (dateObj instanceof Date) {
-          result[fn] = dateObj.toLocaleTimeString('es-AR', {
+          const formattedTime = dateObj.toLocaleTimeString('es-AR', {
             timeZone: tzid,
             hour: '2-digit',
             minute: '2-digit',
             hour12: timeFormat === '12h',
           });
+          result[fn] = formattedTime;
+
+          // Capture raw date for comparison and add user's requested key
+          if (fn === 'shkiah' || fn === 'sunset') {
+            result.puesta_del_sol = formattedTime;
+            result.puesta_del_sol_raw = dateObj;
+          }
         }
       } catch (e) {
         console.warn(`No se pudo calcular ${fn}:`, e.message);

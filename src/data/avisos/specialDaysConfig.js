@@ -1,5 +1,16 @@
 // Días especiales de Jabad (sin los festivos tradicionales que maneja Hebcal)
 const specialDaysConfig = [
+  // {
+  //   dayCondition: ['2 Tevet'],
+  //   avisos: [
+  //     {
+  //       id: 'jabad-foundation',
+  //       title: 'Fundación de Jabad',
+  //       content: 'Aniversario del retorno de los libros de la fundación de Jabad (5 Tevet).',
+  //       icon: '🏠',
+  //     },
+  //   ],
+  // },
   {
     dayCondition: ['6 Tishrei'],
     avisos: [

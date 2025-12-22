@@ -34,8 +34,8 @@ export function SettingsProvider({ children }) {
   const [visibleZmanim, setVisibleZmanim] = usePersistentState("visibleZmanim", defaultZmanim);
   const [visibleEstudios, setVisibleEstudios] = usePersistentState("visibleEstudios", defaultEstudios);
   const [visibleSections, setVisibleSections] = usePersistentState("visibleSections", defaultSections);
-  const [city, setCity] = usePersistentState("userCity", "Buenos Aires");
-  const [timezone, setTimezone] = usePersistentState("timezone", "America/Argentina/Buenos_Aires");
+  const [city, setCity] = usePersistentState("userCity", null);
+  const [timezone, setTimezone] = usePersistentState("timezone", null);
   const [carouselInterval, setCarouselInterval] = usePersistentState("carouselInterval", 5);
   // layout for the two main carousels: arrays of card ids (order matters)
   const [carouselLayout, setCarouselLayout] = usePersistentState(

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { HDate } from "@hebcal/core";
 
-export default function useHebrewDate(gregorianDate, tzid = null) {
+export default function useHebrewDate(gregorianDate, tzid = null, afterSunset = false) {
   const { hebrewDate, hebrewObj } = useMemo(() => {
     if (gregorianDate) {
       try {
@@ -13,7 +13,17 @@ export default function useHebrewDate(gregorianDate, tzid = null) {
           dateToUse = new Date(dateString);
         }
         
-        const hd = new HDate(dateToUse);
+        let hd = new HDate(dateToUse);
+        
+        // 1) Después de shkia Y 2) Antes de las 23:59:59 de la hora local de ESE lugar.
+        // Si ya son las 00:00 AM en el lugar indicado, la fecha gregoriana ya cambió 
+        // y HDate ya nos da el día correcto, por lo que NO debemos sumar +1.
+        const localHours = dateToUse.getHours();
+        // Usamos >= 12 para asegurarnos que estamos en el bloque de la tarde/noche (PM)
+        // y < 24 (siempre cierto) para el límite de medianoche.
+        if (afterSunset && localHours >= 12) {
+          hd = hd.next(); 
+        }
         return {
           hebrewDate: `${hd.getDate()} ${hd.getMonthName()} ${hd.getFullYear()}`,
           hebrewObj: hd,
@@ -24,7 +34,7 @@ export default function useHebrewDate(gregorianDate, tzid = null) {
       }
     }
     return { hebrewDate: "", hebrewObj: null };
-  }, [gregorianDate, tzid]);
+  }, [gregorianDate, tzid, afterSunset]);
 
   return { hebrewDate, hebrewObj };
 }

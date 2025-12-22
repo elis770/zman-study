@@ -7,7 +7,7 @@ import { AboutProjectDialog } from "./AboutProyect/AboutProjectDialog";
 import { AboutMeDialog } from "./AboutMe/AboutMeDialog";
 import { motion, AnimatePresence } from "motion/react";
 
-import { useAppData } from '@/data/useAppData.js';
+import { useAppData } from '../../data/useAppData.js';
 
 export function Header() {
   const theme = useTheme();
