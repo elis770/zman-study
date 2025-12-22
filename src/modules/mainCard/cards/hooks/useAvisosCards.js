@@ -47,11 +47,10 @@ export const useAvisosCards = () => {
         title: 'Encendido de Velas',
         value: (() => {
           const [h, m] = candleLighting.split(':').map(Number);
-          const appData = useAppData();
-          const isJerusalem = appData?.time?.tzid?.toLowerCase().includes('jerusalem');
-          const date = new Date();
-          date.setHours(h, m - (isJerusalem ? 30 : 18));
-          return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+          const isJerusalem = time?.tzid?.toLowerCase().includes('jerusalem');
+          const displayDate = new Date();
+          displayDate.setHours(h, m - (isJerusalem ? 30 : 18));
+          return displayDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
         })()
       });
     }
