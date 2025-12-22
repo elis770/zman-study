@@ -37,15 +37,20 @@ export function SettingsProvider({ children }) {
   const [city, setCity] = usePersistentState("userCity", null);
   const [timezone, setTimezone] = usePersistentState("timezone", null);
   const [carouselInterval, setCarouselInterval] = usePersistentState("carouselInterval", 5);
-  // layout for the two main carousels: arrays of card ids (order matters)
+  // Layout configuration: Array of columns
   const [carouselLayout, setCarouselLayout] = usePersistentState(
     "carouselLayout",
-    { left: ["zmanim", "study"], right: ["minian", "avisos", "seider"] }
+    [
+      { id: 'col1', cards: ["zmanim", "study"], width: 45 },
+      { id: 'col2', cards: ["minian", "avisos", "seider"], width: 45 }
+    ]
   );
   const [timeFormat, setTimeFormat] = usePersistentState("timeFormat", "24h");
   const [showMinian, setShowMinian] = usePersistentState("showMinian", true);
   const [showHayomYom, setShowHayomYom] = usePersistentState("showHayomYom", true);
   const [scrollSpeed, setScrollSpeed] = usePersistentState("scrollSpeed", 2.6);
+  const [showDots, setShowDots] = usePersistentState("showDots", false);
+  const [showArrows, setShowArrows] = usePersistentState("showArrows", false);
 
   // Dynamic card configuration
   const [visibleCards, setVisibleCards] = usePersistentState("visibleCards", {});
@@ -133,7 +138,11 @@ export function SettingsProvider({ children }) {
         seiderList,
         setSeiderList,
         customAvisos,
-        setCustomAvisos
+        setCustomAvisos,
+        showDots,
+        setShowDots,
+        showArrows,
+        setShowArrows
       }}
     >
       {children}

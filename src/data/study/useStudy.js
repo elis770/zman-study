@@ -8,6 +8,7 @@ import {
   DafYomiTransformer,
   RambamTransformer,
   SeferHaMitzvotTransformer,
+  TehilimTransformer,
 } from './studyTransformers.js';
 
 export default function useStudy({
@@ -70,7 +71,7 @@ export default function useStudy({
 
     setSH(new SeferHaMitzvotTransformer(rawSeferHaMitzvot, lang).transform());
     setJumash(new JumashTransformer(rawJumash, date, lang).transform());
-    setTehilim(rawTehilim?.render?.({ lang }) ?? null);
+    setTehilim(new TehilimTransformer(hd2, lang).transform());
     setDafYomi(new DafYomiTransformer(rawDafYomi, lang).transform());
     setYerushalmi(new DafYomiTransformer(rawYerushalmi, lang).transform());
     setMishnaYomi(new SimpleYomiTransformer(rawMishnaYomi, lang).transform());

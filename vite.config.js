@@ -17,6 +17,27 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@hebcal')) {
+              return 'vendor-hebcal';
+            }
+            if (id.includes('@mui') || id.includes('@emotion')) {
+              return 'vendor-mui';
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor-lucide';
+            }
+            return 'vendor'; // El resto de librerías
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000, // Aumentar el límite a 1MB para ser más realista
+  },
   server: {
     watch: {
       usePolling: true,

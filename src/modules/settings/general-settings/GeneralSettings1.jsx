@@ -15,10 +15,6 @@ const GeneralSettings1 = ({
   t,
   language,
   toggleLanguage,
-  // showMinian,
-  // toggleShowMinian,
-  // showHayomYom,
-  // toggleShowHayomYom,
   autoSwitchDelay,
   onAutoSwitchDelayChange,
   timeFormat,
@@ -26,6 +22,8 @@ const GeneralSettings1 = ({
   scrollSpeed,
   setScrollSpeed
 }) => {
+  const { showDots, setShowDots, showArrows, setShowArrows } = useSettings();
+
   const buttonStyle = {
     justifyContent: 'flex-start',
     borderColor: 'rgba(188, 168, 134, 0.3)',
@@ -83,160 +81,27 @@ const GeneralSettings1 = ({
       <Divider sx={{ my: 3 }} />
 
       <Box sx={{ mt: 2 }}>
-        <Typography sx={{ color: '#8b7355', fontSize: '0.95rem', mb: 1 }}>
-          {t('CAROUSEL_LAYOUT') || 'Distribución del carrusel principal'}
+        <Typography sx={{ color: '#8b7355', fontSize: '0.95rem', mb: 1.5 }}>
+          {t('NAVIGATION_OPTIONS') || 'Opciones de Navegación'}
         </Typography>
-        <CarouselLayoutEditor t={t} />
+
+        <Box sx={{ display: "flex", gap: 1, flexDirection: 'column' }}>
+          <Button fullWidth variant="outlined" onClick={() => setShowDots(!showDots)} sx={buttonStyle}>
+            {showDots
+              ? (t('HIDE_DOTS') || 'Ocultar Puntos')
+              : (t('SHOW_DOTS') || 'Mostrar Puntos')}
+          </Button>
+
+          <Button fullWidth variant="outlined" onClick={() => setShowArrows(!showArrows)} sx={buttonStyle}>
+            {showArrows
+              ? (t('HIDE_ARROWS') || 'Ocultar Flechas')
+              : (t('SHOW_ARROWS') || 'Mostrar Flechas')}
+          </Button>
+        </Box>
       </Box>
+
     </Box>
   );
 };
-
-function CarouselLayoutEditor({ t }) {
-  const { carouselLayout, setCarouselLayout } = useSettings();
-  const theme = useTheme();
-  const isMdDown = useMediaQuery(theme.breakpoints.down('md'));
-  const backupRef = useRef(null);
-
-  const allItems = [
-    { id: 'zmanim', label: t('NEXT_ZMANIM') || 'Zmanim' },
-    { id: 'study', label: t('STUDY_TITLE') || 'Estudio' },
-    { id: 'hayom-yom', label: t('HAIOM_IOM_TITLE') || 'Hayom Yom' },
-    { id: 'minian', label: t('MINIAN_TITLE') || 'Minianim' },
-    { id: 'avisos', label: t('AVISOS_TITLE') || 'Avisos' }
-  ];
-
-  const layout = carouselLayout || {
-    left: ['zmanim', 'study'],
-    right: ['minian', 'avisos']
-  };
-
-  useEffect(() => {
-    if (isMdDown && !backupRef.current) {
-      backupRef.current = {
-        left: [...(layout.left || [])],
-        right: [...(layout.right || [])]
-      };
-    }
-
-    if (!isMdDown && backupRef.current) {
-      setCarouselLayout(backupRef.current);
-      backupRef.current = null;
-    }
-  }, [isMdDown, layout, setCarouselLayout]);
-
-  const available = useMemo(
-    () =>
-      allItems.filter(
-        it =>
-          !(layout.left || []).includes(it.id) &&
-          !(layout.right || []).includes(it.id)
-      ),
-    [allItems, layout]
-  );
-
-  const onDragStart = (e, id) => {
-    e.dataTransfer.setData('text/plain', id);
-  };
-
-  const onDrop = (e, side) => {
-    e.preventDefault();
-    const id = e.dataTransfer.getData('text/plain');
-    if (!id) return;
-
-    const left = (layout.left || []).filter(i => i !== id);
-    const right = (layout.right || []).filter(i => i !== id);
-
-    if (side === 'left') left.push(id);
-    if (side === 'right') right.push(id);
-    // If side is 'available', we just don't add it back to left or right
-
-    setCarouselLayout({ left, right });
-  };
-
-  const boxStyle = {
-    p: 1.5,
-    borderRadius: '12px',
-    border: '1px dashed rgba(139, 115, 85, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    minHeight: '60px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 1
-  };
-
-  const itemStyle = {
-    p: 1,
-    borderRadius: '8px',
-    backgroundColor: '#fff',
-    border: '1px solid rgba(139, 115, 85, 0.1)',
-    cursor: 'grab',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-    '&:hover': {
-      backgroundColor: 'rgba(188, 168, 134, 0.1)',
-      borderColor: '#bca886'
-    }
-  };
-
-  return (
-    <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
-      <Box>
-        <Typography variant="caption" sx={{ color: '#8b7355', fontWeight: 600, mb: 0.5, display: 'block' }}>
-          {t('LEFT_BOX') || 'Caja izquierda (Principal)'}
-        </Typography>
-        <Box
-          onDragOver={e => e.preventDefault()}
-          onDrop={e => onDrop(e, 'left')}
-          sx={boxStyle}
-        >
-          {(layout.left || []).map(id => (
-            <Box key={id} draggable onDragStart={e => onDragStart(e, id)} sx={itemStyle}>
-              <Typography variant="body2">{allItems.find(i => i.id === id)?.label}</Typography>
-            </Box>
-          ))}
-        </Box>
-      </Box>
-
-      <Box>
-        <Typography variant="caption" sx={{ color: '#8b7355', fontWeight: 600, mb: 0.5, display: 'block' }}>
-          {t('RIGHT_BOX') || 'Caja derecha'}
-        </Typography>
-        <Box
-          onDragOver={e => e.preventDefault()}
-          onDrop={e => onDrop(e, 'right')}
-          sx={boxStyle}
-        >
-          {(layout.right || []).map(id => (
-            <Box key={id} draggable onDragStart={e => onDragStart(e, id)} sx={itemStyle}>
-              <Typography variant="body2">{allItems.find(i => i.id === id)?.label}</Typography>
-            </Box>
-          ))}
-        </Box>
-      </Box>
-
-      <Box>
-        <Typography variant="caption" sx={{ color: 'rgba(139, 115, 85, 0.6)', fontWeight: 600, mb: 0.5, display: 'block' }}>
-          {t('AVAILABLE') || 'Disponibles (No se mostrarán)'}
-        </Typography>
-        <Box
-          onDragOver={e => e.preventDefault()}
-          onDrop={e => onDrop(e, 'available')}
-          sx={{ ...boxStyle, borderStyle: 'dotted' }}
-        >
-          {available.map(it => (
-            <Box key={it.id} draggable onDragStart={e => onDragStart(e, it.id)} sx={{ ...itemStyle, opacity: 0.8 }}>
-              <Typography variant="body2">{it.label}</Typography>
-            </Box>
-          ))}
-          {available.length === 0 && (
-            <Typography variant="caption" sx={{ color: 'rgba(139, 115, 85, 0.4)', textAlign: 'center', py: 1 }}>
-              Arrastra aquí para ocultar
-            </Typography>
-          )}
-        </Box>
-      </Box>
-    </Box>
-  );
-}
 
 export default GeneralSettings1;

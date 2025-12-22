@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Card, CardContent, Box, Typography, IconButton } from "@mui/material";
+import { Card, CardContent, Box, Typography, IconButton, useTheme, useMediaQuery } from "@mui/material";
 import { Clock, BookOpen, Scroll } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSettings } from "../settings/context/SettingsContext";
@@ -14,6 +14,7 @@ import { GenericCard, CardItemList } from "./cards/ui/CardComponents";
 // InnerCarousel renders a carousel for a given ordered list of card ids
 function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scrollSpeed, t, dataSources }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const { showDots, showArrows } = useSettings();
 
   // Build card configs from dataSources using a definition map to avoid repetition
   const cardConfigs = useMemo(() => {
@@ -100,9 +101,11 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
     if (cards.length <= 1) return;
     const interval = setInterval(() => setCurrentCardIndex((prev) => (prev + 1) % cards.length), carouselInterval * 1000);
     return () => clearInterval(interval);
-  }, [carouselInterval, cards.length, currentCardIndex]);
+  }, [carouselInterval, cards.length]); // Removed currentCardIndex to prevent timer reset on every slide
 
   const handleDotClick = (index) => setCurrentCardIndex(index);
+  const handleNext = () => setCurrentCardIndex((prev) => (prev + 1) % cards.length);
+  const handlePrev = () => setCurrentCardIndex((prev) => (prev - 1 + cards.length) % cards.length);
 
   if (cards.length === 0) {
     return (
@@ -116,7 +119,7 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {cards.length > 1 && (
+      {showDots && cards.length > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
           {cards.map((card, index) => (
             <IconButton key={card.id} onClick={() => handleDotClick(index)} sx={{ width: index === currentCardIndex ? '32px' : '8px', height: '8px', borderRadius: '9999px', backgroundColor: index === currentCardIndex ? '#bca886' : 'rgba(188,168,134,0.3)', transition: 'all 0.3s', padding: 0, minWidth: 0 }} aria-label={`Ir a tarjeta ${index + 1}`} />
@@ -124,10 +127,60 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
         </Box>
       )}
 
-      <Card sx={{ background: 'linear-gradient(to bottom right, rgba(255,255,255,0.8), rgba(232,220,195,0.5))', backdropFilter: 'blur(8px)', border: '1px solid rgba(188,168,134,0.3)', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', borderRadius: '16px', overflow: 'hidden', mt: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <CardContent sx={{ padding: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <AnimatePresence mode="wait">
-            <motion.div key={activeCard ? activeCard.id : 'empty'} initial={{ opacity: 0, x: 300 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -300 }} transition={{ duration: 0.5, ease: 'easeInOut' }} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <Card sx={{ background: 'linear-gradient(to bottom right, rgba(255,255,255,0.8), rgba(232,220,195,0.5))', backdropFilter: 'blur(8px)', border: '1px solid rgba(188,168,134,0.3)', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', borderRadius: '16px', overflow: 'hidden', mt: 1, flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+
+        {/* Arrow Buttons */}
+        {showArrows && cards.length > 1 && (
+          <>
+            <IconButton
+              onClick={handlePrev}
+              sx={{
+                position: 'absolute',
+                left: 8,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                backgroundColor: 'rgba(255,255,255,0.9)',
+                '&:hover': { backgroundColor: '#bca886', color: 'white' },
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+              }}
+            >
+              ←
+            </IconButton>
+            <IconButton
+              onClick={handleNext}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                backgroundColor: 'rgba(255,255,255,0.9)',
+                '&:hover': { backgroundColor: '#bca886', color: 'white' },
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+              }}
+            >
+              →
+            </IconButton>
+          </>
+        )}
+
+        <CardContent sx={{ padding: 0, flex: 1, display: 'grid', overflow: 'hidden' }}>
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={activeCard ? activeCard.id : 'empty'}
+              initial={{ opacity: 0, x: 300 }}
+              animate={{ opacity: 1, x: 0, zIndex: 1 }}
+              exit={{ opacity: 0, x: -300, zIndex: 0 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              style={{
+                gridArea: '1 / 1', // Stack on top of each other
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
               {activeCard ? activeCard.component : null}
             </motion.div>
           </AnimatePresence>
@@ -142,6 +195,11 @@ export default function MainCardCarouselUnified() {
   const { carouselInterval, registerCard, visibleCards, scrollSpeed, carouselLayout } = settings;
   const { t } = useLanguage();
 
+  // Responsive hooks
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('md', 'lg'));
+
   // data sources
   const { zmanimCards, studyCards } = useListCards();
   const { hayomYomData } = useTextCards();
@@ -150,34 +208,80 @@ export default function MainCardCarouselUnified() {
 
   const dataSources = { zmanimCards, studyCards, hayomYomData, minianimCards, seiderCards, avisosCards };
 
-  // layout from settings: default to two columns if missing
-  const layout = carouselLayout || { left: ['zmanim', 'study'], right: ['minian', 'avisos'] };
+  // Normalize layout to array (handle legacy object format from localStorage)
+  const columns = useMemo(() => {
+    let baseColumns = [];
+    if (Array.isArray(carouselLayout)) {
+      baseColumns = carouselLayout;
+    } else {
+      // Fallback / Legacy
+      baseColumns = [
+        { id: 'left', cards: carouselLayout?.left || ['zmanim', 'study'], width: 40 },
+        { id: 'right', cards: carouselLayout?.right || ['minian', 'avisos'], width: 40 }
+      ];
+    }
+
+    // Create effective columns based on screen size by merging content
+    if (isMobile) {
+      // Merge ALL columns into one
+      const allCards = baseColumns.flatMap(col => col.cards);
+      return [{ ...baseColumns[0] || { id: 'merged', width: 100 }, cards: allCards }];
+    } else if (isTablet) {
+      // Keep first column, merge rest into second
+      if (baseColumns.length <= 1) return baseColumns;
+      const firstCol = baseColumns[0];
+      const restCards = baseColumns.slice(1).flatMap(col => col.cards);
+      return [firstCol, { ...(baseColumns[1] || { id: 'merged-right', width: 50 }), cards: restCards }];
+    }
+
+    return baseColumns;
+  }, [carouselLayout, isMobile, isTablet]);
+
+  // Calculate if we need reduced height (>3 columns)
+  const shouldReduceHeight = columns.length > 3;
 
   return (
-    <Box sx={{ width: '100%', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, alignItems: 'stretch', justifyContent: 'center' }}>
-      {[
-        { key: 'left', mdWidth: '40%', showOnXs: true },
-        { key: 'right', mdWidth: '40%', showOnXs: false }
-      ].map(col => (
-        <Box
-          key={col.key}
-          sx={{
-            width: { xs: '95%', md: col.mdWidth },
-            minWidth: 0,
-            display: { xs: col.showOnXs ? 'block' : 'none', md: 'block' }
-          }}
-        >
-          <InnerCarousel
-            ids={layout[col.key] || []}
-            carouselInterval={carouselInterval}
-            registerCard={registerCard}
-            visibleCards={visibleCards}
-            scrollSpeed={scrollSpeed}
-            t={t}
-            dataSources={dataSources}
-          />
-        </Box>
-      ))}
+    <Box sx={{
+      width: { xs: '80%', sm: '90%' },
+      maxWidth: '1800px',
+      margin: '0 auto',
+      display: 'flex',
+      flexDirection: { xs: 'column', md: 'row' },
+      flexWrap: { xs: 'nowrap', md: shouldReduceHeight ? 'wrap' : 'nowrap' },
+      gap: 2,
+      alignItems: 'stretch',
+      justifyContent: 'center'
+    }}>
+      {columns.map((col, index) => {
+        return (
+          <Box
+            key={col.id}
+            sx={{
+              // Relative width based on col.width percentage
+              width: {
+                xs: '100%',
+                md: shouldReduceHeight ? `calc(${col.width}% - 8px)` : `${col.width}%`
+              },
+              height: {
+                xs: 'auto',
+                md: shouldReduceHeight ? '50vh' : 'auto'
+              },
+              minWidth: 0,
+              display: 'block' // Always block because `columns` is already filtered/merged
+            }}
+          >
+            <InnerCarousel
+              ids={col.cards}
+              carouselInterval={carouselInterval}
+              registerCard={registerCard}
+              visibleCards={visibleCards}
+              scrollSpeed={scrollSpeed}
+              t={t}
+              dataSources={dataSources}
+            />
+          </Box>
+        );
+      })}
     </Box>
   );
 }

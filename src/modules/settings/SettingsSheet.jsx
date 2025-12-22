@@ -7,6 +7,7 @@ import ZmanimSettings from "./zmanim/ZmanimSettings.jsx";
 import StudySettings from "./study/StudySettings.jsx";
 import AvisosSettings from "./avisos/AvisosSettings.jsx";
 import TimeListSettings from "./timeList/TimeListSettings.jsx";
+import LayoutSettings from "./layout/LayoutSettings.jsx";
 import { cityList } from "./cities.js";
 import useUserLocation from "../../data/time/useUserLocation.js";
 
@@ -24,6 +25,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
     city: userCity, setCity: onUserCityChange, timeFormat, toggleTimeFormat,
     showMinian, toggleShowMinian, showHayomYom, toggleShowHayomYom,
     carouselInterval, setCarouselInterval, scrollSpeed, setScrollSpeed,
+    carouselLayout, setCarouselLayout,
     setBulkZmanim, setBulkEstudios, minianimList, setMinianimList,
     seiderList, setSeiderList,
     customAvisos, setCustomAvisos
@@ -87,7 +89,9 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
     study: true,
     avisos: true,
     minian: true,
-    seider: true
+    minian: true,
+    seider: true,
+    layout: true
   });
 
   const [cityInput, setCityInput] = useState("");
@@ -384,6 +388,25 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
             manageTitleKey={'MANAGE_SEIDER'}
           />
         )}
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* LAYOUT */}
+        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("layout")}>
+          {t("DISTRIBUTION_TITLE") || "Distribución de Pantalla"}
+        </Typography>
+
+        {expanded.layout && (
+          <LayoutSettings
+            layout={carouselLayout}
+            setLayout={setCarouselLayout}
+            t={t}
+          />
+        )}
+
+        {/* Bottom spacing to prevent cutoff */}
+        <Box sx={{ height: '80px' }} />
+
       </Box>
     </Drawer>
   );

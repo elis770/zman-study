@@ -104,3 +104,36 @@ export class SeferHaMitzvotTransformer extends BaseTransformer {
     return this.getText();
   }
 }
+
+// -------------------- Tehilim --------------------
+export class TehilimTransformer extends BaseTransformer {
+  constructor(date, lang = 'he') {
+    super(null, lang);
+    this.date = date;
+  }
+
+  transform() {
+    if (!this.date) return null;
+
+    const day = this.date.getDate();
+    const month = this.date.getMonth();
+
+    // 1. Ciclo mensual (base)
+    const baseRange = tehilimMonthly[day];
+    
+    // 2. Ciclo Elul/Tishrei (extra)
+    // tehilimByelul tiene keys 6 (Elul) y 7 (Tishrei)
+    const extraRange = tehilimByelul[month]?.[day];
+
+    if (!baseRange) return null;
+
+
+    let result = `${baseRange}`;
+    if (extraRange) {
+      result += ` + ${extraRange}`;
+    }
+    
+    // Eliminar palabras si existen (limpieza)
+    return result.replace(/Tehilim|Psalms|תהילים/gi, '').trim();
+  }
+}
