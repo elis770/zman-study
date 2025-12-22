@@ -1,7 +1,10 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Box, Typography, Slider, Button, IconButton, Paper, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Plus, Trash2 } from 'lucide-react';
+import { useLanguage } from '../../../shared/traslantions/useLanguage.js';
+import { useSettings } from "../context/SettingsContext.jsx";
+import { Divider } from '@mui/material';
 
 // Compact box style for drop zones - horizontal layout
 const boxStyle = {
@@ -34,7 +37,9 @@ const itemStyle = {
     }
 };
 
-const LayoutSettings = ({ layout, setLayout, t }) => {
+const LayoutSettings = () => {
+    const { t } = useLanguage();
+    const {carouselLayout, setCarouselLayout} = useSettings();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md')); // xs, sm
     const isTablet = useMediaQuery(theme.breakpoints.between('md', 'lg')); // md
@@ -53,9 +58,9 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
     ];
 
     // Normalize layout
-    const safeLayout = Array.isArray(layout) ? layout : [
-        { id: 'col1', cards: layout?.left || ['zmanim', 'study'], width: 50 },
-        { id: 'col2', cards: layout?.right || ['minian', 'avisos'], width: 50 }
+    const safeLayout = Array.isArray(carouselLayout) ? carouselLayout : [
+        { id: 'col1', cards: carouselLayout?.left || ['zmanim', 'study'], width: 50 },
+        { id: 'col2', cards: carouselLayout?.right || ['minian', 'avisos'], width: 50 }
     ];
 
     // Compute Effective Layout for DISPLAY (merging content)
@@ -80,8 +85,8 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
         return safeLayout;
     }, [safeLayout, isMobile, isTablet]);
 
-    const handleSetLayout = (newLayout) => {
-        setLayout(newLayout);
+    const handlesetCarouselLayout = (newLayout) => {
+        setCarouselLayout(newLayout);
     };
 
     // Calculate available (unused) cards
@@ -114,7 +119,7 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
                 return col;
             });
         }
-        handleSetLayout(newLayout);
+        handlesetCarouselLayout(newLayout);
     };
 
     // Layout Management with relative width normalization
@@ -124,14 +129,14 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
         // Distribute width evenly
         const newWidth = 100 / (effectiveLayout.length + 1);
         const normalizedLayout = effectiveLayout.map(col => ({ ...col, width: newWidth }));
-        handleSetLayout([...normalizedLayout, { id: newId, cards: [], width: newWidth }]);
+        handlesetCarouselLayout([...normalizedLayout, { id: newId, cards: [], width: newWidth }]);
     };
 
     const removeColumn = (colId) => {
         const newLayout = effectiveLayout.filter(c => c.id !== colId);
         // Redistribute width evenly
         const newWidth = 100 / newLayout.length;
-        handleSetLayout(newLayout.map(col => ({ ...col, width: newWidth })));
+        handlesetCarouselLayout(newLayout.map(col => ({ ...col, width: newWidth })));
     };
 
     const updateWidth = (colId, val) => {
@@ -152,7 +157,7 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
             }
         });
 
-        handleSetLayout(newLayout);
+        handlesetCarouselLayout(newLayout);
     };
 
     return (

@@ -97,7 +97,7 @@ export function Header() {
               fontVariantNumeric: 'tabular-nums',
               lineHeight: 1
             }}>
-              {time}
+              <span>{time}</span>
             </Typography>
 
             {/* Date and Location - Mobile: Bottom, Desktop: Side of time */}
@@ -113,11 +113,15 @@ export function Header() {
                 <AnimatePresence mode="wait">
                   {showHebrewDate ? (
                     <motion.div key="hebrew" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.5 }} style={{ display: 'flex', justifyContent: 'inherit', alignItems: 'center', width: '100%' }}>
-                      <Typography className="hebrew-text" sx={{ color: theme.palette.text.primary, fontSize: { xs: '1rem', sm: '1.1rem' }, fontWeight: 600 }}>{hebrewDate}</Typography>
+                      <Typography className="hebrew-text" sx={{ color: theme.palette.text.primary, fontSize: { xs: '1rem', sm: '1.1rem' }, fontWeight: 600 }}>
+                        <span>{hebrewDate}</span>
+                      </Typography>
                     </motion.div>
                   ) : (
                     <motion.div key="gregorian" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.5 }} style={{ display: 'flex', justifyContent: 'inherit', alignItems: 'center', width: '100%' }}>
-                      <Typography sx={{ color: theme.palette.text.primary, fontSize: { xs: '1rem', sm: '1.1rem' }, textTransform: 'capitalize' }}>{formattedDate}</Typography>
+                      <Typography sx={{ color: theme.palette.text.primary, fontSize: { xs: '1rem', sm: '1.1rem' }, textTransform: 'capitalize' }}>
+                        <span>{formattedDate}</span>
+                      </Typography>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -127,7 +131,7 @@ export function Header() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: theme.custom.colors.text.quaternary }}>
                 <MapPin style={{ width: '12px', height: '12px' }} />
                 <Typography sx={{ fontSize: '0.7rem' }}>
-                  {city} • {tzid}
+                  <span>{city} • {tzid}</span>
                 </Typography>
               </Box>
             </Box>

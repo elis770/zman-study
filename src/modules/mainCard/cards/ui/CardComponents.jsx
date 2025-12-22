@@ -108,7 +108,7 @@ export const ScrollingContent = ({ children, interval, scrollKey, speedFactor })
         <Box
             ref={containerRef}
             sx={{
-                maxHeight: '58vh',
+                height: '100%',
                 overflow: 'hidden',
                 position: 'relative',
             }}

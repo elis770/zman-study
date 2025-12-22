@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 export default function App() {
   return (
     <Box sx={{
-      minHeight: '100vh', // Dynamic viewport height for mobile
+      height: '100dvh', // Dynamic viewport height for mobile
       display: 'flex',
       flexDirection: 'column',
       background: 'linear-gradient(to bottom, #f5efe3, #e8dcc3)',
@@ -30,7 +30,7 @@ export default function App() {
           overflowX: 'hidden'
         }}
       >
-        <Box sx={{ width: { xs: '100%', md: '90%' }, maxWidth: '1300px', display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ width: { xs: '100%', md: '90%' }, maxWidth: '1300px', display: 'flex', justifyContent: 'center', flex: 1, height: '100%' }}>
           {/* Unified MainCardCarousel handles two boxes internally (responsive). */}
           <MainCardCarousel />
         </Box>

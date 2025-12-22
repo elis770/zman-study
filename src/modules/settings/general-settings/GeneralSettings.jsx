@@ -1,28 +1,13 @@
-import { useRef, useEffect, useMemo } from 'react';
-import {
-  Slider,
-  Typography,
-  Divider,
-  Box,
-  Button,
-  useMediaQuery
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Slider, Typography, Divider, Box, Button } from '@mui/material';
 import { useSettings } from '../context/SettingsContext.jsx';
-import { TextAlignCenter } from 'lucide-react';
+import { useLanguage } from '../../../shared/traslantions/useLanguage.js';
 
-const GeneralSettings1 = ({
-  t,
-  language,
-  toggleLanguage,
-  autoSwitchDelay,
-  onAutoSwitchDelayChange,
-  timeFormat,
-  toggleTimeFormat,
-  scrollSpeed,
-  setScrollSpeed
-}) => {
-  const { showDots, setShowDots, showArrows, setShowArrows } = useSettings();
+const GeneralSettings = ({ autoSwitchDelay, onAutoSwitchDelayChange }) => {
+  const { t, language, toggleLanguage } = useLanguage();
+
+  const { timeFormat, toggleTimeFormat, scrollSpeed,
+    setScrollSpeed, showDots, setShowDots,
+    showArrows, setShowArrows } = useSettings();
 
   const buttonStyle = {
     justifyContent: 'flex-start',
@@ -104,4 +89,4 @@ const GeneralSettings1 = ({
   );
 };
 
-export default GeneralSettings1;
+export default GeneralSettings;

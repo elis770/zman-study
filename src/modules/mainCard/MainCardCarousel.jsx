@@ -250,7 +250,8 @@ export default function MainCardCarouselUnified() {
       flexWrap: { xs: 'nowrap', md: shouldReduceHeight ? 'wrap' : 'nowrap' },
       gap: 2,
       alignItems: 'stretch',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      height: '100%'
     }}>
       {columns.map((col, index) => {
         return (
@@ -262,10 +263,7 @@ export default function MainCardCarouselUnified() {
                 xs: '100%',
                 md: shouldReduceHeight ? `calc(${col.width}% - 8px)` : `${col.width}%`
               },
-              height: {
-                xs: 'auto',
-                md: shouldReduceHeight ? '50vh' : 'auto'
-              },
+              height: '100%',
               minWidth: 0,
               display: 'block' // Always block because `columns` is already filtered/merged
             }}
