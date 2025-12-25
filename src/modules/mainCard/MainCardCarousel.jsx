@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, Box, Typography, IconButton, useTheme, useMediaQuery } from "@mui/material";
-import { Clock, BookOpen, Scroll } from "lucide-react";
+import { Clock, BookOpen, Scroll, CloudSun } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSettings } from "../settings/context/SettingsContext";
 import { useLanguage } from '@/shared/traslantions/useLanguage.js';
@@ -10,6 +10,7 @@ import { useTextCards } from "./cards/hooks/useTextCards";
 import { useTimeCards } from "./cards/hooks/useTimeCards";
 import { useAvisosCards } from "./cards/hooks/useAvisosCards";
 import { GenericCard, CardItemList } from "./cards/ui/CardComponents";
+import { WeatherApp } from "./cards/ui/WeatherApp.jsx";
 
 // InnerCarousel renders a carousel for a given ordered list of card ids
 function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scrollSpeed, t, dataSources }) {
@@ -66,6 +67,13 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
         icon: Scroll,
         hasData: () => avisosCards?.length > 0,
         renderContent: () => <CardItemList data={avisosCards} />
+      },
+      {
+        id: 'weather',
+        titleKey: 'WEATHER_TITLE',
+        icon: CloudSun,
+        hasData: () => true,
+        renderContent: () => <WeatherApp isCard={true} />
       }
     ];
 
@@ -88,6 +96,13 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
       }));
   }, [ids, dataSources, carouselInterval, scrollSpeed, t]);
 
+  /* // Register cards whenever configs change to ensure all discovered cards are known by settings
+  useEffect(() => {
+    if (cardConfigs.length > 0) {
+      cardConfigs.forEach(config => registerCard(config.id, config.title, config.icon));
+    }
+  }, [cardConfigs, registerCard]); */
+
   // Register on mount
   useEffect(() => {
     cardConfigs.forEach(config => registerCard(config.id, config.title, config.icon));
@@ -95,6 +110,17 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
 
   const visibleCardConfigs = cardConfigs.filter(config => visibleCards[config.id] !== false);
   const cards = visibleCardConfigs.map(config => ({ id: config.id, component: config.component }));
+
+  /* useEffect(() => {
+    if (currentCardIndex >= cards.length) setCurrentCardIndex(0);
+    if (cards.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentCardIndex((prev) => (prev + 1) % cards.length);
+    }, carouselInterval * 1000);
+
+    return () => clearInterval(interval);
+  }, [carouselInterval, cards.length]); */
 
   useEffect(() => {
     if (currentCardIndex >= cards.length) setCurrentCardIndex(0);

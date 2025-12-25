@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import usePersistentState from "../../../shared/hooks/usePersistentState";
 
 const SettingsContext = createContext(undefined);
@@ -42,7 +42,7 @@ export function SettingsProvider({ children }) {
     "carouselLayout",
     [
       { id: 'col1', cards: ["zmanim", "study"], width: 45 },
-      { id: 'col2', cards: ["minian", "avisos", "seider"], width: 45 }
+      { id: 'col2', cards: ["minian", "avisos", "seider", "weather"], width: 45 }
     ]
   );
   const [timeFormat, setTimeFormat] = usePersistentState("timeFormat", "24h");
@@ -101,6 +101,23 @@ export function SettingsProvider({ children }) {
   const toggleCard = (id) => {
     setVisibleCards(prev => ({ ...prev, [id]: !prev[id] }));
   };
+
+  // Migration/Initialization: Ensure weather card is in the layout if not present
+  useEffect(() => {
+    const isWeatherInLayout = carouselLayout.some(col => col.cards.includes('weather'));
+    if (!isWeatherInLayout && carouselLayout.length > 0) {
+      setCarouselLayout(prev => {
+        const newLayout = [...prev];
+        // Add to the second column by default if it exists, otherwise the first
+        const targetColIndex = newLayout.length > 1 ? 1 : 0;
+        newLayout[targetColIndex] = {
+          ...newLayout[targetColIndex],
+          cards: [...newLayout[targetColIndex].cards, 'weather']
+        };
+        return newLayout;
+      });
+    }
+  }, []); // Only run on mount
 
   return (
     <SettingsContext.Provider
