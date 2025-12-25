@@ -7,7 +7,6 @@ import useSpecialDay from '../../../../data/avisos/useSpecialDay';
 export const useAvisosCards = () => {
   const { customAvisos } = useSettings();
   const { time, jadashot, zmanim } = useAppData();
-  //console.log(useAppData());
   const specialDay = useSpecialDay();
 
   const { date } = time || {};

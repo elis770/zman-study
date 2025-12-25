@@ -82,27 +82,47 @@ export const ScrollingContent = ({ children, interval, scrollKey, speedFactor })
         const singleBlock = singleBlockRef.current;
         if (!container || !inner || !singleBlock) return;
 
-        let loopHeight = singleBlock.offsetHeight;
-        let speed = loopHeight / (interval * 1000 * speedFactor);
-
+        let speed = 0.02 * speedFactor;
         let lastTime = performance.now();
+        let state = 'PAUSE_TOP'; // PAUSE_TOP, SCROLLING, PAUSE_BOTTOM
+        let pauseStartTime = 0;
+
         const loop = (now) => {
             const delta = now - lastTime;
             lastTime = now;
 
-            if (loopHeight > 0 && speed > 0) {
-                scrollPos.current += speed * delta;
-                if (scrollPos.current >= loopHeight) {
-                    scrollPos.current -= loopHeight;
+            const contentHeight = singleBlock.offsetHeight;
+            const containerHeight = container.offsetHeight;
+            const maxScroll = contentHeight - containerHeight;
+
+            if (state === 'PAUSE_TOP') {
+                if (!pauseStartTime) pauseStartTime = now;
+                if (now - pauseStartTime > 2000) {
+                    state = 'SCROLLING';
+                    pauseStartTime = 0;
                 }
-                inner.style.transform = `translateY(-${scrollPos.current}px)`;
+            } else if (state === 'SCROLLING') {
+                scrollPos.current += speed * delta;
+                if (scrollPos.current >= maxScroll) {
+                    scrollPos.current = maxScroll;
+                    state = 'PAUSE_BOTTOM';
+                }
+            } else if (state === 'PAUSE_BOTTOM') {
+                if (!pauseStartTime) pauseStartTime = now;
+                if (now - pauseStartTime > 2000) {
+                    scrollPos.current = 0;
+                    state = 'PAUSE_TOP';
+                    pauseStartTime = 0;
+                }
             }
+
+            inner.style.transform = `translateY(-${scrollPos.current}px)`;
             rafRef.current = requestAnimationFrame(loop);
         };
 
         rafRef.current = requestAnimationFrame(loop);
         return () => cancelAnimationFrame(rafRef.current);
-    }, [shouldScroll, interval, speedFactor, children]);
+    }, [shouldScroll, speedFactor, children]);
 
     return (
         <Box
@@ -121,8 +141,7 @@ export const ScrollingContent = ({ children, interval, scrollKey, speedFactor })
                     willChange: 'transform'
                 }}
             >
-                <Box ref={singleBlockRef} key="block-1">{children}</Box>
-                {shouldScroll && <Box key="block-2">{children}</Box>}
+                <Box ref={singleBlockRef}>{children}</Box>
             </Box>
         </Box>
     );

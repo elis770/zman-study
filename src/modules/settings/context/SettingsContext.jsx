@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useCallback } from "react";
 import usePersistentState from "../../../shared/hooks/usePersistentState";
 
 const SettingsContext = createContext(undefined);
@@ -84,18 +84,25 @@ export function SettingsProvider({ children }) {
   };
 
   // Register a card from MainCardCarousel
-  const registerCard = (id, title, icon) => {
-    setCardDefinitions(prev => ({
-      ...prev,
-      [id]: { title, icon }
-    }));
+  const registerCard = useCallback((id, title, icon) => {
+    setCardDefinitions(prev => {
+      // Avoid update if same
+      if (prev[id] && prev[id].title === title && prev[id].icon === icon) return prev;
+      return {
+        ...prev,
+        [id]: { title, icon }
+      };
+    });
 
-    // Initialize as visible by default if not already set
-    setVisibleCards(prev => ({
-      ...prev,
-      [id]: prev[id] !== undefined ? prev[id] : true
-    }));
-  };
+    setVisibleCards(prev => {
+      // Initialize as visible by default if not already set, otherwise return same ref
+      if (prev[id] !== undefined) return prev;
+      return {
+        ...prev,
+        [id]: true
+      };
+    });
+  }, [setCardDefinitions, setVisibleCards]);
 
   // Toggle card visibility
   const toggleCard = (id) => {

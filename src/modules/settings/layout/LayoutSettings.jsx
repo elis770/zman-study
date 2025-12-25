@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Box, Typography, Slider, Button, IconButton, Paper, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, CloudSun } from 'lucide-react';
 import { useLanguage } from '../../../shared/traslantions/useLanguage.js';
 import { useSettings } from "../context/SettingsContext.jsx";
 import { Divider } from '@mui/material';
@@ -39,7 +39,7 @@ const itemStyle = {
 
 const LayoutSettings = () => {
     const { t } = useLanguage();
-    const {carouselLayout, setCarouselLayout} = useSettings();
+    const { carouselLayout, setCarouselLayout } = useSettings();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md')); // xs, sm
     const isTablet = useMediaQuery(theme.breakpoints.between('md', 'lg')); // md
@@ -54,7 +54,8 @@ const LayoutSettings = () => {
         { id: 'hayom-yom', label: t('HAIOM_IOM_TITLE') || 'Hayom Yom' },
         { id: 'minian', label: t('MINIAN_TITLE') || 'Minianim' },
         { id: 'seider', label: t('SEIDER_TITLE') || 'Shiurim/Seider' },
-        { id: 'avisos', label: t('AVISOS_TITLE') || 'Avisos' }
+        { id: 'avisos', label: t('AVISOS_TITLE') || 'Avisos' },
+        { id: 'weather', label: t('WEATHER_TITLE') || 'Clima' }
     ];
 
     // Normalize layout
