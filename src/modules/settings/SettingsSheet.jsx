@@ -89,7 +89,6 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
     study: true,
     avisos: true,
     minian: true,
-    minian: true,
     seider: true,
     layout: true
   });
