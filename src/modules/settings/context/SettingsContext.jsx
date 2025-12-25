@@ -51,6 +51,8 @@ export function SettingsProvider({ children }) {
   const [scrollSpeed, setScrollSpeed] = usePersistentState("scrollSpeed", 2.6);
   const [showDots, setShowDots] = usePersistentState("showDots", false);
   const [showArrows, setShowArrows] = usePersistentState("showArrows", false);
+  const [currentThemeKey, setCurrentThemeKey] = usePersistentState("currentThemeKey", "beige");
+  const [themeMode, setThemeMode] = usePersistentState("themeMode", "light");
 
   // Dynamic card configuration
   const [visibleCards, setVisibleCards] = usePersistentState("visibleCards", {});
@@ -104,6 +106,12 @@ export function SettingsProvider({ children }) {
 
   // Migration/Initialization: Ensure weather card is in the layout if not present
   useEffect(() => {
+    // Migrate 'dark' theme key to themeMode
+    if (currentThemeKey === 'dark') {
+      setCurrentThemeKey('beige');
+      setThemeMode('dark');
+    }
+
     const isWeatherInLayout = carouselLayout.some(col => col.cards.includes('weather'));
     if (!isWeatherInLayout && carouselLayout.length > 0) {
       setCarouselLayout(prev => {
@@ -159,7 +167,11 @@ export function SettingsProvider({ children }) {
         showDots,
         setShowDots,
         showArrows,
-        setShowArrows
+        setShowArrows,
+        currentThemeKey,
+        setCurrentThemeKey,
+        themeMode,
+        setThemeMode
       }}
     >
       {children}

@@ -59,7 +59,9 @@ export default function useUserLocation(options = {}) {
       // 2️⃣ Ciudad pasada por usuario
       if (options.city) {
         try {
-          const results = cityTimezones.lookupViaCity(options.city);
+          // Normalización básica para casos conocidos
+          let searchCity = options.city.trim();          
+          const results = cityTimezones.lookupViaCity(searchCity);
           if (results && results.length > 0) {
             const location = results[0]; // Tomamos el primer match
             if (mounted) {
@@ -67,7 +69,7 @@ export default function useUserLocation(options = {}) {
               setLongitude(location.lng);
               const tz = location.timezone || tzlookup(location.lat, location.lng);
               setTzid(tz);
-              setCity(location.city);
+              setCity(options.city); // Mantenemos el nombre original para mostrar
               setCountry(location.country || "");
               setDetectionMethod('city');
               setLoading(false);
@@ -78,11 +80,10 @@ export default function useUserLocation(options = {}) {
           }
         } catch (e) {
           console.warn(`Error buscando ciudad "${options.city}":`, e);
-          // Si falla, continuamos con el siguiente método
         }
       }
 
-      // 3️⃣ Detección por IP (Prioridad: Silenciosa y completa)
+      // 3️⃣ Detección por IP
       try {
         const data = await fetchWithTimeout("https://ipapi.co/json/");
         if (mounted && data && !data.error) {
@@ -96,8 +97,14 @@ export default function useUserLocation(options = {}) {
           return;
         }
       } catch (err) {
-        console.warn("ipapi.co failed, trying worldtimeapi:", err.message);
+        console.warn("ipapi.co failed, trying api.ipify.org:", err.message);
         try {
+          const ipData = await fetchWithTimeout("https://api.ipify.org?format=json");
+          if (mounted && ipData.ip) {
+            // Con la IP, podríamos intentar otro servicio, pero por ahora al menos sabemos que falló el geo-ip completo
+            console.log("IP detectada via ipify:", ipData.ip);
+          }
+          
           const data = await fetchWithTimeout("https://worldtimeapi.org/api/ip");
           if (mounted && data) {
             setTzid(data.timezone || data.tzid);

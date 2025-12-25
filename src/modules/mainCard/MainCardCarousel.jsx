@@ -15,6 +15,7 @@ import { WeatherApp } from "./cards/ui/WeatherApp.jsx";
 // InnerCarousel renders a carousel for a given ordered list of card ids
 function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scrollSpeed, t, dataSources }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const theme = useTheme();
   const { showDots, showArrows } = useSettings();
 
   // Build card configs from dataSources using a definition map to avoid repetition
@@ -42,8 +43,27 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
         icon: Scroll,
         hasData: () => !!hayomYomData,
         renderContent: () => (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pb: 2, backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: '8px', p: 2 }}>
-            <Typography className="hebrew-text" sx={{ color: '#5d4037', fontSize: '1rem', whiteSpace: 'pre-wrap', textAlign: 'right', lineHeight: 1.6 }}>{hayomYomData?.text}</Typography>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            pb: 2,
+            backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'action.hover',
+            borderRadius: '8px',
+            p: 2
+          }}>
+            <Typography
+              className="hebrew-text"
+              sx={{
+                color: theme.palette.text.primary,
+                fontSize: '1.2rem',
+                whiteSpace: 'pre-wrap',
+                textAlign: 'right',
+                lineHeight: 1.6
+              }}
+            >
+              {hayomYomData?.text}
+            </Typography>
           </Box>
         )
       },
@@ -133,27 +153,54 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
   const handleNext = () => setCurrentCardIndex((prev) => (prev + 1) % cards.length);
   const handlePrev = () => setCurrentCardIndex((prev) => (prev - 1 + cards.length) % cards.length);
 
-  if (cards.length === 0) {
-    return (
-      <Card sx={{ background: 'linear-gradient(to bottom right, rgba(255,255,255,0.8), rgba(232,220,195,0.5))', backdropFilter: 'blur(8px)', border: '1px solid rgba(188,168,134,0.3)', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', borderRadius: '16px', p: 4, textAlign: 'center' }}>
-        <Typography sx={{ color: '#8b7355', fontSize: '1.25rem' }}>No hay tarjetas visibles. Activa al menos una en Configuración.</Typography>
-      </Card>
-    );
-  }
-
-  const activeCard = cards[currentCardIndex] || cards[0];
+  const activeCard = cards.length > 0
+    ? (cards[currentCardIndex] || cards[0])
+    : {
+      id: 'empty', component: (
+        <Box sx={{ p: 4, textAlign: 'center' }}>
+          <Typography sx={{ color: theme.palette.text.secondary || 'inherit', fontSize: '1.1rem' }}>
+            No hay tarjetas visibles. Activa al menos una en Configuración.
+          </Typography>
+        </Box>
+      )
+    };
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {showDots && cards.length > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
           {cards.map((card, index) => (
-            <IconButton key={card.id} onClick={() => handleDotClick(index)} sx={{ width: index === currentCardIndex ? '32px' : '8px', height: '8px', borderRadius: '9999px', backgroundColor: index === currentCardIndex ? '#bca886' : 'rgba(188,168,134,0.3)', transition: 'all 0.3s', padding: 0, minWidth: 0 }} aria-label={`Ir a tarjeta ${index + 1}`} />
+            <IconButton
+              key={card.id}
+              onClick={() => handleDotClick(index)}
+              sx={{
+                width: index === currentCardIndex ? '32px' : '8px',
+                height: '8px',
+                borderRadius: '9999px',
+                backgroundColor: index === currentCardIndex ? theme.palette.primary.main : theme.custom?.colors?.border?.main,
+                transition: 'all 0.3s',
+                padding: 0,
+                minWidth: 0
+              }}
+              aria-label={`Ir a tarjeta ${index + 1}`}
+            />
           ))}
         </Box>
       )}
 
-      <Card sx={{ background: 'linear-gradient(to bottom right, rgba(255,255,255,0.8), rgba(232,220,195,0.5))', backdropFilter: 'blur(8px)', border: '1px solid rgba(188,168,134,0.3)', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', borderRadius: '16px', overflow: 'hidden', mt: 1, flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <Card sx={{
+        background: theme.custom?.colors?.glass?.cardGradient || theme.palette.background.paper,
+        backdropFilter: 'blur(8px)',
+        border: `1px solid ${theme.custom?.colors?.border?.main || theme.palette.divider}`,
+        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        mt: 1,
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative'
+      }}>
 
         {/* Arrow Buttons */}
         {showArrows && cards.length > 1 && (
@@ -166,8 +213,9 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 10,
-                backgroundColor: 'rgba(255,255,255,0.9)',
-                '&:hover': { backgroundColor: '#bca886', color: 'white' },
+                backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.9)',
+                color: 'text.primary',
+                '&:hover': { backgroundColor: 'primary.main', color: 'white' },
                 boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
               }}
             >
@@ -181,8 +229,9 @@ function InnerCarousel({ ids, carouselInterval, registerCard, visibleCards, scro
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 10,
-                backgroundColor: 'rgba(255,255,255,0.9)',
-                '&:hover': { backgroundColor: '#bca886', color: 'white' },
+                backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.9)',
+                color: 'text.primary',
+                '&:hover': { backgroundColor: 'primary.main', color: 'white' },
                 boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
               }}
             >

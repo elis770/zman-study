@@ -5,11 +5,13 @@ import {
   Divider,
   Box,
   Button,
-  useMediaQuery
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  useTheme
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { useSettings } from '../context/SettingsContext.jsx';
-import { TextAlignCenter } from 'lucide-react';
 
 const GeneralSettings1 = ({
   t,
@@ -22,16 +24,35 @@ const GeneralSettings1 = ({
   scrollSpeed,
   setScrollSpeed
 }) => {
-  const { showDots, setShowDots, showArrows, setShowArrows } = useSettings();
+  const {
+    showDots, setShowDots,
+    showArrows, setShowArrows,
+    currentThemeKey, setCurrentThemeKey,
+    themeMode, setThemeMode
+  } = useSettings();
+  const theme = useTheme();
 
   const buttonStyle = {
     justifyContent: 'flex-start',
-    borderColor: 'rgba(188, 168, 134, 0.3)',
-    color: '#8b7355',
+    borderColor: theme.custom?.colors?.border?.main || 'divider',
+    color: 'primary.main',
     mb: 1,
     '&:hover': {
-      backgroundColor: 'rgba(139, 115, 85, 0.04)',
-      borderColor: '#8b7355'
+      backgroundColor: 'action.hover',
+      borderColor: 'primary.main'
+    }
+  };
+
+  const selectStyle = {
+    color: 'primary.main',
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.custom?.colors?.border?.main || 'divider',
+    },
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'primary.main',
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'primary.main',
     }
   };
 
@@ -53,7 +74,45 @@ const GeneralSettings1 = ({
       <Divider sx={{ my: 3 }} />
 
       <Box sx={{ mt: 1 }}>
-        <Typography sx={{ color: '#8b7355', fontSize: '0.9rem', mb: 1 }}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography sx={{ color: 'primary.main', fontSize: '0.9rem', mb: 1, fontWeight: 500 }}>
+              {t('THEME_LABEL') || 'Tema Visual'}
+            </Typography>
+            <FormControl fullWidth size="small">
+              <Select
+                value={currentThemeKey}
+                onChange={(e) => setCurrentThemeKey(e.target.value)}
+                sx={selectStyle}
+              >
+                <MenuItem value="beige">{t('THEME_BEIGE')}</MenuItem>
+                <MenuItem value="violet">{t('THEME_VIOLET')}</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box sx={{ flex: 1 }}>
+            <Typography sx={{ color: 'primary.main', fontSize: '0.9rem', mb: 1, fontWeight: 500 }}>
+              {t('DARK_MODE_LABEL') || 'Modo Oscuro'}
+            </Typography>
+            <FormControl fullWidth size="small">
+              <Select
+                value={themeMode}
+                onChange={(e) => setThemeMode(e.target.value)}
+                sx={selectStyle}
+              >
+                <MenuItem value="light">{t('MODE_LIGHT') || 'Blanco (Claro)'}</MenuItem>
+                <MenuItem value="dark">{t('MODE_DARK') || 'Oscuro'}</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Box>
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
+
+      <Box sx={{ mt: 1 }}>
+        <Typography sx={{ color: 'primary.main', fontSize: '0.9rem', mb: 1 }}>
           {t('ROTATION_INTERVAL') || 'Intervalo de rotación de estudios (segundos)'}
         </Typography>
         <Slider
@@ -62,11 +121,12 @@ const GeneralSettings1 = ({
           max={30}
           step={1}
           onChange={(_, val) => onAutoSwitchDelayChange(val * 1000)}
+          sx={{ color: 'primary.main' }}
         />
       </Box>
 
       <Box sx={{ mt: 2 }}>
-        <Typography sx={{ color: '#8b7355', fontSize: '0.9rem', mb: 1 }}>
+        <Typography sx={{ color: 'primary.main', fontSize: '0.9rem', mb: 1 }}>
           {t('SCROLL_SPEED') || 'Velocidad del scroll'}
         </Typography>
         <Slider
@@ -75,13 +135,14 @@ const GeneralSettings1 = ({
           max={3}
           step={0.1}
           onChange={(_, val) => setScrollSpeed(val)}
+          sx={{ color: 'primary.main' }}
         />
       </Box>
 
       <Divider sx={{ my: 3 }} />
 
       <Box sx={{ mt: 2 }}>
-        <Typography sx={{ color: '#8b7355', fontSize: '0.95rem', mb: 1.5 }}>
+        <Typography sx={{ color: 'primary.main', fontSize: '0.95rem', mb: 1.5 }}>
           {t('NAVIGATION_OPTIONS') || 'Opciones de Navegación'}
         </Typography>
 

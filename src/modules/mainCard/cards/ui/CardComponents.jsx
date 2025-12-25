@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme, alpha } from "@mui/material";
 
 export const CardItemList = ({ data }) => {
+    const theme = useTheme();
     return (
         <>
             {data.map((item, index) => {
@@ -14,22 +15,22 @@ export const CardItemList = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'space-between',
                             p: 2,
-                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                            backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'action.hover',
                             borderRadius: '8px'
                         }}
                     >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                            <IconComponent style={{ width: '20px', height: '20px', color: '#bca886' }} />
+                            <IconComponent style={{ width: '20px', height: '20px', color: theme.palette.primary.light }} />
                             <Box>
-                                <Typography sx={{ color: '#8b7355', fontSize: '0.875rem', fontWeight: 600 }}>
+                                <Typography sx={{ color: 'primary.main', fontSize: '0.875rem', fontWeight: 600 }}>
                                     {item.title}
                                 </Typography>
-                                <Typography className="hebrew-text" sx={{ color: 'rgba(139, 115, 85, 0.6)', fontSize: '0.75rem' }}>
+                                <Typography className="hebrew-text" sx={{ color: 'text.secondary', fontSize: '0.75rem', opacity: 0.8 }}>
                                     {item.hebrewTitle}
                                 </Typography>
                             </Box>
                         </Box>
-                        <Typography sx={{ color: '#8b7355', fontSize: '1.25rem', fontWeight: 600 }}>
+                        <Typography sx={{ color: 'primary.main', fontSize: '1.25rem', fontWeight: 800 }}>
                             {item.value}
                         </Typography>
                     </Box>
@@ -129,13 +130,14 @@ export const ScrollingContent = ({ children, interval, scrollKey, speedFactor })
 };
 
 export const GenericCard = ({ id, title, icon: IconComponent, content, interval, speedFactor }) => {
+    const theme = useTheme();
     return (
         <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ textAlign: 'center', mb: 1, flexShrink: 0 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
-                    <IconComponent style={{ width: '24px', height: '24px', color: '#bca886' }} />
+                    <IconComponent style={{ width: '24px', height: '24px', color: theme.palette.primary.light }} />
                 </Box>
-                <Typography sx={{ color: '#8b7355', fontSize: '1.25rem', fontWeight: 600 }}>
+                <Typography sx={{ color: 'primary.main', fontSize: '1.25rem', fontWeight: 800 }}>
                     {title}
                 </Typography>
             </Box>

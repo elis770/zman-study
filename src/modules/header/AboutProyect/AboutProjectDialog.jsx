@@ -12,7 +12,7 @@ export function AboutProjectDialog({ open, onClose }) {
       fullWidth
       PaperProps={{
         sx: {
-          background: `linear-gradient(to bottom right, ${theme.custom.colors.glass.backgroundLight}, ${theme.custom.colors.glass.backgroundDark})`,
+          background: theme.custom?.colors?.glass?.cardGradient || theme.palette.background.paper,
           backdropFilter: 'blur(12px)',
           border: `1px solid ${theme.custom.colors.border.main}`,
           borderRadius: '16px',

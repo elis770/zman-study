@@ -11,14 +11,14 @@ import LayoutSettings from "./layout/LayoutSettings.jsx";
 import { cityList } from "./cities.js";
 import useUserLocation from "../../data/time/useUserLocation.js";
 
-import { useTheme } from "../../shared/theme/useTheme.js";
+import { useTheme } from "@mui/material";
 import { useLanguage } from "../../shared/traslantions/useLanguage.js";
 import { useSettings } from "./context/SettingsContext.jsx";
 import { allZmanim } from "../../context/zmanim/zmanimConfig.js";
 import { allStudies } from "./study/context/studyConfig.js";
 
 export const SettingsSheet = ({ isOpen, onClose }) => {
-  const { theme, toggleTheme } = useTheme();
+  const theme = useTheme();
   const { t, language, toggleLanguage } = useLanguage();
   const {
     visibleZmanim, toggleZman, visibleEstudios, toggleEstudio,
@@ -203,26 +203,29 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
       onClose={onClose}
       PaperProps={{
         sx: {
-          width: { xs: "70%", sm: "70%", md: 420 },
+          width: { xs: "85%", sm: "70%", md: 420 },
           maxWidth: '100%',
-          background: "linear-gradient(to bottom right, #f5efe3, #e8dcc3)",
+          background: theme.palette.background.default,
+          backgroundImage: theme.custom?.colors?.background?.gradient
+            ? `linear-gradient(to bottom right, ${theme.custom.colors.background.gradient[0]}, ${theme.custom.colors.background.gradient[1]})`
+            : 'none',
           p: { xs: 2, sm: 3 },
           borderRadius: { xs: '16px 0 0 16px', md: 0 },
-          boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
+          boxShadow: '-10px 0 30px rgba(0,0,0,0.2)',
         }
       }}
     >
       <Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-          <Typography variant="h5" sx={{ color: "#8b7355", fontWeight: 600 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+          <Typography variant="h5" sx={{ color: "primary.main", fontWeight: 700 }}>
             {t("SETTINGS_TITLE") || "Configuración"}
           </Typography>
           <IconButton onClick={onClose}>
-            <X color="#8b7355" />
+            <X color={theme.palette.primary.main} />
           </IconButton>
         </Box>
 
-        <Typography variant="body2" sx={{ color: 'rgba(139, 115, 85, 0.7)', mb: 4 }}>
+        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4 }}>
           Personaliza qué elementos deseas ver en la aplicación
         </Typography>
 
@@ -231,14 +234,26 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
         {/* CIUDAD */}
         <Box>
           <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-            <MapPin color="#bca886" />
-            <Typography sx={{ color: "#8b7355" }}>
+            <MapPin color={theme.palette.primary.light} />
+            <Typography sx={{ color: "primary.main", fontWeight: 600 }}>
               {t("CITY_LABEL") || "Ciudad"}
             </Typography>
           </Box>
 
           <Box ref={cityInputWrapperRef} sx={{ position: "relative" }}>
-            <TextField fullWidth value={cityInput} onChange={handleCityChange} onKeyDown={handleKeyDown} onFocus={() => cityInput.length > 1 && setShowSuggestions(true)} placeholder={userCity || t("CITY_PLACEHOLDER") || "Ej: New York"} autoComplete="off" sx={{ mb: 2, "& .MuiOutlinedInput-root": { backgroundColor: "rgba(255,255,255,0.6)" } }} />
+            <TextField
+              fullWidth
+              value={cityInput}
+              onChange={handleCityChange}
+              onKeyDown={handleKeyDown}
+              onFocus={() => cityInput.length > 1 && setShowSuggestions(true)}
+              placeholder={userCity || t("CITY_PLACEHOLDER") || "Ej: New York"}
+              autoComplete="off"
+              sx={{
+                mb: 2,
+                "& .MuiOutlinedInput-root": { backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'background.paper' }
+              }}
+            />
 
             {showSuggestions && suggestions.length > 0 && (
               <Paper sx={{ position: "absolute", width: "100%", zIndex: 10, maxHeight: 200, overflowY: "auto" }}>
@@ -250,9 +265,9 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
                       selected={index === selectedSuggestionIndex}
                       sx={{
                         "&.Mui-selected": {
-                          backgroundColor: "#bca886",
-                          color: "white",
-                          "&:hover": { backgroundColor: "#a89474" }
+                          backgroundColor: "primary.light",
+                          color: "primary.contrastText",
+                          "&:hover": { backgroundColor: "primary.main" }
                         }
                       }}
                     >
@@ -265,7 +280,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
           </Box>
 
           <Box sx={{ display: "flex", gap: 1 }}>
-            <Button fullWidth onClick={handleSaveCity} sx={{ backgroundColor: "#bca886", color: "white", "&:hover": { backgroundColor: "#a89474" } }}>
+            <Button fullWidth variant="contained" onClick={handleCityChange} sx={{ py: 1 }}>
               {t("SAVE") || "Guardar"}
             </Button>
 
@@ -279,7 +294,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
 
         {/* GENERAL */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" sx={{ color: "#8b7355", mb: 1, cursor: "pointer" }} onClick={() => toggle("general")}>
+          <Typography variant="h6" sx={{ color: "primary.main", mb: 1, cursor: "pointer", fontWeight: 600 }} onClick={() => toggle("general")}>
             {t("GENERAL_SETTINGS") || "Configuración General"}
           </Typography>
 
@@ -287,8 +302,6 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
             <>
               <GeneralSettings1
                 t={t}
-                theme={theme}
-                toggleTheme={toggleTheme}
                 language={language}
                 toggleLanguage={toggleLanguage}
                 showMinian={showMinian}
@@ -310,7 +323,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
         <Divider sx={{ my: 3 }} />
 
         {/* ZMANIM */}
-        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("zmanim")}>
+        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("zmanim")}>
           {t("ZMANIM_TITLE")}
         </Typography>
 
@@ -326,7 +339,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
         <Divider sx={{ my: 3 }} />
 
         {/* STUDY */}
-        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("study")}>
+        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("study")}>
           {t("STUDY_TITLE")}
         </Typography>
 
@@ -342,7 +355,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
         <Divider sx={{ my: 3 }} />
 
         {/* AVISOS */}
-        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("avisos")}>
+        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("avisos")}>
           {t("AVISOS_EVENTS_TITLE") || "Avisos y Eventos"}
         </Typography>
 
@@ -357,7 +370,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
         <Divider sx={{ my: 3 }} />
 
         {/* MINIAN */}
-        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("minian")}>
+        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("minian")}>
           {t("MINIAN_TITLE") || "Minyanim"}
         </Typography>
 
@@ -374,7 +387,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
         <Divider sx={{ my: 3 }} />
 
         {/* SEIDER */}
-        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("seider")}>
+        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("seider")}>
           {t("SEIDER_TITLE") || "Seider"}
         </Typography>
 
@@ -391,7 +404,7 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
         <Divider sx={{ my: 3 }} />
 
         {/* LAYOUT */}
-        <Typography variant="h6" sx={{ color: "#8b7355", cursor: "pointer" }} onClick={() => toggle("layout")}>
+        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("layout")}>
           {t("DISTRIBUTION_TITLE") || "Distribución de Pantalla"}
         </Typography>
 

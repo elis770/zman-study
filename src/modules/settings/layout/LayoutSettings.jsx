@@ -4,35 +4,36 @@ import { useTheme } from '@mui/material/styles';
 import { Plus, Trash2 } from 'lucide-react';
 
 // Compact box style for drop zones - horizontal layout
-const boxStyle = {
+const boxStyle = (theme) => ({
     p: 1,
     borderRadius: '8px',
-    border: '1px dashed rgba(139, 115, 85, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    border: `1px dashed ${theme.custom?.colors?.border?.main || 'rgba(139, 115, 85, 0.3)'}`,
+    backgroundColor: theme.custom?.colors?.glass?.background || 'rgba(255, 255, 255, 0.3)',
     minHeight: '40px',
     display: 'flex',
     flexWrap: 'wrap',
     gap: 0.5,
     alignItems: 'center'
-};
+});
 
 // Compact inline chip style - small boxes
-const itemStyle = {
+const itemStyle = (theme) => ({
     px: 1,
     py: 0.3,
     borderRadius: '4px',
-    backgroundColor: '#fff',
-    border: '1px solid rgba(139, 115, 85, 0.2)',
+    backgroundColor: theme.palette.background.paper,
+    border: `1px solid ${theme.custom?.colors?.border?.light || 'rgba(139, 115, 85, 0.2)'}`,
     cursor: 'grab',
     boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
     display: 'inline-block',
     fontSize: '0.7rem',
     lineHeight: 1.4,
+    color: 'text.primary',
     '&:hover': {
-        backgroundColor: 'rgba(188, 168, 134, 0.15)',
-        borderColor: '#bca886'
+        backgroundColor: theme.palette.action.hover,
+        borderColor: 'primary.main'
     }
-};
+});
 
 const LayoutSettings = ({ layout, setLayout, t }) => {
     const theme = useTheme();
@@ -157,7 +158,7 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
 
     return (
         <Box>
-            <Typography variant="body2" sx={{ color: 'rgba(139, 115, 85, 0.7)', mb: 1.5, fontSize: '0.85rem' }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.5, fontSize: '0.85rem' }}>
                 {t('LAYOUT_DESC') || 'Arrastra las tarjetas para organizar la pantalla principal. Los anchos son relativos entre sí.'}
             </Typography>
 
@@ -166,14 +167,14 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
                 <Box sx={{
                     mb: 2,
                     p: 1.5,
-                    backgroundColor: 'rgba(139, 115, 85, 0.08)',
-                    border: '1px dashed rgba(139, 115, 85, 0.3)',
+                    backgroundColor: 'action.hover',
+                    border: `1px dashed ${theme.palette.primary.light}`,
                     borderRadius: 1,
                     display: 'flex',
                     alignItems: 'center',
                     gap: 1
                 }}>
-                    <Typography variant="caption" sx={{ color: '#8b7355', fontSize: '0.75rem', fontStyle: 'italic' }}>
+                    <Typography variant="caption" sx={{ color: 'primary.main', fontSize: '0.75rem', fontStyle: 'italic', fontWeight: 500 }}>
                         * Vista simplificada para {isMobile ? 'Móvil' : 'Tablet'}.
                         Las tarjetas se han agrupado automáticamente.
                     </Typography>
@@ -182,29 +183,29 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {effectiveLayout.map((col, index) => (
-                    <Paper key={col.id} elevation={0} sx={{ p: 1.5, border: '1px solid rgba(139, 115, 85, 0.15)', borderRadius: 1.5, backgroundColor: 'rgba(255, 255, 255, 0.4)' }}>
+                    <Paper key={col.id} elevation={0} sx={{ p: 1.5, border: `1px solid ${theme.custom?.colors?.border?.main || 'divider'}`, borderRadius: 1.5, backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'background.paper' }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Typography variant="caption" sx={{ color: '#8b7355', fontWeight: 600, fontSize: '0.8rem' }}>
+                                <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 600, fontSize: '0.8rem' }}>
                                     {t('COLUMN') || 'Columna'} {index + 1}
                                 </Typography>
                             </Box>
                             {effectiveLayout.length > 1 && (
-                                <IconButton size="small" onClick={() => removeColumn(col.id)} sx={{ color: '#d32f2f', p: 0.5 }}>
+                                <IconButton size="small" onClick={() => removeColumn(col.id)} sx={{ color: 'error.main', p: 0.5 }}>
                                     <Trash2 size={14} />
                                 </IconButton>
                             )}
                         </Box>
 
                         <Box sx={{ mb: 1, px: 0.5 }}>
-                            <Typography variant="caption" sx={{ color: 'rgba(139, 115, 85, 0.7)', fontSize: '0.75rem' }}>
+                            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                                 {t('WIDTH') || 'Ancho'}: {Math.round(col.width)}%
                             </Typography>
                             <Slider
                                 value={col.width}
                                 min={10} max={90} step={5}
                                 onChange={(_, val) => updateWidth(col.id, val)}
-                                sx={{ color: '#bca886', height: 4 }}
+                                sx={{ color: 'primary.main', height: 4 }}
                                 size="small"
                             />
                         </Box>
@@ -212,18 +213,18 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
                         <Box
                             onDragOver={e => e.preventDefault()}
                             onDrop={e => onDrop(e, col.id)}
-                            sx={boxStyle}
+                            sx={boxStyle(theme)}
                         >
                             {col.cards.map(cardId => {
                                 const cardLabel = availableCardsDefs.find(c => c.id === cardId)?.label || cardId;
                                 return (
-                                    <Box key={cardId} draggable onDragStart={e => onDragStart(e, cardId)} sx={itemStyle}>
+                                    <Box key={cardId} draggable onDragStart={e => onDragStart(e, cardId)} sx={itemStyle(theme)}>
                                         {cardLabel}
                                     </Box>
                                 );
                             })}
                             {col.cards.length === 0 && (
-                                <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.3)', fontSize: '0.7rem', width: '100%', textAlign: 'center' }}>
+                                <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem', width: '100%', textAlign: 'center' }}>
                                     Arrastra aquí
                                 </Typography>
                             )}
@@ -237,28 +238,28 @@ const LayoutSettings = ({ layout, setLayout, t }) => {
                         onClick={addColumn}
                         variant="outlined"
                         size="small"
-                        sx={{ color: '#8b7355', borderColor: '#8b7355', borderStyle: 'dashed', fontSize: '0.75rem', py: 0.5 }}
+                        sx={{ color: 'primary.main', borderColor: `${theme.palette.primary.main}`, borderStyle: 'dashed', fontSize: '0.75rem', py: 0.5 }}
                     >
                         {t('ADD_COLUMN') || 'Agregar Columna'}
                     </Button>
                 )}
 
                 <Box>
-                    <Typography variant="caption" sx={{ color: '#8b7355', fontWeight: 600, mb: 0.5, display: 'block', fontSize: '0.8rem' }}>
+                    <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 600, mb: 0.5, display: 'block', fontSize: '0.8rem' }}>
                         {t('AVAILABLE') || 'Disponibles'}
                     </Typography>
                     <Box
                         onDragOver={e => e.preventDefault()}
                         onDrop={e => onDrop(e, 'available')}
-                        sx={{ ...boxStyle, borderStyle: 'dotted' }}
+                        sx={{ ...boxStyle(theme), borderStyle: 'dotted' }}
                     >
                         {availableCards.map(card => (
-                            <Box key={card.id} draggable onDragStart={e => onDragStart(e, card.id)} sx={{ ...itemStyle, opacity: 0.7 }}>
+                            <Box key={card.id} draggable onDragStart={e => onDragStart(e, card.id)} sx={{ ...itemStyle(theme), opacity: 0.7 }}>
                                 {card.label}
                             </Box>
                         ))}
                         {availableCards.length === 0 && (
-                            <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.3)', fontSize: '0.7rem', width: '100%', textAlign: 'center' }}>
+                            <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem', width: '100%', textAlign: 'center' }}>
                                 Todo asignado
                             </Typography>
                         )}

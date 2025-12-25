@@ -1,7 +1,8 @@
-import { Box, Button, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, useTheme, alpha } from "@mui/material";
 import { allStudies } from './context/studyConfig.js';
 
 const StudySettings = ({ t, visibleStudies, onStudiesChange, onSelectionChange }) => {
+  const theme = useTheme();
   // Comprueba si todos los estudios están seleccionados
   const areAllSelected = visibleStudies.length === allStudies.length;
 
@@ -16,7 +17,14 @@ const StudySettings = ({ t, visibleStudies, onStudiesChange, onSelectionChange }
           variant="outlined"
           size="small"
           onClick={() => onSelectionChange(nextAction)}
-          sx={{ borderColor: '#bca886', color: '#8b7355', '&:hover': { borderColor: '#8b7355', backgroundColor: 'rgba(139, 115, 85, 0.04)' } }}
+          sx={{
+            borderColor: theme.custom?.colors?.border?.main || 'primary.light',
+            color: 'primary.main',
+            '&:hover': {
+              borderColor: 'primary.main',
+              backgroundColor: 'action.hover'
+            }
+          }}
         >
           {buttonText}
         </Button>
@@ -35,8 +43,8 @@ const StudySettings = ({ t, visibleStudies, onStudiesChange, onSelectionChange }
                 checked={visibleStudies.includes(study.key)}
                 onChange={() => onStudiesChange(study.key)}
                 sx={{
-                  color: '#bca886',
-                  '&.Mui-checked': { color: '#8b7355' }
+                  color: 'primary.light',
+                  '&.Mui-checked': { color: 'primary.main' }
                 }}
               />
             }
@@ -44,7 +52,7 @@ const StudySettings = ({ t, visibleStudies, onStudiesChange, onSelectionChange }
             sx={{
               '& .MuiFormControlLabel-label': {
                 fontSize: '0.9rem',
-                color: '#8b7355'
+                color: 'text.primary'
               }
             }}
           />

@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Box, Typography, Button, Select, MenuItem, FormControl, InputLabel, List, ListItem, ListItemText, IconButton } from "@mui/material";
+import { Box, Typography, Button, Select, MenuItem, FormControl, InputLabel, List, ListItem, ListItemText, IconButton, useTheme, alpha } from "@mui/material";
 import { X } from "lucide-react";
 import { useLanguage } from '@/shared/traslantions/useLanguage.js';
 
 const TimeListSettings = ({ list = [], onSave, onDelete, addTitleKey, manageTitleKey }) => {
   const { t } = useLanguage();
+  const theme = useTheme();
   const [prayerType, setPrayerType] = useState('shajarit');
   const [hour, setHour] = useState('07');
   const [minute, setMinute] = useState('00');
@@ -29,14 +30,19 @@ const TimeListSettings = ({ list = [], onSave, onDelete, addTitleKey, manageTitl
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h6" sx={{ color: '#8b7355', fontSize: '1rem' }}>
+      <Typography variant="h6" sx={{ color: 'primary.main', fontSize: '1rem', fontWeight: 600 }}>
         {t(addTitleKey) || t('ADD_MINIAN') || 'Agregar'}
       </Typography>
 
       <Box component="form" onSubmit={handleAdd} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <FormControl fullWidth size="small">
-          <InputLabel sx={{ color: '#8b7355' }}>{t('PRAYER') || 'Tefilá'}</InputLabel>
-          <Select value={prayerType} label={t('PRAYER') || 'Tefilá'} onChange={(e) => setPrayerType(e.target.value)} sx={{ backgroundColor: 'rgba(255,255,255,0.6)' }}>
+          <InputLabel sx={{ color: 'primary.main' }}>{t('PRAYER') || 'Tefilá'}</InputLabel>
+          <Select
+            value={prayerType}
+            label={t('PRAYER') || 'Tefilá'}
+            onChange={(e) => setPrayerType(e.target.value)}
+            sx={{ backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'action.hover' }}
+          >
             <MenuItem value="shajarit">🌅 {t('SHAJARIT')}</MenuItem>
             <MenuItem value="minja">🌇 {t('MINJA')}</MenuItem>
             <MenuItem value="maariv">🌃 {t('MAARIV')}</MenuItem>
@@ -46,34 +52,55 @@ const TimeListSettings = ({ list = [], onSave, onDelete, addTitleKey, manageTitl
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
           <FormControl fullWidth size="small">
             <InputLabel>{t('HOUR') || 'Hora'}</InputLabel>
-            <Select value={hour} label={t('HOUR') || 'Hora'} onChange={(e) => setHour(e.target.value)} sx={{ backgroundColor: 'rgba(255,255,255,0.6)' }}>
+            <Select
+              value={hour}
+              label={t('HOUR') || 'Hora'}
+              onChange={(e) => setHour(e.target.value)}
+              sx={{ backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'action.hover' }}
+            >
               {renderHourOptions()}
             </Select>
           </FormControl>
           <Typography>:</Typography>
           <FormControl fullWidth size="small">
             <InputLabel>{t('MINUTE') || 'Minuto'}</InputLabel>
-            <Select value={minute} label={t('MINUTE') || 'Minuto'} onChange={(e) => setMinute(e.target.value)} sx={{ backgroundColor: 'rgba(255,255,255,0.6)' }}>
+            <Select
+              value={minute}
+              label={t('MINUTE') || 'Minuto'}
+              onChange={(e) => setMinute(e.target.value)}
+              sx={{ backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'action.hover' }}
+            >
               {renderMinuteOptions()}
             </Select>
           </FormControl>
         </Box>
 
-        <Button type="submit" variant="contained" sx={{ backgroundColor: '#bca886', color: 'white', '&:hover': { backgroundColor: '#a89474' } }}>
+        <Button type="submit" variant="contained" sx={{ color: 'white', py: 1 }}>
           {t('SAVE') || 'Guardar'}
         </Button>
       </Box>
 
       {list && list.length > 0 && (
         <Box sx={{ mt: 2 }}>
-          <Typography variant="h6" sx={{ color: '#8b7355', fontSize: '1rem', mb: 1 }}>
+          <Typography variant="h6" sx={{ color: 'primary.main', fontSize: '1rem', mb: 1, fontWeight: 600 }}>
             {t(manageTitleKey) || 'Gestionar'}
           </Typography>
           <List dense sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {list.map(item => (
-              <ListItem key={item.id} sx={{ backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: '8px', border: '1px solid rgba(188, 168, 134, 0.2)' }}
-                secondaryAction={<IconButton edge="end" onClick={() => onDelete(item.id)}><X size={18} color="#8b7355" /></IconButton>}>
-                <ListItemText primary={`${prayerIcons[item.type]} ${t(item.type.toUpperCase())} - ${item.time}`} sx={{ '& .MuiListItemText-primary': { color: '#8b7355', fontSize: '0.9rem' } }} />
+              <ListItem
+                key={item.id}
+                sx={{
+                  backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'action.hover',
+                  borderRadius: '8px',
+                  border: `1px solid ${theme.custom?.colors?.border?.main || 'divider'}`
+                }}
+                secondaryAction={
+                  <IconButton edge="end" onClick={() => onDelete(item.id)}>
+                    <X size={18} color={theme.palette.primary.main} />
+                  </IconButton>
+                }
+              >
+                <ListItemText primary={`${prayerIcons[item.type]} ${t(item.type.toUpperCase())} - ${item.time}`} sx={{ '& .MuiListItemText-primary': { color: 'primary.main', fontSize: '0.9rem', fontWeight: 500 } }} />
               </ListItem>
             ))}
           </List>

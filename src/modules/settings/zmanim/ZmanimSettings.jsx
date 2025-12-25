@@ -1,7 +1,8 @@
-import { Box, Button, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, useTheme, alpha } from "@mui/material";
 import { allZmanim } from '../../../context/zmanim/zmanimConfig.js';
 
 const ZmanimSettings = ({ t, visibleZmanim, onZmanimChange, onSelectionChange }) => {
+  const theme = useTheme();
   // Comprueba si todos los zmanim están seleccionados
   const areAllSelected = visibleZmanim.length === allZmanim.length;
 
@@ -16,7 +17,14 @@ const ZmanimSettings = ({ t, visibleZmanim, onZmanimChange, onSelectionChange })
           variant="outlined"
           size="small"
           onClick={() => onSelectionChange(nextAction)}
-          sx={{ borderColor: '#bca886', color: '#8b7355', '&:hover': { borderColor: '#8b7355', backgroundColor: 'rgba(139, 115, 85, 0.04)' } }}
+          sx={{
+            borderColor: theme.custom?.colors?.border?.main || 'primary.light',
+            color: 'primary.main',
+            '&:hover': {
+              borderColor: 'primary.main',
+              backgroundColor: 'action.hover'
+            }
+          }}
         >
           {buttonText}
         </Button>
@@ -35,8 +43,8 @@ const ZmanimSettings = ({ t, visibleZmanim, onZmanimChange, onSelectionChange })
                 checked={visibleZmanim.includes(zman.key)}
                 onChange={() => onZmanimChange(zman.key)}
                 sx={{
-                  color: '#bca886',
-                  '&.Mui-checked': { color: '#8b7355' }
+                  color: 'primary.light',
+                  '&.Mui-checked': { color: 'primary.main' }
                 }}
               />
             }
@@ -44,7 +52,7 @@ const ZmanimSettings = ({ t, visibleZmanim, onZmanimChange, onSelectionChange })
             sx={{
               '& .MuiFormControlLabel-label': {
                 fontSize: '0.9rem',
-                color: '#8b7355'
+                color: 'text.primary'
               }
             }}
           />

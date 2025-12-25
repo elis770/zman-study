@@ -1,107 +1,112 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, alpha } from '@mui/material/styles';
 
-// Color palette for KosherClock
-const colors = {
-  // Primary colors
-  primary: {
-    main: '#8b7355',      // Main brown color
-    light: '#bca886',     // Light gold/tan
-    dark: '#6b5845',      // Darker brown
-  },
-  
-  // Secondary/accent colors
-  secondary: {
-    main: '#bca886',      // Gold/tan
-    light: '#e8dcc3',     // Very light beige
-    dark: '#a89876',      // Darker gold
-  },
-  
-  // Background colors
-  background: {
-    default: '#f5efe3',   // Light cream
-    paper: '#ffffff',     // White
-    gradient: {
-      start: '#f5efe3',
-      end: '#e8dcc3',
-    },
-  },
-  
-  // Text colors
-  text: {
-    primary: '#8b7355',                    // Main text color
-    secondary: 'rgba(139, 115, 85, 0.8)',  // Secondary text
-    tertiary: 'rgba(139, 115, 85, 0.7)',   // Tertiary text
-    quaternary: 'rgba(139, 115, 85, 0.6)', // Quaternary text
-    disabled: 'rgba(139, 115, 85, 0.4)',   // Disabled text
-  },
-  
-  // Border colors
-  border: {
-    main: 'rgba(188, 168, 134, 0.3)',
-    light: 'rgba(188, 168, 134, 0.2)',
-  },
-  
-  // Glass/backdrop effects
-  glass: {
-    background: 'rgba(255, 255, 255, 0.4)',
-    backgroundAlt: 'rgba(255, 255, 255, 0.5)',
-    backgroundDark: 'rgba(255, 255, 255, 0.8)',
-    backgroundLight: 'rgba(255, 255, 255, 0.95)',
-  },
+const baseTypography = {
+  fontFamily: [
+    '-apple-system',
+    'BlinkMacSystemFont',
+    '"Segoe UI"',
+    'Roboto',
+    '"Helvetica Neue"',
+    'Arial',
+    'sans-serif',
+  ].join(','),
 };
 
-// Create Material-UI theme
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: colors.primary.main,
-      light: colors.primary.light,
-      dark: colors.primary.dark,
-    },
-    secondary: {
-      main: colors.secondary.main,
-      light: colors.secondary.light,
-      dark: colors.secondary.dark,
-    },
-    background: {
-      default: colors.background.default,
-      paper: colors.background.paper,
-    },
-    text: {
-      primary: colors.text.primary,
-      secondary: colors.text.secondary,
-    },
-  },
-  
-  // Custom theme extensions
-  custom: {
-    colors: colors,
-  },
-  
-  // Typography customization
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-    ].join(','),
-  },
-  
-  // Component overrides
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-        },
+const baseComponents = {
+  MuiButton: {
+    styleOverrides: {
+      root: {
+        textTransform: 'none',
+        borderRadius: '8px',
       },
     },
   },
-});
+  MuiCard: {
+    styleOverrides: {
+      root: {
+        borderRadius: '16px',
+      }
+    }
+  }
+};
 
-export default theme;
-export { colors };
+const themeConfigs = {
+  beige: {
+    primary: '#8b7355',
+    secondary: '#bca886',
+    background: '#f5efe3',
+    paper: '#ffffff',
+    gradientEnd: '#e8dcc3',
+  },
+  violet: {
+    primary: '#6b4fbb',
+    secondary: '#9c27b0',
+    background: '#f8f4ff',
+    paper: '#ffffff',
+    gradientEnd: '#ebd9ff',
+  }
+};
+
+export const getTheme = (key, mode = 'light') => {
+  const isDark = mode === 'dark';
+  const config = themeConfigs[key] || themeConfigs.beige;
+
+  const theme = createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: config.primary,
+      },
+      secondary: {
+        main: config.secondary,
+      },
+      background: {
+        default: isDark ? '#000000' : config.background,
+        paper: isDark ? '#121212' : '#ffffff',
+      },
+      text: {
+        primary: isDark ? '#ffffff' : config.primary,
+        secondary: isDark ? alpha('#ffffff', 0.7) : alpha(config.primary, 0.8),
+      },
+    },
+    typography: baseTypography,
+    components: baseComponents,
+  });
+
+  // Extensiones dinámicas para asegurar que TODO el tema cambie
+  theme.custom = {
+    colors: {
+      background: {
+        gradient: isDark 
+          ? ['#000000', '#1a1a1a'] 
+          : [config.background, config.gradientEnd],
+      },
+      glass: {
+        background: isDark ? alpha('#1e1e1e', 0.9) : alpha('#ffffff', 0.95),
+        backgroundAlt: isDark ? alpha('#1e1e1e', 0.95) : alpha('#ffffff', 0.8),
+        cardGradient: isDark 
+          ? `linear-gradient(to bottom right, ${alpha('#1e1e1e', 0.95)}, ${alpha('#000000', 0.9)})`
+          : `linear-gradient(to bottom right, ${alpha('#ffffff', 0.95)}, ${alpha(config.background, 0.9)})`,
+      },
+      border: {
+        main: isDark ? alpha('#ffffff', 0.1) : alpha(config.primary, 0.2),
+        light: isDark ? alpha('#ffffff', 0.05) : alpha(config.primary, 0.1),
+      },
+      text: {
+        primary: theme.palette.text.primary,
+        secondary: theme.palette.text.secondary,
+        tertiary: isDark ? alpha('#ffffff', 0.5) : alpha(config.primary, 0.7),
+        quaternary: isDark ? alpha('#ffffff', 0.4) : alpha(config.primary, 0.5),
+      }
+    }
+  };
+
+  return theme;
+};
+
+export const themes = {
+  beige: getTheme('beige', 'light'),
+  violet: getTheme('violet', 'light'),
+};
+
+export default themes.beige;

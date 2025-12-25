@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { Sun, Cloud, CloudSun, Cloudy, CloudRain, CloudDrizzle, CloudLightning, Snowflake, Wind } from 'lucide-react';
 import { useAppData } from '../../../../data/useAppData.js';
 import { useLanguage } from '../../../../shared/traslantions/useLanguage.js';
 
 export const WeatherApp = ({ isCard = false }) => {
+  const theme = useTheme();
   const { time } = useAppData();
   const { t, language } = useLanguage();
   const city = time?.city;
@@ -17,7 +18,7 @@ export const WeatherApp = ({ isCard = false }) => {
   const getWeatherIcon = (iconCode) => {
     const iconProps = {
       size: isCard ? 48 : 64,
-      color: '#8b7355',
+      color: theme.palette.primary.main,
       strokeWidth: 1.5
     };
 
@@ -90,7 +91,7 @@ export const WeatherApp = ({ isCard = false }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: { xs: 2, md: 4 }, my: 1 }}>
             <Box sx={{
               p: 1.5,
-              backgroundColor: 'rgba(188, 168, 134, 0.1)',
+              backgroundColor: theme.custom?.colors?.border?.light || 'action.hover',
               borderRadius: '16px',
               display: 'flex',
               alignItems: 'center',
@@ -139,7 +140,7 @@ export const WeatherApp = ({ isCard = false }) => {
             gap: 1.5,
             mt: { xs: 1.5, md: 2 },
             pt: { xs: 1.5, md: 2 },
-            borderTop: '1px solid rgba(188, 168, 134, 0.2)'
+            borderTop: `1px solid ${theme.custom?.colors?.border?.main || 'divider'}`
           }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-around', width: '100%' }}>
               <Box>
@@ -176,8 +177,8 @@ export const WeatherApp = ({ isCard = false }) => {
     return (
       <Box sx={{
         width: '100%',
-        backgroundColor: 'rgba(232, 220, 195, 0.4)',
-        border: '1px solid rgba(188, 168, 134, 0.2)',
+        backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'background.paper',
+        border: `1px solid ${theme.custom?.colors?.border?.main || 'divider'}`,
         borderRadius: '16px',
         p: { xs: 1.5, sm: 2, md: 3 },
         mt: 1,
@@ -195,17 +196,17 @@ export const WeatherApp = ({ isCard = false }) => {
     <Box
       sx={{
         width: { xs: '100%', sm: '320px', md: '400px' },
-        background: 'rgba(232, 220, 195, 0.3)',
+        background: theme.custom?.colors?.glass?.background || 'background.paper',
         backdropFilter: 'blur(12px)',
         borderRadius: '32px',
-        border: '1px solid rgba(188, 168, 134, 0.3)',
+        border: `1px solid ${theme.custom?.colors?.border?.main || 'divider'}`,
         p: { xs: 3, sm: 4, md: 5 },
         textAlign: 'center',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(139, 115, 85, 0.1)',
+        boxShadow: `0 8px 32px ${theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.4)' : alpha(theme.palette.primary.main, 0.1)}`,
         alignSelf: 'center',
         transition: 'all 0.3s ease'
       }}

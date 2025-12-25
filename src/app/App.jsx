@@ -1,14 +1,20 @@
 import { Header } from "../modules/header/Header";
 import MainCardCarousel from "../modules/mainCard/MainCardCarousel";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 
 export default function App() {
+  const theme = useTheme();
+  const gradient = theme.custom?.colors?.background?.gradient;
+  const backgroundStyle = gradient
+    ? { background: `linear-gradient(to bottom, ${gradient[0]}, ${gradient[1]})` }
+    : { backgroundColor: theme.palette.background.default };
+
   return (
     <Box sx={{
-      minHeight: '100vh', // Dynamic viewport height for mobile
+      minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      background: 'linear-gradient(to bottom, #f5efe3, #e8dcc3)',
+      ...backgroundStyle,
       overflow: 'hidden'
     }}>
       <Header />
