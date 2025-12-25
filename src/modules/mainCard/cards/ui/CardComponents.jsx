@@ -16,7 +16,7 @@ export const CardItemList = ({ data }) => {
                             justifyContent: 'space-between',
                             p: 2,
                             backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'action.hover',
-                            borderRadius: '8px'
+                            borderRadius: 1
                         }}
                     >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -30,7 +30,7 @@ export const CardItemList = ({ data }) => {
                                 </Typography>
                             </Box>
                         </Box>
-                        <Typography sx={{ color: 'primary.main', fontSize: '1.25rem', fontWeight: 800 }}>
+                        <Typography sx={{ color: 'primary.main', fontSize: { xs: '0.9rem', md: '1.25rem' }, fontWeight: 800 }}>
                             {item.value}
                         </Typography>
                     </Box>

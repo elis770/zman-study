@@ -92,7 +92,8 @@ export function Header() {
             <Typography sx={{
               color: theme.palette.text.primary,
               letterSpacing: '0.05em',
-              fontSize: { xs: '8vh', sm: '3rem', md: '4.5rem' },
+             //fontSize: { xs: 40, sm: 35, md: 70 },
+              fontSize: { xs: '6vh', sm: '2.5rem', md: '4.5rem' },
               fontWeight: 700,
               fontVariantNumeric: 'tabular-nums',
               lineHeight: 1

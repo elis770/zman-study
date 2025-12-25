@@ -42,8 +42,13 @@ const useSefaria = (gregorianData) => {
         const newStudies = data.calendar_items.reduce((acc, item) => {
           const key = ordersMap[item.order];
           if (key) {
-            acc[key] =
-              item.order === 15 ? { en: item.ref } : item.displayValue;
+            let value = item.order === 15 ? item.ref : item.displayValue;
+            if (typeof value === "string") {
+              value = value
+              .replace(/\bTanya\b|\bPart\s+[IVXLCDM]+\b|[,;]/gi, "")
+              .trim();
+            }
+            acc[key] = item.order === 15 ? { en: value } : value;
           }
           return acc;
         }, {});
