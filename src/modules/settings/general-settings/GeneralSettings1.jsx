@@ -56,6 +56,7 @@ const GeneralSettings1 = ({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <br />
       <Box sx={{ display: "flex", gap: 1 }}>
         <Button fullWidth variant="outlined" onClick={toggleLanguage} sx={buttonStyle}>
           {t(language === 'es' ? 'CHANGE_TO_HEBREW' : 'CHANGE_TO_SPANISH')}
@@ -69,7 +70,7 @@ const GeneralSettings1 = ({
         </Button>
       </Box>
 
-      <Divider sx={{ my: 3 }} />
+      <br />
 
       <Box sx={{ mt: 1 }}>
         <Box sx={{ display: 'flex', gap: 2 }}>
@@ -111,6 +112,27 @@ const GeneralSettings1 = ({
         </Box>
       </Box>
 
+      <br />
+      <Box sx={{ mt: 2 }}>
+        <Typography sx={{ color: 'primary.main', fontWeight: 500, mb: 1.5 }}>
+          {t('NAVIGATION_OPTIONS') || 'Opciones de Navegación'}
+        </Typography>
+
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button fullWidth variant="outlined" onClick={() => setShowDots(!showDots)} sx={buttonStyle}>
+            {showDots
+              ? (t('HIDE_DOTS') || 'Ocultar Puntos')
+              : (t('SHOW_DOTS') || 'Mostrar Puntos')}
+          </Button>
+
+          <Button fullWidth variant="outlined" onClick={() => setShowArrows(!showArrows)} sx={buttonStyle}>
+            {showArrows
+              ? (t('HIDE_ARROWS') || 'Ocultar Flechas')
+              : (t('SHOW_ARROWS') || 'Mostrar Flechas')}
+          </Button>
+        </Box>
+      </Box>
+
       <Divider sx={{ my: 3 }} />
 
       <Box sx={{ mt: 1 }}>
@@ -139,28 +161,6 @@ const GeneralSettings1 = ({
           onChange={(_, val) => setScrollSpeed(val)}
           sx={{ color: 'primary.main' }}
         />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      <Box sx={{ mt: 2 }}>
-        <Typography sx={{ color: 'primary.main', fontSize: '0.95rem', mb: 1.5 }}>
-          {t('NAVIGATION_OPTIONS') || 'Opciones de Navegación'}
-        </Typography>
-
-        <Box sx={{ display: "flex", gap: 1, flexDirection: 'column' }}>
-          <Button fullWidth variant="outlined" onClick={() => setShowDots(!showDots)} sx={buttonStyle}>
-            {showDots
-              ? (t('HIDE_DOTS') || 'Ocultar Puntos')
-              : (t('SHOW_DOTS') || 'Mostrar Puntos')}
-          </Button>
-
-          <Button fullWidth variant="outlined" onClick={() => setShowArrows(!showArrows)} sx={buttonStyle}>
-            {showArrows
-              ? (t('HIDE_ARROWS') || 'Ocultar Flechas')
-              : (t('SHOW_ARROWS') || 'Mostrar Flechas')}
-          </Button>
-        </Box>
       </Box>
 
     </Box>

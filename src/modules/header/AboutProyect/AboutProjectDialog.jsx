@@ -26,22 +26,6 @@ export function AboutProjectDialog({ open, onClose }) {
         }
       }}
     >
-      <Box
-        component="img"
-        src="/icon.png"
-        alt="kosherClock"
-        sx={{
-          width: '120px',
-          height: '120px',
-          borderRadius: '50%',
-          objectFit: 'cover',
-          display: 'block',
-          mx: 'auto',
-          mt: 3,
-          mb: '1rem',
-          border: `3px solid ${theme.custom.colors.border.main}`
-        }}
-      />
       <DialogTitle sx={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -50,7 +34,7 @@ export function AboutProjectDialog({ open, onClose }) {
         fontWeight: 600,
         pb: 1
       }}>
-        Sobre el Proyecto
+        TimTor
         <IconButton
           onClick={onClose}
           sx={{
@@ -64,7 +48,7 @@ export function AboutProjectDialog({ open, onClose }) {
       <DialogContent>
         <Box sx={{ py: 2 }}>
           <Typography sx={{ color: theme.palette.text.primary, mb: 2, lineHeight: 1.7 }}>
-            <strong>KosherClock</strong> es una aplicación diseñada para ayudar a la comunidad judía
+            <strong>TimTor</strong> es una aplicación diseñada para ayudar a la comunidad judía
             a mantenerse conectada con sus tradiciones diarias.
           </Typography>
 
@@ -79,6 +63,7 @@ export function AboutProjectDialog({ open, onClose }) {
             <li>Hayom Yom - enseñanzas diarias</li>
             <li>Tefilot y oraciones</li>
             <li>Seider Hayom - orden del día</li>
+            <li>Clima</li>
           </Box>
 
           <Typography sx={{ color: theme.palette.text.secondary, mb: 1, fontWeight: 600 }}>
@@ -87,8 +72,9 @@ export function AboutProjectDialog({ open, onClose }) {
           <Box component="ul" sx={{ color: theme.palette.text.secondary, pl: 3, mb: 2 }}>
             <li>Desarrollado con React para una interfaz dinámica y receptiva</li>
             <li>Integración con hebcal y APIs de Sefaria para datos precisos</li>
-            <li>Diseño centrado en la facilidad de uso y acceso rápido</li>
+            <li>Diseño centrado en la facilidad de uso y acceso rápido con MUI</li>
             <li>Optimizado para detección automática de ubicación y horarios globales</li>
+            <li>Configurado para que el manejo de datos y de infomacion se maneje directamente en el frontend</li>
           </Box>
 
           <Typography sx={{ color: theme.custom.colors.text.tertiary, fontSize: '0.875rem', fontStyle: 'italic' }}>

@@ -13,7 +13,7 @@ export const WeatherApp = ({ isCard = false }) => {
   const [loading, setLoading] = useState(false);
 
   const urlBase = 'https://api.openweathermap.org/data/2.5/weather';
-  const ApiKey = '3ac42ad3305b0d407c4883df3467a9cc';
+  const ApiKey = import.meta.env.VITE_OPENWEATHER_API_KEY; //agrega tu contraseña de la api
 
   const getWeatherIcon = (iconCode) => {
     const iconProps = {
