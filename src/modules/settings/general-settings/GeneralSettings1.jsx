@@ -1,4 +1,3 @@
-import { useRef, useEffect, useMemo } from 'react';
 import {
   Slider,
   Typography,
@@ -8,7 +7,6 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
   useTheme
 } from '@mui/material';
 import { useSettings } from '../context/SettingsContext.jsx';
@@ -87,6 +85,10 @@ const GeneralSettings1 = ({
               >
                 <MenuItem value="beige">{t('THEME_BEIGE')}</MenuItem>
                 <MenuItem value="violet">{t('THEME_VIOLET')}</MenuItem>
+                <MenuItem value="blue">{t('THEME_BLUE')}</MenuItem>
+                <MenuItem value="red">{t('THEME_RED')}</MenuItem>
+                <MenuItem value="green">{t('THEME_GREEN')}</MenuItem>
+                <MenuItem value="orange">{t('THEME_ORANGE')}</MenuItem>
               </Select>
             </FormControl>
           </Box>

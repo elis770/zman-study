@@ -44,7 +44,35 @@ const themeConfigs = {
     background: '#f8f4ff',
     paper: '#ffffff',
     gradientEnd: '#ebd9ff',
-  }
+  },
+  blue: {
+    primary: '#1976d2',
+    secondary: '#64b5f6',
+    background: '#f2f7fd',
+    paper: '#ffffff',
+    gradientEnd: '#dbeafe',
+  },
+  red: {
+    primary: '#d32f2f',
+    secondary: '#ef5350',
+    background: '#fff5f5',
+    paper: '#ffffff',
+    gradientEnd: '#fde2e2',
+  },
+  green: {
+    primary: '#2e7d32',
+    secondary: '#66bb6a',
+    background: '#f4fbf6',
+    paper: '#ffffff',
+    gradientEnd: '#dcf5e3',
+  },
+  orange: {
+    primary: '#f57c00',
+    secondary: '#ff9800',
+    background: '#fff8f2',
+    paper: '#ffffff',
+    gradientEnd: '#ffe8d9',
+  },
 };
 
 export const getTheme = (key, mode = 'light') => {
@@ -107,6 +135,10 @@ export const getTheme = (key, mode = 'light') => {
 export const themes = {
   beige: getTheme('beige', 'light'),
   violet: getTheme('violet', 'light'),
+  blue: getTheme('blue', 'light'),
+  red: getTheme('red', 'light'),
+  green: getTheme('green', 'light'),
+  orange: getTheme('orange', 'light'),
 };
 
 export default themes.beige;

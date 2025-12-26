@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Drawer, Box, Typography, IconButton, Divider, TextField, Button, Paper, List, ListItemButton, ListItemText, Slider } from "@mui/material";
+import { Drawer, Box, Typography, IconButton, Divider, TextField, Button, Paper, List, ListItemButton, ListItemText, Slider, ThemeProvider } from "@mui/material";
 import { X, MapPin, } from "lucide-react";
 
 import GeneralSettings1 from "./general-settings/GeneralSettings1.jsx";
@@ -196,232 +196,233 @@ export const SettingsSheet = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  return (
-    <Drawer
-      anchor="right"
-      open={isOpen}
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          width: { xs: "85%", sm: "70%", md: 420 },
-          maxWidth: '100%',
-          background: theme.palette.background.default,
-          backgroundImage: theme.custom?.colors?.background?.gradient
-            ? `linear-gradient(to bottom right, ${theme.custom.colors.background.gradient[0]}, ${theme.custom.colors.background.gradient[1]})`
-            : 'none',
-          p: { xs: 2, sm: 3 },
-          borderRadius: { xs: '16px 0 0 16px', md: 0 },
-          boxShadow: '-10px 0 30px rgba(0,0,0,0.2)',
-        }
-      }}
-    >
-      <Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-          <Typography variant="h5" sx={{ color: "primary.main", fontWeight: 700 }}>
-            {t("SETTINGS_TITLE") || "Configuración"}
-          </Typography>
-          <IconButton onClick={onClose}>
-            <X color={theme.palette.primary.main} />
-          </IconButton>
-        </Box>
-
-        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4 }}>
-          Personaliza qué elementos deseas ver en la aplicación
-        </Typography>
-
-        <Divider sx={{ my: 3 }} />
-
-        {/* CIUDAD */}
-        <Box>
-          <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-            <MapPin color={theme.palette.primary.light} />
-            <Typography sx={{ color: "primary.main", fontWeight: 600 }}>
-              {t("CITY_LABEL") || "Ciudad"}
+    return (
+      <Drawer
+        anchor="right"
+        open={isOpen}
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            width: { xs: "85%", sm: "70%", md: 420 },
+            maxWidth: '100%',
+            background: theme.palette.background.default,
+            backgroundImage: theme.custom?.colors?.background?.gradient
+              ? `linear-gradient(to bottom right, ${theme.custom.colors.background.gradient[0]}, ${theme.custom.colors.background.gradient[1]})`
+              : 'none',
+            p: { xs: 2, sm: 3 },
+            borderRadius: { xs: '16px 0 0 16px', md: 0 },
+            boxShadow: '-10px 0 30px rgba(0,0,0,0.2)',
+          }
+        }}
+      >
+        <ThemeProvider theme={theme}>
+          <Box>
+            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+              <Typography variant="h5" sx={{ color: "primary.main", fontWeight: 700 }}>
+                {t("SETTINGS_TITLE") || "Configuración"}
+              </Typography>
+              <IconButton onClick={onClose}>
+                <X color={theme.palette.primary.main} />
+              </IconButton>
+            </Box>
+  
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4 }}>
+              Personaliza qué elementos deseas ver en la aplicación
             </Typography>
-          </Box>
-
-          <Box ref={cityInputWrapperRef} sx={{ position: "relative" }}>
-            <TextField
-              fullWidth
-              value={cityInput}
-              onChange={handleCityChange}
-              onKeyDown={handleKeyDown}
-              onFocus={() => cityInput.length > 1 && setShowSuggestions(true)}
-              placeholder={userCity || t("CITY_PLACEHOLDER") || "Ej: New York"}
-              autoComplete="off"
-              sx={{
-                mb: 2,
-                "& .MuiOutlinedInput-root": { backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'background.paper' }
-              }}
-            />
-
-            {showSuggestions && suggestions.length > 0 && (
-              <Paper sx={{ position: "absolute", width: "100%", zIndex: 10, maxHeight: 200, overflowY: "auto" }}>
-                <List dense>
-                  {suggestions.map((s, index) => (
-                    <ListItemButton
-                      key={s}
-                      onClick={() => handleSuggestionClick(s)}
-                      selected={index === selectedSuggestionIndex}
-                      sx={{
-                        "&.Mui-selected": {
-                          backgroundColor: "primary.light",
-                          color: "primary.contrastText",
-                          "&:hover": { backgroundColor: "primary.main" }
-                        }
-                      }}
-                    >
-                      <ListItemText primary={s} />
-                    </ListItemButton>
-                  ))}
-                </List>
-              </Paper>
-            )}
-          </Box>
-
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Button fullWidth variant="contained" onClick={handleCityChange} sx={{ py: 1 }}>
-              {t("SAVE") || "Guardar"}
-            </Button>
-
-            <Button fullWidth variant="outlined" onClick={handleDetectByIp}>
-              {t("DETECT_IP_BUTTON") || "Detectar por IP"}
-            </Button>
-          </Box>
-        </Box>
-
-        <Divider sx={{ my: 3 }} />
-
-        {/* GENERAL */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" sx={{ color: "primary.main", mb: 1, cursor: "pointer", fontWeight: 600 }} onClick={() => toggle("general")}>
-            {t("GENERAL_SETTINGS") || "Configuración General"}
-          </Typography>
-
-          {expanded.general && (
-            <>
-              <GeneralSettings1
+  
+            <Divider sx={{ my: 3 }} />
+  
+            {/* CIUDAD */}
+            <Box>
+              <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+                <MapPin color={theme.palette.primary.light} />
+                <Typography sx={{ color: "primary.main", fontWeight: 600 }}>
+                  {t("CITY_LABEL") || "Ciudad"}
+                </Typography>
+              </Box>
+  
+              <Box ref={cityInputWrapperRef} sx={{ position: "relative" }}>
+                <TextField
+                  fullWidth
+                  value={cityInput}
+                  onChange={handleCityChange}
+                  onKeyDown={handleKeyDown}
+                  onFocus={() => cityInput.length > 1 && setShowSuggestions(true)}
+                  placeholder={userCity || t("CITY_PLACEHOLDER") || "Ej: New York"}
+                  autoComplete="off"
+                  sx={{
+                    mb: 2,
+                    "& .MuiOutlinedInput-root": { backgroundColor: theme.custom?.colors?.glass?.backgroundAlt || 'background.paper' }
+                  }}
+                />
+  
+                {showSuggestions && suggestions.length > 0 && (
+                  <Paper sx={{ position: "absolute", width: "100%", zIndex: 10, maxHeight: 200, overflowY: "auto" }}>
+                    <List dense>
+                      {suggestions.map((s, index) => (
+                        <ListItemButton
+                          key={s}
+                          onClick={() => handleSuggestionClick(s)}
+                          selected={index === selectedSuggestionIndex}
+                          sx={{
+                            "&.Mui-selected": {
+                              backgroundColor: "primary.light",
+                              color: "primary.contrastText",
+                              "&:hover": { backgroundColor: "primary.main" }
+                            }
+                          }}
+                        >
+                          <ListItemText primary={s} />
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </Paper>
+                )}
+              </Box>
+  
+              <Box sx={{ display: "flex", gap: 1 }}>
+                <Button fullWidth variant="contained" onClick={handleCityChange} sx={{ py: 1 }}>
+                  {t("SAVE") || "Guardar"}
+                </Button>
+  
+                <Button fullWidth variant="outlined" onClick={handleDetectByIp}>
+                  {t("DETECT_IP_BUTTON") || "Detectar por IP"}
+                </Button>
+              </Box>
+            </Box>
+  
+            <Divider sx={{ my: 3 }} />
+  
+            {/* GENERAL */}
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h6" sx={{ color: "primary.main", mb: 1, cursor: "pointer", fontWeight: 600 }} onClick={() => toggle("general")}>
+                {t("GENERAL_SETTINGS") || "Configuración General"}
+              </Typography>
+  
+              {expanded.general && (
+                <>
+                  <GeneralSettings1
+                    t={t}
+                    language={language}
+                    toggleLanguage={toggleLanguage}
+                    showMinian={showMinian}
+                    toggleShowMinian={toggleShowMinian}
+                    showHayomYom={showHayomYom}
+                    toggleShowHayomYom={toggleShowHayomYom}
+                    autoSwitchDelay={autoSwitchDelay}
+                    onAutoSwitchDelayChange={onAutoSwitchDelayChange}
+                    timeFormat={timeFormat}
+                    toggleTimeFormat={toggleTimeFormat}
+                    scrollSpeed={scrollSpeed}
+                    setScrollSpeed={setScrollSpeed}
+                  />
+  
+                </>
+              )}
+            </Box>
+  
+            <Divider sx={{ my: 3 }} />
+  
+            {/* ZMANIM */}
+            <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("zmanim")}>
+              {t("ZMANIM_TITLE")}
+            </Typography>
+  
+            {expanded.zmanim && (
+              <ZmanimSettings
                 t={t}
-                language={language}
-                toggleLanguage={toggleLanguage}
-                showMinian={showMinian}
-                toggleShowMinian={toggleShowMinian}
-                showHayomYom={showHayomYom}
-                toggleShowHayomYom={toggleShowHayomYom}
-                autoSwitchDelay={autoSwitchDelay}
-                onAutoSwitchDelayChange={onAutoSwitchDelayChange}
-                timeFormat={timeFormat}
-                toggleTimeFormat={toggleTimeFormat}
-                scrollSpeed={scrollSpeed}
-                setScrollSpeed={setScrollSpeed}
+                visibleZmanim={visibleZmanimArray}
+                onZmanimChange={toggleZman}
+                onSelectionChange={onZmanimSelectionChange}
               />
-
-            </>
-          )}
-        </Box>
-
-        <Divider sx={{ my: 3 }} />
-
-        {/* ZMANIM */}
-        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("zmanim")}>
-          {t("ZMANIM_TITLE")}
-        </Typography>
-
-        {expanded.zmanim && (
-          <ZmanimSettings
-            t={t}
-            visibleZmanim={visibleZmanimArray}
-            onZmanimChange={toggleZman}
-            onSelectionChange={onZmanimSelectionChange}
-          />
-        )}
-
-        <Divider sx={{ my: 3 }} />
-
-        {/* STUDY */}
-        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("study")}>
-          {t("STUDY_TITLE")}
-        </Typography>
-
-        {expanded.study && (
-          <StudySettings
-            t={t}
-            visibleStudies={visibleStudiesArray}
-            onStudiesChange={toggleEstudio}
-            onSelectionChange={onStudiesSelectionChange}
-          />
-        )}
-
-        <Divider sx={{ my: 3 }} />
-
-        {/* AVISOS */}
-        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("avisos")}>
-          {t("AVISOS_EVENTS_TITLE") || "Avisos y Eventos"}
-        </Typography>
-
-        {expanded.avisos && (
-          <AvisosSettings
-            customAvisos={customAvisos}
-            onAddAviso={onAddAviso}
-            onDeleteAviso={onDeleteAviso}
-          />
-        )}
-
-        <Divider sx={{ my: 3 }} />
-
-        {/* MINIAN */}
-        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("minian")}>
-          {t("MINIAN_TITLE") || "Minyanim"}
-        </Typography>
-
-        {expanded.minian && (
-          <TimeListSettings
-            list={minianimList}
-            onSave={handleSaveMinian}
-            onDelete={handleDeleteMinian}
-            addTitleKey={'ADD_MINIAN'}
-            manageTitleKey={'MANAGE_MINIANIM'}
-          />
-        )}
-
-        <Divider sx={{ my: 3 }} />
-
-        {/* SEIDER */}
-        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("seider")}>
-          {t("SEIDER_TITLE") || "Seider"}
-        </Typography>
-
-        {expanded.seider && (
-          <TimeListSettings
-            list={seiderList}
-            onSave={handleSaveSeider}
-            onDelete={handleDeleteSeider}
-            addTitleKey={'ADD_SEIDER'}
-            manageTitleKey={'MANAGE_SEIDER'}
-          />
-        )}
-
-        <Divider sx={{ my: 3 }} />
-
-        {/* LAYOUT */}
-        <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("layout")}>
-          {t("DISTRIBUTION_TITLE") || "Distribución de Pantalla"}
-        </Typography>
-
-        {expanded.layout && (
-          <LayoutSettings
-            layout={carouselLayout}
-            setLayout={setCarouselLayout}
-            t={t}
-          />
-        )}
-
-        {/* Bottom spacing to prevent cutoff */}
-        <Box sx={{ height: '80px' }} />
-
-      </Box>
-    </Drawer>
-  );
-};
-
+            )}
+  
+            <Divider sx={{ my: 3 }} />
+  
+            {/* STUDY */}
+            <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("study")}>
+              {t("STUDY_TITLE")}
+            </Typography>
+  
+            {expanded.study && (
+              <StudySettings
+                t={t}
+                visibleStudies={visibleStudiesArray}
+                onStudiesChange={toggleEstudio}
+                onSelectionChange={onStudiesSelectionChange}
+              />
+            )}
+  
+            <Divider sx={{ my: 3 }} />
+  
+            {/* AVISOS */}
+            <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("avisos")}>
+              {t("AVISOS_EVENTS_TITLE") || "Avisos y Eventos"}
+            </Typography>
+  
+            {expanded.avisos && (
+              <AvisosSettings
+                customAvisos={customAvisos}
+                onAddAviso={onAddAviso}
+                onDeleteAviso={onDeleteAviso}
+              />
+            )}
+  
+            <Divider sx={{ my: 3 }} />
+  
+            {/* MINIAN */}
+            <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("minian")}>
+              {t("MINIAN_TITLE") || "Minyanim"}
+            </Typography>
+  
+            {expanded.minian && (
+              <TimeListSettings
+                list={minianimList}
+                onSave={handleSaveMinian}
+                onDelete={handleDeleteMinian}
+                addTitleKey={'ADD_MINIAN'}
+                manageTitleKey={'MANAGE_MINIANIM'}
+              />
+            )}
+  
+            <Divider sx={{ my: 3 }} />
+  
+            {/* SEIDER */}
+            <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("seider")}>
+              {t("SEIDER_TITLE") || "Seider"}
+            </Typography>
+  
+            {expanded.seider && (
+              <TimeListSettings
+                list={seiderList}
+                onSave={handleSaveSeider}
+                onDelete={handleDeleteSeider}
+                addTitleKey={'ADD_SEIDER'}
+                manageTitleKey={'MANAGE_SEIDER'}
+              />
+            )}
+  
+            <Divider sx={{ my: 3 }} />
+  
+            {/* LAYOUT */}
+            <Typography variant="h6" sx={{ color: "primary.main", cursor: "pointer", fontWeight: 600, mt: 1 }} onClick={() => toggle("layout")}>
+              {t("DISTRIBUTION_TITLE") || "Distribución de Pantalla"}
+            </Typography>
+  
+            {expanded.layout && (
+              <LayoutSettings
+                layout={carouselLayout}
+                setLayout={setCarouselLayout}
+                t={t}
+              />
+            )}
+  
+            {/* Bottom spacing to prevent cutoff */}
+            <Box sx={{ height: '80px' }} />
+  
+          </Box>
+        </ThemeProvider>
+      </Drawer>
+    );
+  };
 export default SettingsSheet;
