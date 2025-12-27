@@ -14,7 +14,7 @@ export const WeatherApp = ({ isCard = false }) => {
 
   const urlBase = 'https://api.openweathermap.org/data/2.5/weather';
   //const ApiKey = import.meta.env.VITE_OPENWEATHER_API_KEY; //agrega tu contraseña de la api
-  const ApiKey = '36622212221222122212221222122212'; //agrega tu contraseña de la api1
+  const ApiKey = 'f274bfce891adcbdcbc5f50da7df9158'; //agrega tu contraseña de la api1
 
   const getWeatherIcon = (iconCode) => {
     const iconProps = {
