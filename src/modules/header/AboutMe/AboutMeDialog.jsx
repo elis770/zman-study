@@ -1,0 +1,88 @@
+import { Dialog, DialogTitle, DialogContent, Box, Typography, IconButton, useTheme } from "@mui/material";
+import { X } from "lucide-react";
+
+export function AboutMeDialog({ open, onClose }) {
+  const theme = useTheme();
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          background: theme.custom?.colors?.glass?.cardGradient || theme.palette.background.paper,
+          backdropFilter: 'blur(12px)',
+          border: `1px solid ${theme.custom.colors.border.main}`,
+          borderRadius: 2,
+          maxHeight: { xs: '90vh', md: '80vh' },
+          height: { xs: 'auto', md: '50vh' },
+          width: { xs: '95vw', md: '50vw' },
+          maxWidth: '800px',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }
+      }}
+    >
+      <DialogTitle sx={{
+        textAlign: 'center',
+        position: 'relative',
+        pt: 4,
+        pb: 1
+      }}>
+        <IconButton
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 12,
+            top: 12,
+            color: theme.palette.text.primary,
+            '&:hover': { backgroundColor: theme.custom.colors.border.light }
+          }}
+        >
+          <X style={{ width: '20px', height: '20px' }} />
+        </IconButton>
+
+        <Box
+          component="img"
+          src="/122.png"
+          alt="Eliahu"
+          sx={{
+            width: 100,
+            height: 100,
+            borderRadius: '50%',
+            objectFit: 'cover',
+            mb: 2,
+            border: `3px solid ${theme.custom.colors.border.main}`,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            display: 'block',
+            mx: 'auto'
+          }}
+        />
+
+        <Typography variant="h7" component="div" sx={{
+          color: theme.palette.text.primary,
+          fontWeight: 700,
+          letterSpacing: '0.02em'
+        }}>
+          Eliahu Steynberg - Desarrollador de Software
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <Box sx={{ py: 2 }}>
+          <Typography sx={{ color: theme.palette.text.primary, mb: 2, lineHeight: 1.7 }}>
+            Apasionado por la tecnología y la creación de soluciones que impactan positivamente.
+            Este proyecto es una demostración de mis habilidades en JS, React, habilidades en el area frontend de la programacion web y facilitar el acceso a información
+            importante para la vida judía diaria, combinando tecnología moderna con sabiduría ancestral.
+          </Typography>
+
+          <Typography sx={{ color: theme.custom.colors.text.tertiary, fontSize: '0.875rem', fontStyle: 'italic' }}>
+            Puedes encontrar más sobre mis habilidades en <a href="https://github.com/elis770" target="_blank" rel="noopener noreferrer">mi GitHub</a>.
+          </Typography>
+        </Box>
+      </DialogContent>
+    </Dialog>
+  );
+}

@@ -1,0 +1,24 @@
+import { useState, useEffect } from 'react';
+import { useLanguage } from './useLanguage.js';
+
+const TranslateText = ({ text, sourceLang }) => {
+  const { language, translateDynamicText } = useLanguage();
+  const [translatedText, setTranslatedText] = useState(text);
+
+  useEffect(() => {
+    if (!text || sourceLang === language) {
+      setTranslatedText(text);
+      return;
+    }
+    
+    const safe = typeof text === 'string' ? text : (text?.toString?.() ?? '');
+    translateDynamicText(safe, sourceLang)
+      .then(setTranslatedText)
+      .catch(() => setTranslatedText(text));
+      
+  }, [text, sourceLang, language, translateDynamicText]);
+
+  return <span>{translatedText || text}</span>;
+};
+
+export default TranslateText;
